@@ -32,11 +32,18 @@ export function UserMenu() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
     )
-    sb.from('users').select('display_name').eq('id', user.id).maybeSingle().then(({ data }) => {
-      if (!alive) return
-      const dn = (data as any)?.display_name?.trim()
-      if (dn) setLabel(dn)
-    }).catch(() => {})
+    ;(async () => {
+      try {
+        const { data } = await sb
+          .from('users')
+          .select('display_name')
+          .eq('id', user.id)
+          .maybeSingle()
+        if (!alive) return
+        const dn = (data as any)?.display_name?.trim()
+        if (dn) setLabel(dn)
+      } catch {}
+    })()
     return () => { alive = false }
   }, [user?.id])
 
