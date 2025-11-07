@@ -61,19 +61,21 @@ export function FavoriteButton({
     }
     if (typeof initialActive !== 'undefined') setSafe(initialActive)
     if (!user) { return () => { alive = false } }
-    sb()
-      .from('favorites')
-      .select('user_id')
-      .eq('user_id', user.id)
-      .eq('target_type', targetType)
-      .eq('target_id', eventId)
-      .maybeSingle()
-      .then(({ data }) => {
+    ;(async () => {
+      try {
+        const { data } = await sb()
+          .from('favorites')
+          .select('user_id')
+          .eq('user_id', user.id)
+          .eq('target_type', targetType)
+          .eq('target_id', eventId)
+          .maybeSingle()
         const remote = !!data
+        if (!alive) return
         // Avoid flicker: only set if different from current
         if (remote !== favRef.current) setSafe(remote)
-      })
-      .catch(() => {})
+      } catch {}
+    })()
     return () => { alive = false }
   }, [user, eventId, targetType, initialActive])
 
@@ -134,12 +136,8 @@ export function FavoriteButton({
       if (persisted !== next) throw new Error('No se pudo persistir el favorito (RLS/permiso).')
       try {
         if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('nighthub-fav-changed', { detail: { id: eventId, type: targetType, added: next } })); window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message: next ? 'Guardado en favoritos' : 'Eliminado de favoritos' } }))
-        }
-      } catch {}
-      try {
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('nighthub-fav-changed', { detail: { id: eventId, type: targetType, added: next } })); window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message: next ? 'Guardado en favoritos' : 'Eliminado de favoritos' } }))
+          window.dispatchEvent(new CustomEvent('nighthub-fav-changed', { detail: { id: eventId, type: targetType, added: next } }))
+          window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message: next ? 'Guardado en favoritos' : 'Eliminado de favoritos' } }))
         }
       } catch {}
     } catch (e: any) {
