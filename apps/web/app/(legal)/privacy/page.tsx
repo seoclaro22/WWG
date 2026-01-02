@@ -7,8 +7,8 @@ export default function PrivacyPage() {
   const ES = (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Política de Privacidad</h1>
-      <p className="muted">Esta política explica cómo tratamos tus datos personales cuando usas NightHub Mallorca (la “Plataforma”). Cumplimos el Reglamento (UE) 2016/679 (RGPD) y la normativa española vigente.</p>
-      <Section n={1} title="Responsable"><p>Responsable: NightHub Mallorca. Contacto: privacy@nighthub.app</p></Section>
+      <p className="muted">Esta política explica cómo tratamos tus datos personales cuando usas Where We Go (la “Plataforma”). Cumplimos el Reglamento (UE) 2016/679 (RGPD) y la normativa española vigente.</p>
+      <Section n={1} title="Responsable"><p>Responsable: Cristian Felipe Romero San Martín (Where We Go). Contacto: info@seoclaro.com</p></Section>
       <Section n={2} title="Datos que tratamos">
         <ul className="list-disc pl-5 text-white/80">
           <li>Identificación: email, nombre a mostrar y preferencias de idioma.</li>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
       </Section>
       <Section n={5} title="Conservación"><p>Conservamos datos mientras tengas cuenta o sea necesario. Puedes borrar tus datos desde “Cuenta”. Registros legales se guardan el tiempo exigido.</p></Section>
       <Section n={6} title="Cesiones y encargados"><p>No vendemos tus datos. Usamos proveedores como encargados (hosting/BD con garantías adecuadas). En webs de terceros aplican sus políticas.</p></Section>
-      <Section n={7} title="Derechos"><p>Acceso, rectificación, supresión, oposición, limitación y portabilidad: privacy@nighthub.app. Reclama ante la AEPD si procede.</p></Section>
+      <Section n={7} title="Derechos"><p>Acceso, rectificación, supresión, oposición, limitación y portabilidad: info@seoclaro.com. Reclama ante la AEPD si procede.</p></Section>
       <Section n={8} title="Seguridad"><p>Medidas técnicas/organizativas: cifrado en tránsito, control de accesos y RLS en base de datos.</p></Section>
       <Section n={9} title="Menores"><p>Plataforma para mayores de 18 años. Si detectamos una cuenta de un menor, la desactivamos y eliminamos los datos.</p></Section>
       <Section n={10} title="Cambios"><p>Podemos actualizar esta política y avisaremos por medios razonables si los cambios son significativos.</p></Section>
@@ -43,8 +43,8 @@ export default function PrivacyPage() {
   const EN = (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Privacy Policy</h1>
-      <p className="muted">This policy explains how we process your personal data when you use NightHub Mallorca (the “Platform”). We comply with EU Regulation 2016/679 (GDPR) and applicable Spanish law.</p>
-      <Section n={1} title="Controller"><p>Controller: NightHub Mallorca. Contact: privacy@nighthub.app</p></Section>
+      <p className="muted">This policy explains how we process your personal data when you use Where We Go (the “Platform”). We comply with EU Regulation 2016/679 (GDPR) and applicable Spanish law.</p>
+      <Section n={1} title="Controller"><p>Controller: Cristian Felipe Romero San Martín (Where We Go). Contact: info@seoclaro.com</p></Section>
       <Section n={2} title="Data we process">
         <ul className="list-disc pl-5 text-white/80">
           <li>Identification: email, display name and language preference.</li>
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
       </Section>
       <Section n={5} title="Retention"><p>We keep data while you have an account or as needed. You can delete your data from “Account”. Legal/operational logs are retained as required by law.</p></Section>
       <Section n={6} title="Sharing and processors"><p>We do not sell your data. We use processors (e.g., hosting/DB in the EU/EEA or with adequate safeguards). Third‑party ticket sites have their own policies.</p></Section>
-      <Section n={7} title="Your rights"><p>Access, rectification, erasure, objection, restriction and portability: privacy@nighthub.app. You may lodge a complaint with your DPA.</p></Section>
+      <Section n={7} title="Your rights"><p>Access, rectification, erasure, objection, restriction and portability: info@seoclaro.com. You may lodge a complaint with your DPA.</p></Section>
       <Section n={8} title="Security"><p>We apply appropriate technical and organizational measures (transport encryption, access control, DB RLS).</p></Section>
       <Section n={9} title="Children"><p>The Platform is intended for users aged 18+. Accounts of minors will be disabled and data removed.</p></Section>
       <Section n={10} title="Changes"><p>We may update this policy and will notify you when changes are significant.</p></Section>
@@ -79,8 +79,8 @@ export default function PrivacyPage() {
   const DE = (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Datenschutzerklärung</h1>
-      <p className="muted">Diese Richtlinie erläutert, wie wir deine personenbezogenen Daten verarbeiten, wenn du NightHub Mallorca (die „Plattform“) nutzt. Wir halten die DSGVO (EU 2016/679) und geltendes spanisches Recht ein.</p>
-      <Section n={1} title="Verantwortlicher"><p>Verantwortlicher: NightHub Mallorca. Kontakt: privacy@nighthub.app</p></Section>
+      <p className="muted">Diese Richtlinie erläutert, wie wir deine personenbezogenen Daten verarbeiten, wenn du Where We Go (die „Plattform“) nutzt. Wir halten die DSGVO (EU 2016/679) und geltendes spanisches Recht ein.</p>
+      <Section n={1} title="Verantwortlicher"><p>Verantwortlicher: Cristian Felipe Romero San Martín (Where We Go). Kontakt: info@seoclaro.com</p></Section>
       <Section n={2} title="Welche Daten verarbeiten wir">
         <ul className="list-disc pl-5 text-white/80">
           <li>Identifikation: E‑Mail, Anzeigename und Sprache.</li>
@@ -105,7 +105,7 @@ export default function PrivacyPage() {
       </Section>
       <Section n={5} title="Speicherdauer"><p>Wir speichern Daten solange dein Konto existiert oder es notwendig ist. Du kannst deine Daten unter „Konto“ löschen. Gesetzliche Protokolle bewahren wir entsprechend auf.</p></Section>
       <Section n={6} title="Weitergabe/Auftragsverarbeiter"><p>Wir verkaufen keine Daten. Wir nutzen Auftragsverarbeiter (z. B. Hosting/DB in der EU/EWR oder mit geeigneten Garantien). Bei Drittseiten gelten deren Richtlinien.</p></Section>
-      <Section n={7} title="Betroffenenrechte"><p>Auskunft, Berichtigung, Löschung, Widerspruch, Einschränkung, Datenübertragbarkeit: privacy@nighthub.app. Du kannst dich bei der zuständigen Aufsichtsbehörde beschweren.</p></Section>
+      <Section n={7} title="Betroffenenrechte"><p>Auskunft, Berichtigung, Löschung, Widerspruch, Einschränkung, Datenübertragbarkeit: info@seoclaro.com. Du kannst dich bei der zuständigen Aufsichtsbehörde beschweren.</p></Section>
       <Section n={8} title="Sicherheit"><p>Wir setzen angemessene technische und organisatorische Maßnahmen ein (Transportverschlüsselung, Zugriffskontrolle, DB‑RLS).</p></Section>
       <Section n={9} title="Minderjährige"><p>Die Plattform richtet sich an Personen ab 18 Jahren. Konten Minderjähriger werden deaktiviert und Daten gelöscht.</p></Section>
       <Section n={10} title="Änderungen"><p>Wir können diese Richtlinie aktualisieren und informieren dich bei wesentlichen Änderungen.</p></Section>

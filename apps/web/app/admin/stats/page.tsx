@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 
 type TopItem = { id: string; name: string; count: number; type?: string }
+type LatestUser = { id: string; email?: string | null; display_name?: string | null; created_at?: string | null }
 
 function sb(){
   return createClient(
@@ -34,6 +35,8 @@ function StatsInner(){
   const [searchTop, setSearchTop] = useState<{ term: string; count: number }[]>([])
   const [zoneTop, setZoneTop] = useState<{ zone: string; count: number }[]>([])
   const [djsSearched, setDjsSearched] = useState<TopItem[]>([])
+  const [activeUsers, setActiveUsers] = useState(0)
+  const [latestUsers, setLatestUsers] = useState<LatestUser[]>([])
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string|undefined>()
 
@@ -44,6 +47,35 @@ function StatsInner(){
     const client = sb()
     try {
       const { fromIso, toIso } = buildRange()
+      const activeUsersPromise = (async () => {
+        const seen = new Set<string>()
+        const collect = async (table: string, col: string) => {
+          let q = client.from(table).select(`user_id,${col}`)
+          if (fromIso) q = (q as any).gte(col, fromIso)
+          if (toIso) q = (q as any).lte(col, toIso)
+          const { data, error } = await q
+          if (error) return
+          for (const r of (data || []) as any[]) {
+            if (r.user_id) seen.add(r.user_id)
+          }
+        }
+        await Promise.all([
+          collect('favorites', 'created_at'),
+          collect('clicks', 'ts'),
+          collect('reviews', 'created_at'),
+          collect('follows', 'created_at'),
+        ])
+        return seen.size
+      })()
+      const latestUsersPromise = (async () => {
+        const { data, error } = await client
+          .from('users')
+          .select('id,email,display_name,created_at')
+          .order('created_at', { ascending: false })
+          .limit(20)
+        if (error) return [] as LatestUser[]
+        return (data || []) as LatestUser[]
+      })()
       // Favorites top (club/event/dj) - aggregate on client for simplicity
       let favQ = client.from('favorites').select('target_type,target_id,created_at')
       if (fromIso) favQ = (favQ as any).gte('created_at', fromIso)
@@ -131,9 +163,14 @@ function StatsInner(){
         setDjsSearched([])
       }
 
+      const [activeCount, newestUsers] = await Promise.all([activeUsersPromise, latestUsersPromise])
+      setActiveUsers(activeCount)
+      setLatestUsers(newestUsers)
     } catch(e:any){
       setErr(e?.message || 'Error cargando estadisticas')
-      setFavTop([]); setClickTop([]); setSearchTop([]); setZoneTop([])
+      setFavTop([]); setFavEvents([]); setFavClubs([]); setFavDjs([])
+      setClickTop([]); setSearchTop([]); setZoneTop([]); setDjsSearched([])
+      setActiveUsers(0); setLatestUsers([])
     } finally {
       setBusy(false)
     }
@@ -166,7 +203,6 @@ function StatsInner(){
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/admin" className="btn btn-secondary">Volver</Link>
-          <h1 className="text-2xl font-semibold">Estadisticas</h1>
         </div>
         <div className="flex items-center gap-2">
           <select value={preset} onChange={e=>setPreset(e.target.value as any)} className="bg-base-card border border-white/10 rounded-xl p-2 text-sm">
@@ -184,6 +220,23 @@ function StatsInner(){
       {err && <div className="text-red-400 text-sm">{err}</div>}
       {!busy && (
         <div className="grid md:grid-cols-2 gap-4">
+          <div className="card p-4">
+            <div className="font-medium mb-2">Usuarios activos</div>
+            <div className="text-3xl font-semibold">{activeUsers}</div>
+            <div className="text-xs text-white/60">Periodo seleccionado</div>
+          </div>
+          <div className="card p-4">
+            <div className="font-medium mb-2">Ultimos 20 usuarios</div>
+            <ul className="space-y-1 text-sm">
+              {latestUsers.map(u => (
+                <li key={u.id} className="flex items-center justify-between gap-3">
+                  <span className="truncate">{u.display_name || u.email || u.id}</span>
+                  <span className="text-white/60 text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : ''}</span>
+                </li>
+              ))}
+              {latestUsers.length===0 && <li className="text-white/60">Sin datos</li>}
+            </ul>
+          </div>
           <div className="card p-4">
             <div className="font-medium mb-2">Top Favoritos (todo)</div>
             <ul className="space-y-1 text-sm">

@@ -7,8 +7,8 @@ import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/Toaster'
 
 export const metadata = {
-  title: 'NightHub Mallorca',
-  description: 'Descubre. Reserva. Baila.'
+  title: 'Where We Go',
+  description: 'Agenda local curada. Donde vamos hoy?'
 }
 
 // Evita el prerender estatico en build (usa runtime siempre)

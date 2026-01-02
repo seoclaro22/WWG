@@ -1,15 +1,16 @@
-export default function RootLoading() {
-  // Lightweight skeleton to improve perceived performance
+"use client"
+
+export default function Loading() {
   return (
-    <div className="space-y-4 animate-pulse">
-      <div className="h-6 w-40 bg-white/10 rounded" />
-      <div className="h-10 bg-white/5 rounded" />
-      <div className="grid gap-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-24 bg-white/5 rounded-xl border border-white/10" />
-        ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F14]">
+      <div className="text-center">
+        <div className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text wwg-gold-sheen">
+          WWG
+        </div>
+        <div className="mt-2 text-xs md:text-sm tracking-[0.35em] text-white/70 wwg-neon">
+          WHERE WE GO
+        </div>
       </div>
     </div>
   )
 }
-

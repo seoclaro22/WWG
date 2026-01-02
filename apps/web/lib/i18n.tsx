@@ -5,12 +5,32 @@ type Dict = Record<string, string>
 
 const dictionaries: Record<string, Dict> = {
   es: {
-    'nav.home': 'Inicio',
+    'nav.home': 'Descubrir',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promociona',
     'nav.signin': 'Entrar',
     'nav.account': 'Cuenta',
     'nav.favorites': 'Favoritos',
+
+    'landing.badge': 'Agenda local curada por expertos',
+    'landing.locale_hint': 'ES · EN · DE',
+    'landing.subtitle': 'La agenda local definitiva. Curada por expertos.',
+    'landing.placeholder': 'Donde sales hoy? (Ej. Palma)',
+    'landing.cta': 'Buscar planes',
+    'landing.use_location': 'Usar mi ubicacion',
+    'landing.using_location': 'Detectando ubicacion...',
+    'landing.locating': 'Buscando tu ubicacion...',
+    'landing.locating_auto': 'Pidiendo permiso de ubicacion...',
+    'landing.located': 'Ubicacion detectada.',
+    'landing.located_fallback': 'Ubicacion aproximada por coordenadas.',
+    'landing.geo_denied': 'No pudimos obtener tu ubicacion. Activa permisos o escribe tu zona.',
+    'landing.geo_not_supported': 'Tu navegador no permite geolocalizacion.',
+    'landing.no_events': 'No tenemos eventos para esa zona.',
+    'landing.no_events_fallback': 'No hay eventos en {zone}. Mostrando {fallback}.',
+    'landing.error_empty': 'Escribe una zona para continuar.',
+    'landing.point_curated': 'Selecciones curadas',
+    'landing.point_live': 'Eventos en tiempo real',
+    'landing.point_multi': 'Multi idioma',
 
     'discover.title': 'La noche empieza aqui',
     'tabs.events': 'Proximos eventos',
@@ -59,7 +79,7 @@ const dictionaries: Record<string, Dict> = {
     'account.danger_text': 'Esta accion eliminara tus datos en NightHub y cerrara la sesion.',
     'account.delete_btn': 'Borrar mis datos y cerrar cuenta en esta app',
 
-    'auth.title': 'MALLORCA NIGHTS',
+    'auth.title': 'Where We Go',
     'auth.subtitle': 'Accede a la cuenta para empezar',
     'auth.email': 'Email',
     'auth.password': 'Contrasena',
@@ -109,15 +129,37 @@ const dictionaries: Record<string, Dict> = {
     'loading': 'Cargando...',
 
     'dj.upcoming': 'Proximos eventos',
-    'dj.no_upcoming': 'No hay eventos proximos.'
+    'dj.no_upcoming': 'No hay eventos proximos.',
+    'dj.similar': 'Tambien te puede gustar',
+    'action.view': 'Ver'
   },
   en: {
-    'nav.home': 'Home',
+    'nav.home': 'Discover',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promote',
     'nav.signin': 'Sign in',
     'nav.account': 'Account',
     'nav.favorites': 'Favorites',
+
+    'landing.badge': 'Local agenda curated by experts',
+    'landing.locale_hint': 'ES · EN · DE',
+    'landing.subtitle': 'The definitive local guide. Curated picks, live now.',
+    'landing.placeholder': 'Where are you going out? (e.g. Palma)',
+    'landing.cta': 'Find plans',
+    'landing.use_location': 'Use my location',
+    'landing.using_location': 'Detecting location...',
+    'landing.locating': 'Getting your location...',
+    'landing.locating_auto': 'Requesting location access...',
+    'landing.located': 'Location detected.',
+    'landing.located_fallback': 'Using approximate coordinates.',
+    'landing.geo_denied': 'Could not get your location. Enable permission or type your area.',
+    'landing.geo_not_supported': 'Your browser does not allow geolocation.',
+    'landing.no_events': 'No events are available for that area.',
+    'landing.no_events_fallback': 'No events in {zone}. Showing {fallback}.',
+    'landing.error_empty': 'Type a zone to continue.',
+    'landing.point_curated': 'Curated picks',
+    'landing.point_live': 'Live events',
+    'landing.point_multi': 'Multi language',
 
     'discover.title': 'The night starts here',
     'tabs.events': 'Upcoming events',
@@ -166,7 +208,7 @@ const dictionaries: Record<string, Dict> = {
     'account.danger_text': 'This will delete your data in NightHub and sign you out.',
     'account.delete_btn': 'Delete my data and sign out',
 
-    'auth.title': 'MALLORCA NIGHTS',
+    'auth.title': 'Where We Go',
     'auth.subtitle': 'Sign in to start',
     'auth.email': 'Email',
     'auth.password': 'Password',
@@ -216,15 +258,37 @@ const dictionaries: Record<string, Dict> = {
     'loading': 'Loading...',
 
     'dj.upcoming': 'Upcoming events',
-    'dj.no_upcoming': 'No upcoming events.'
+    'dj.no_upcoming': 'No upcoming events.',
+    'dj.similar': 'You may also like',
+    'action.view': 'View'
   },
   de: {
-    'nav.home': 'Start',
+    'nav.home': 'Entdecken',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promoten',
     'nav.signin': 'Anmelden',
     'nav.account': 'Konto',
     'nav.favorites': 'Favoriten',
+
+    'landing.badge': 'Lokale Agenda von Experten kuratiert',
+    'landing.locale_hint': 'ES · EN · DE',
+    'landing.subtitle': 'Der ultimative lokale Guide. Von Experten kuratiert.',
+    'landing.placeholder': 'Wohin gehst du heute? (z.B. Palma)',
+    'landing.cta': 'Finde Plaene',
+    'landing.use_location': 'Meinen Standort nutzen',
+    'landing.using_location': 'Standort wird ermittelt...',
+    'landing.locating': 'Standort wird abgerufen...',
+    'landing.locating_auto': 'Standorterlaubnis wird angefragt...',
+    'landing.located': 'Standort erkannt.',
+    'landing.located_fallback': 'Ungefaehre Koordinaten genutzt.',
+    'landing.geo_denied': 'Standort konnte nicht ermittelt werden. Erlaube den Zugriff oder tippe deine Zone.',
+    'landing.geo_not_supported': 'Dein Browser erlaubt keine Geolokalisierung.',
+    'landing.no_events': 'Keine Events fur diese Zone vorhanden.',
+    'landing.no_events_fallback': 'Keine Events in {zone}. Zeige {fallback}.',
+    'landing.error_empty': 'Gib eine Zone ein, um fortzufahren.',
+    'landing.point_curated': 'Kuratiert',
+    'landing.point_live': 'Live Events',
+    'landing.point_multi': 'Mehrsprachig',
 
     'discover.title': 'Die Nacht beginnt hier',
     'tabs.events': 'Bevorstehende Events',
@@ -273,7 +337,7 @@ const dictionaries: Record<string, Dict> = {
     'account.danger_text': 'Dies loscht deine Daten in NightHub und meldet dich ab.',
     'account.delete_btn': 'Meine Daten loschen und abmelden',
 
-    'auth.title': 'MALLORCA NIGHTS',
+    'auth.title': 'Where We Go',
     'auth.subtitle': 'Melde dich an, um zu starten',
     'auth.email': 'E-Mail',
     'auth.password': 'Passwort',
@@ -323,7 +387,9 @@ const dictionaries: Record<string, Dict> = {
     'loading': 'Laden...',
 
     'dj.upcoming': 'Bevorstehende Events',
-    'dj.no_upcoming': 'Keine bevorstehenden Events.'
+    'dj.no_upcoming': 'Keine bevorstehenden Events.',
+    'dj.similar': 'Das koennte dir auch gefallen',
+    'action.view': 'Ansehen'
   }
 }
 

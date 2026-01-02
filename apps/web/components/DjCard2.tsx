@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { FavoriteButton } from './FavoriteButton'
 import { LocalText } from './LocalText'
+import { useI18n } from '@/lib/i18n'
 // Removed Seguir/Quitar button from list cards per request
 
 type Props = {
@@ -20,11 +21,17 @@ type Props = {
 }
 
 export function DjCard2({ dj, showHeart = false }: Props) {
+  const { locale, t } = useI18n()
   const image = dj.image || null
   const genres = Array.isArray(dj.genres) ? dj.genres : []
   const baseShort = (dj.short_bio || '').trim()
   const baseBio = dj.bio || ''
   const desc = baseShort || (baseBio ? (baseBio.length > 160 ? baseBio.slice(0, 157) + '...' : baseBio) : '')
+  const shortI18n = dj.short_bio_i18n && typeof dj.short_bio_i18n === 'object' ? (dj.short_bio_i18n as any)[locale] : ''
+  const bioI18n = dj.bio_i18n && typeof dj.bio_i18n === 'object' ? (dj.bio_i18n as any)[locale] : ''
+  const localized = shortI18n || bioI18n || ''
+  const localizedDesc = localized ? (localized.length > 160 ? localized.slice(0, 157) + '...' : localized) : ''
+  const displayDesc = localizedDesc || baseShort || desc
   return (
     <div className="card card-glass overflow-hidden relative">
       {showHeart && (
@@ -46,13 +53,13 @@ export function DjCard2({ dj, showHeart = false }: Props) {
           {genres.length > 0 && (
             <div className="text-xs text-white/60 mt-1">{genres.join(', ')}</div>
           )}
-          {desc && (
+          {displayDesc && (
             <div className="text-xs text-white/70 mt-1">
-              <LocalText value={baseShort || desc} i18n={dj.short_bio_i18n || dj.bio_i18n || undefined} />
+              {displayDesc}
             </div>
           )}
           <div className="mt-2 flex gap-2 flex-wrap">
-            <Link href={`/dj/${dj.id}`} className="btn btn-secondary text-sm px-3 py-1">Ver</Link>
+            <Link href={`/dj/${dj.id}`} className="btn btn-primary text-sm px-3 py-1">{t('action.view')}</Link>
           </div>
         </div>
       </div>

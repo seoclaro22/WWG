@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { fetchClubsPublic } from '@/lib/db'
+import { LocalText } from '@/components/LocalText'
+import { T } from '@/components/T'
 
 export default async function ClubsIndex() {
   const clubs = await fetchClubsPublic({ limit: 200 })
@@ -20,10 +22,12 @@ export default async function ClubsIndex() {
               )}
               <div className="flex-1">
                 <div className="font-medium">{c.name}</div>
-                <div className="text-sm text-white/70 line-clamp-2">{c.description || '-'}</div>
+                <div className="text-sm text-white/70 line-clamp-2">
+                  <LocalText value={c.description || '-'} i18n={c.description_i18n || undefined} />
+                </div>
                 <div className="text-xs text-white/50 mt-1">{c.address || '—'}{c.zone ? ` · ${c.zone}` : ''}</div>
               </div>
-              <Link href={`/club/${c.id}`} className="btn btn-secondary">Ver</Link>
+              <Link href={`/club/${c.id}`} className="btn btn-secondary"><T k="action.view" /></Link>
             </div>
           )
         })}

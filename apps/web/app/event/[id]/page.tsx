@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { fetchEvent, fetchEventLineup, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
-import { ReviewsSection } from '@/components/ReviewsSection'
 import { ReserveButton } from '@/components/ReserveButton'
 import { T } from '@/components/T'
 import { LDate } from '@/components/LDate'
@@ -18,13 +17,19 @@ export default async function EventDetail({ params }: { params: { id: string } }
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
   const cover = imgs.length ? imgs[0] : null
   return (
-    <div className="space-y-4">
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
+      <div className="relative z-10 space-y-4">
       {cover ? (
         <img src={cover} alt={e.name} className="w-full aspect-[3/4] object-cover rounded-xl border border-white/10" />
       ) : (
         <div className="aspect-[3/4] w-full rounded-xl bg-white/5" />
       )}
-      <h1 className="text-2xl font-semibold"><LocalText value={(e as any).name} i18n={(e as any).name_i18n} /></h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold"><LocalText value={(e as any).name} i18n={(e as any).name_i18n} /></h1>
+        <FavoriteButton eventId={(e as any).id} useLocalCache />
+      </div>
       <div className="muted">
         <LDate value={e.start_at} options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} /> ·{' '}
         {clubId ? <Link className="underline hover:text-gold" href={`/club/${clubId}`}>{e.club_name || '-'}</Link> : (e.club_name || '-')}
@@ -54,8 +59,6 @@ export default async function EventDetail({ params }: { params: { id: string } }
         )}
         <Link className="btn btn-secondary" href={`https://maps.google.com?q=${encodeURIComponent((e as any).club_name || 'Mallorca')}`} target="_blank"><T k="action.directions" /></Link>
       </div>
-      <FavoriteButton eventId={(e as any).id} useLocalCache />
-      <ReviewsSection targetType="event" targetId={(e as any).id} />
       {moreFromClub.length > 0 && (
         <div className="card p-4 space-y-2">
           <div className="font-medium">Mas en {e.club_name}</div>
@@ -68,6 +71,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
         </div>
       )}
       <div className="text-xs text-white/50">ID: {id}</div>
+      </div>
     </div>
   )
 }

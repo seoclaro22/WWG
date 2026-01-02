@@ -72,8 +72,11 @@ function EventsManager() {
     if (!id) return
     const ok = confirm('Â¿Eliminar este evento?')
     if (!ok) return
-    const { error } = await sb().from('events').delete().eq('id', id)
+    const client = sb()
+    const { error } = await client.from('events').delete().eq('id', id)
     if (error) { alert('No se pudo eliminar: ' + error.message); return }
+    try { await client.from('events_public').delete().eq('id', id) } catch {}
+    try { await client.from('event_djs').delete().eq('event_id', id) } catch {}
     load()
   }
 
@@ -81,7 +84,6 @@ function EventsManager() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/admin" className="btn btn-secondary">â† Volver</Link>
           <Link href="/admin" className="btn btn-secondary"><span aria-hidden="true">{'<'}</span> Volver</Link>
           <h1 className="text-2xl font-semibold">Eventos</h1>
         </div>

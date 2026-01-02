@@ -11,6 +11,7 @@ type Club = {
   id?: string
   name: string
   description?: string | null
+  description_i18n?: Record<string, string> | null
   address?: string | null
   referral_link?: string | null
   status?: string
@@ -146,6 +147,26 @@ function ClubForm({ initial, onCancel, onSave }: { initial: Club; onCancel: () =
         <div className="md:col-span-2">
           <label className="block text-sm">Descripcion</label>
           <textarea value={form.description || ''} onChange={e=>setForm({ ...form, description: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={3} />
+        </div>
+        <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm">Descripcion (EN)</label>
+            <textarea
+              value={(form.description_i18n?.en) || ''}
+              onChange={e=>setForm({ ...form, description_i18n: { ...(form.description_i18n || {}), en: e.target.value } })}
+              className="w-full bg-transparent border border-white/10 rounded-xl p-2"
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-sm">Descripcion (DE)</label>
+            <textarea
+              value={(form.description_i18n?.de) || ''}
+              onChange={e=>setForm({ ...form, description_i18n: { ...(form.description_i18n || {}), de: e.target.value } })}
+              className="w-full bg-transparent border border-white/10 rounded-xl p-2"
+              rows={3}
+            />
+          </div>
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm">Generos predominantes</label>

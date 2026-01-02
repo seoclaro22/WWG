@@ -23,6 +23,7 @@ function DJsManager() {
   const [items, setItems] = useState<DJ[]>([])
   const [q, setQ] = useState('')
   const [editing, setEditing] = useState<DJ | null>(null)
+  const [saving, setSaving] = useState(false)
   const dq = useDebounce(q, 300)
 
   async function load() {
@@ -34,32 +35,41 @@ function DJsManager() {
   }
   useEffect(() => { load() }, [dq])
 
+  function toast(message: string) {
+    if (typeof window === 'undefined') return
+    window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message } }))
+  }
+
   async function save(dj: DJ) {
+    if (saving) return
     const s = sb()
+    const payload = {
+      name: dj.name,
+      short_bio: dj.short_bio || null,
+      bio: dj.bio ?? null,
+      genres: dj.genres || [],
+      images: dj.images || [],
+      short_bio_i18n: dj.short_bio_i18n || null,
+      bio_i18n: dj.bio_i18n || null
+    }
+    setSaving(true)
     try {
       if (dj.id) {
-        const { data, error } = await s
-          .from('djs')
-          .update({ name: dj.name, short_bio: dj.short_bio || null, bio: dj.bio, genres: dj.genres || [], images: dj.images || [], short_bio_i18n: dj.short_bio_i18n || null, bio_i18n: dj.bio_i18n || null })
-          .eq('id', dj.id)
-          .select('id,name,short_bio,bio,genres,short_bio_i18n,bio_i18n')
-          .maybeSingle()
-        if (error) { alert('No se pudo guardar el DJ: ' + error.message); return }
-        if (data) setItems(prev => prev.map(it => it.id === data.id ? (data as any) : it))
-        else await load()
+        const { error } = await s.from('djs').update(payload).eq('id', dj.id)
+        if (error) { toast('No se pudo guardar el DJ: ' + error.message); return }
+        setItems(prev => prev.map(it => it.id === dj.id ? { ...it, ...payload } : it))
       } else {
-        const { data, error } = await s
-          .from('djs')
-          .insert({ name: dj.name, short_bio: dj.short_bio || null, bio: dj.bio, genres: dj.genres || [], images: dj.images || [], short_bio_i18n: dj.short_bio_i18n || null, bio_i18n: dj.bio_i18n || null })
-          .select('id,name,short_bio,bio,genres,short_bio_i18n,bio_i18n')
-          .maybeSingle()
-        if (error) { alert('No se pudo crear el DJ: ' + error.message); return }
-        if (data) setItems(prev => [data as any, ...prev])
+        const { data, error } = await s.from('djs').insert(payload).select('id').maybeSingle()
+        if (error) { toast('No se pudo crear el DJ: ' + error.message); return }
+        if (data?.id) setItems(prev => [{ id: data.id, ...payload } as any, ...prev])
         else await load()
       }
       setEditing(null)
+      toast('DJ guardado.')
     } catch (e: any) {
-      alert('No se pudo guardar el DJ: ' + (e?.message || 'Error desconocido'))
+      toast('No se pudo guardar el DJ: ' + (e?.message || 'Error desconocido'))
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -97,12 +107,12 @@ function DJsManager() {
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
       </div>
-      {editing && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} />}
+      {editing && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
     </div>
   )
 }
 
-function DJForm({ initial, onCancel, onSave }: { initial: DJ; onCancel: () => void; onSave: (d: DJ) => void }) {
+function DJForm({ initial, onCancel, onSave, saving }: { initial: DJ; onCancel: () => void; onSave: (d: DJ) => void; saving: boolean }) {
   const [form, setForm] = useState<DJ>({ ...initial, genres: initial.genres || [], images: initial.images || [] })
   const cover = Array.isArray(form.images) && form.images.length ? form.images[0] : null
   return (
@@ -151,8 +161,10 @@ function DJForm({ initial, onCancel, onSave }: { initial: DJ; onCancel: () => vo
         </div>
       </div>
       <div className="flex gap-2">
-        <button className="btn btn-primary" onClick={()=>onSave(form)}>Guardar</button>
-        <button className="btn btn-secondary" onClick={onCancel}>Cancelar</button>
+        <button className="btn btn-primary" type="button" onClick={()=>onSave(form)} disabled={saving}>
+          {saving ? 'Guardando...' : 'Guardar'}
+        </button>
+        <button className="btn btn-secondary" type="button" onClick={onCancel} disabled={saving}>Cancelar</button>
       </div>
     </div>
   )

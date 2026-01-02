@@ -138,40 +138,82 @@ export default function FavoritesPage() {
   }, [client, user, load])
 
   if (!user) return <div className="muted">{t('common.login_to_view')}</div>
+  const eventItems = items.filter(i => i.type === 'event')
+  const clubItems = items.filter(i => i.type === 'club')
+  const djItems = items.filter(i => i.type === 'dj')
+  const isLoading = loading && items.length === 0
+
+  const renderList = (list: FavItem[]) => (
+    list.map(it => (
+      <div key={`${it.type}:${it.id}`} className="card p-4 flex items-center justify-between">
+        <Link href={it.type === 'event' ? `/event/${it.id}` : it.type === 'club' ? `/club/${it.id}` : `/dj/${it.id}`} className="flex-1 min-w-0">
+          <div className="font-medium truncate">{it.name}</div>
+          {it.type === 'event' && (
+            <div className="text-sm text-white/60">{it.club_name} - {it.start_at ? new Date(it.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' }) : ''}</div>
+          )}
+        </Link>
+        <div className="ml-3 shrink-0 flex items-center">
+          <button
+            className="btn btn-secondary text-xs px-3 py-1"
+            onClick={() => removeFavorite(it)}
+          >
+            {t('action.remove') || 'Eliminar'}
+          </button>
+        </div>
+      </div>
+    ))
+  )
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <h1 className="text-2xl font-semibold">{t('favorites.title')}</h1>
-      <div className="grid gap-3">
-        {loading && items.length === 0 && (
-          <>
-            <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
-            <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
-          </>
-        )}
-        {items.map(it => (
-          <div key={`${it.type}:${it.id}`} className="card p-4 flex items-center justify-between">
-            <Link href={it.type === 'event' ? `/event/${it.id}` : it.type === 'club' ? `/club/${it.id}` : `/dj/${it.id}`} className="flex-1 min-w-0">
-              <div className="font-medium truncate">{it.name}</div>
-              {it.type === 'event' && (
-                <div className="text-sm text-white/60">{it.club_name} - {it.start_at ? new Date(it.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' }) : ''}</div>
-              )}
-            </Link>
-            <div className="ml-3 shrink-0 flex flex-col items-end justify-center gap-1">
-              <button
-                className="btn btn-secondary text-xs px-3 py-1"
-                onClick={() => removeFavorite(it)}
-              >
-                {t('action.remove') || 'Eliminar'}
-              </button>
-              <div className="text-[10px] sm:text-xs text-white/50 uppercase tracking-wide">{it.type}</div>
-            </div>
-          </div>
-        ))}
-        {!loading && items.length === 0 && (
-          <div className="muted">{t('favorites.empty')}</div>
-        )}
-      </div>
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Mis clubs favoritos</h2>
+        <div className="grid gap-3">
+          {isLoading && (
+            <>
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+            </>
+          )}
+          {!isLoading && clubItems.length > 0 && renderList(clubItems)}
+          {!isLoading && clubItems.length === 0 && (
+            <div className="muted">No tienes clubs favoritos.</div>
+          )}
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Mis DJs favoritos</h2>
+        <div className="grid gap-3">
+          {isLoading && (
+            <>
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+            </>
+          )}
+          {!isLoading && djItems.length > 0 && renderList(djItems)}
+          {!isLoading && djItems.length === 0 && (
+            <div className="muted">No tienes DJs favoritos.</div>
+          )}
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Mis eventos favoritos</h2>
+        <div className="grid gap-3">
+          {isLoading && (
+            <>
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+              <div className="h-16 rounded-xl bg-white/5 animate-pulse" />
+            </>
+          )}
+          {!isLoading && eventItems.length > 0 && renderList(eventItems)}
+          {!isLoading && eventItems.length === 0 && (
+            <div className="muted">No tienes eventos favoritos.</div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

@@ -4,6 +4,15 @@ import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 
+const normalizeZone = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
 export function Filters() {
   const router = useRouter()
   const pathname = usePathname()
@@ -16,6 +25,30 @@ export function Filters() {
   const { t } = useI18n()
   const [genres, setGenres] = useState<string[]>([])
   const [zones, setZones] = useState<string[]>(['Mallorca','Ibiza','Barcelona','Madrid'])
+  const [zonesReady, setZonesReady] = useState(false)
+
+  // Asegura que la zona actual en la URL sea valida para el selector
+  useEffect(() => {
+    if (!zone || zones.includes(zone) || !zonesReady) return
+    const zoneNormalized = normalizeZone(zone)
+    const matched = zones.find((z) => {
+      const zNormalized = normalizeZone(z)
+      return zoneNormalized === zNormalized || zoneNormalized.includes(zNormalized) || zNormalized.includes(zoneNormalized)
+    })
+    const sp = new URLSearchParams(params as any)
+    if (matched) {
+      sp.set('zone', matched)
+      if (typeof window !== 'undefined') localStorage.setItem('nighthub-zone', matched)
+      router.replace(`${pathname}?${sp.toString()}`)
+      return
+    }
+    sp.delete('zone')
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('nighthub-zone')
+      if (saved === zone) localStorage.removeItem('nighthub-zone')
+    }
+    router.replace(`${pathname}?${sp.toString()}`)
+  }, [zone, zones, zonesReady, params, pathname, router])
 
   useEffect(() => {
     const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
@@ -28,7 +61,9 @@ export function Filters() {
           const found = Array.from(new Set((data as any[]).map(x=>x.zone).filter(Boolean)))
           if (found.length) setZones(prev => Array.from(new Set([...prev, ...found])))
         }
-      } catch {}
+      } catch {} finally {
+        setZonesReady(true)
+      }
     })()
   }, [])
 

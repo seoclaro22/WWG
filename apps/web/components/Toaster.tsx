@@ -20,13 +20,14 @@ export function Toaster() {
   }, [])
   if (!toasts.length) return null
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 space-y-2">
-      {toasts.map(t => (
-        <div key={t.id} className="card px-3 py-2 text-sm bg-black/70 border border-white/10 rounded-xl shadow-lg">
-          {t.text}
-        </div>
-      ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none px-4">
+      <div className="space-y-2">
+        {toasts.map(t => (
+          <div key={t.id} className="card px-5 py-4 text-sm text-center bg-black/70 border border-white/10 rounded-xl shadow-lg min-w-[240px]">
+            {t.text}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
-

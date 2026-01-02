@@ -31,8 +31,8 @@ export function ClubCard({ club, showHeart = false }: Props) {
           <div className="text-sm text-white/70">{club.address || '-'}</div>
           {club.zone && <div className="text-xs text-white/60">{club.zone}</div>}
           <div className="mt-2 flex gap-2 flex-wrap">
-            <Link href={`/club/${club.id}`} className="btn btn-secondary text-sm px-3 py-1">Ver</Link>
-            <a className="btn btn-secondary text-sm px-3 py-1" target="_blank" rel="noreferrer" href={`https://maps.google.com?q=${mapQ}`}>{t('action.directions')}</a>
+            <Link href={`/club/${club.id}`} className="btn btn-primary text-sm px-3 py-1">{t('action.view')}</Link>
+            <a className="btn btn-primary text-sm px-3 py-1" target="_blank" rel="noreferrer" href={`https://maps.google.com?q=${mapQ}`}>{t('action.directions')}</a>
           </div>
         </div>
       </div>
