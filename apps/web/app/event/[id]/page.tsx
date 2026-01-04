@@ -7,6 +7,30 @@ import { T } from '@/components/T'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
 
+function getSpotifyEmbed(input?: string | null) {
+  const raw = (input || '').trim()
+  if (!raw) return null
+  const iframeMatch = raw.match(/src=["']([^"']+)["']/i)
+  const heightMatch = raw.match(/height=["']?(\d{2,4})["']?/i)
+  const url = iframeMatch ? iframeMatch[1] : raw
+  try {
+    const u = new URL(url)
+    if (!u.hostname.endsWith('spotify.com')) return null
+    let src = u.toString()
+    if (!u.pathname.startsWith('/embed/')) {
+      const parts = u.pathname.split('/').filter(Boolean)
+      if (parts.length >= 2) {
+        src = `https://open.spotify.com/embed/${parts[0]}/${parts[1]}`
+      }
+    }
+    const path = new URL(src).pathname
+    const isCompact = /\/embed\/(track|episode)\//.test(path)
+    const height = heightMatch ? Number(heightMatch[1]) : (isCompact ? 152 : 352)
+    return { src, height }
+  } catch {}
+  return null
+}
+
 export default async function EventDetail({ params }: { params: { id: string } }) {
   const { id } = params
   const e = await fetchEvent(id)
@@ -43,13 +67,34 @@ export default async function EventDetail({ params }: { params: { id: string } }
       )}
       <div className="space-y-2">
         <details className="card p-4"><summary className="font-medium"><T k="event.description" /></summary><p className="mt-2 text-sm text-white/80"><LocalText value={(e as any).description} i18n={(e as any).description_i18n} /></p></details>
-        <details className="card p-4"><summary className="font-medium"><T k="event.lineup" /></summary>
-          <div className="mt-2 text-sm text-white/80">
-            {lineup.length ? lineup.map(d => (
-              <div key={d.id}><Link href={`/dj/${d.id}`} className="underline hover:text-gold">{d.name}</Link></div>
-            )) : '-'}
+        <div className="card p-4">
+          <div className="font-medium"><T k="event.lineup" /></div>
+          <div className="mt-3 space-y-3">
+            {lineup.length ? lineup.map(d => {
+              const embed = getSpotifyEmbed((d as any).spotify_embed)
+              return (
+                <div key={d.id} className="space-y-2">
+                  <Link href={`/dj/${d.id}`} className="underline hover:text-gold">
+                    <LocalText value={d.name} i18n={(d as any).name_i18n || undefined} />
+                  </Link>
+                  {embed && (
+                    <div className="rounded-xl border border-white/10 overflow-hidden bg-black/30">
+                      <iframe
+                        src={embed.src}
+                        title="Spotify player"
+                        width="100%"
+                        height={embed.height}
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                        className="block w-full"
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            }) : <div className="text-sm text-white/60">-</div>}
           </div>
-        </details>
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {(e as any).url_referral ? (

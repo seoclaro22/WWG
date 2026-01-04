@@ -43,6 +43,7 @@ create table if not exists public.djs (
   name_i18n jsonb,
   bio_i18n jsonb,
   short_bio_i18n jsonb,
+  spotify_embed text,
   genres text[] default '{}',
   socials jsonb,
   images jsonb,

@@ -7,7 +7,7 @@ import { useDebounce } from '@/components/hooks/useDebounce'
 import { GenreSelect } from '@/components/GenreSelect'
 import { UploadImage } from '@/components/UploadImage'
 
-type DJ = { id?: string; name: string; short_bio?: string | null; bio?: string | null; genres?: string[] | null; images?: any; short_bio_i18n?: any; bio_i18n?: any }
+type DJ = { id?: string; name: string; short_bio?: string | null; bio?: string | null; spotify_embed?: string | null; genres?: string[] | null; images?: any; short_bio_i18n?: any; bio_i18n?: any }
 
 function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
 
@@ -28,7 +28,7 @@ function DJsManager() {
 
   async function load() {
     const s = sb()
-    let query = s.from('djs').select('id,name,short_bio,bio,genres,images,short_bio_i18n,bio_i18n').order('created_at', { ascending: false }).limit(50)
+    let query = s.from('djs').select('id,name,short_bio,bio,spotify_embed,genres,images,short_bio_i18n,bio_i18n').order('created_at', { ascending: false }).limit(50)
     if (dq) query = query.ilike('name', `%${dq}%`)
     const { data } = await query
     setItems(data || [])
@@ -40,6 +40,15 @@ function DJsManager() {
     window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message } }))
   }
 
+  function missingSpotifyColumn(error: any) {
+    const msg = String(error?.message || '')
+    if (/spotify_embed/i.test(msg)) {
+      toast('Falta la columna spotify_embed en la tabla djs. Actualiza la base de datos.')
+      return true
+    }
+    return false
+  }
+
   async function save(dj: DJ) {
     if (saving) return
     const s = sb()
@@ -47,6 +56,7 @@ function DJsManager() {
       name: dj.name,
       short_bio: dj.short_bio || null,
       bio: dj.bio ?? null,
+      spotify_embed: dj.spotify_embed || null,
       genres: dj.genres || [],
       images: dj.images || [],
       short_bio_i18n: dj.short_bio_i18n || null,
@@ -56,11 +66,11 @@ function DJsManager() {
     try {
       if (dj.id) {
         const { error } = await s.from('djs').update(payload).eq('id', dj.id)
-        if (error) { toast('No se pudo guardar el DJ: ' + error.message); return }
+        if (error) { if (!missingSpotifyColumn(error)) toast('No se pudo guardar el DJ: ' + error.message); return }
         setItems(prev => prev.map(it => it.id === dj.id ? { ...it, ...payload } : it))
       } else {
         const { data, error } = await s.from('djs').insert(payload).select('id').maybeSingle()
-        if (error) { toast('No se pudo crear el DJ: ' + error.message); return }
+        if (error) { if (!missingSpotifyColumn(error)) toast('No se pudo crear el DJ: ' + error.message); return }
         if (data?.id) setItems(prev => [{ id: data.id, ...payload } as any, ...prev])
         else await load()
       }
@@ -144,6 +154,17 @@ function DJForm({ initial, onCancel, onSave, saving }: { initial: DJ; onCancel: 
         <div className="md:col-span-2">
           <label className="block text-sm">Bio larga (ficha)</label>
           <textarea value={form.bio || ''} onChange={e=>setForm({ ...form, bio: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={4} />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm">Spotify (embed o URL)</label>
+          <textarea
+            value={form.spotify_embed || ''}
+            onChange={e=>setForm({ ...form, spotify_embed: e.target.value })}
+            className="w-full bg-transparent border border-white/10 rounded-xl p-2"
+            rows={3}
+            placeholder="Pega el codigo iframe de Spotify o un enlace"
+          />
+          <div className="text-[11px] text-white/50 mt-1">Se guarda el embed para mostrarlo en la ficha del DJ.</div>
         </div>
         <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
           <div>

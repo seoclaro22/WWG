@@ -6,12 +6,37 @@ import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
 
+function getSpotifyEmbed(input?: string | null) {
+  const raw = (input || '').trim()
+  if (!raw) return null
+  const iframeMatch = raw.match(/src=["']([^"']+)["']/i)
+  const heightMatch = raw.match(/height=["']?(\d{2,4})["']?/i)
+  const url = iframeMatch ? iframeMatch[1] : raw
+  try {
+    const u = new URL(url)
+    if (!u.hostname.endsWith('spotify.com')) return null
+    let src = u.toString()
+    if (!u.pathname.startsWith('/embed/')) {
+      const parts = u.pathname.split('/').filter(Boolean)
+      if (parts.length >= 2) {
+        src = `https://open.spotify.com/embed/${parts[0]}/${parts[1]}`
+      }
+    }
+    const path = new URL(src).pathname
+    const isCompact = /\/embed\/(track|episode)\//.test(path)
+    const height = heightMatch ? Number(heightMatch[1]) : (isCompact ? 152 : 352)
+    return { src, height }
+  } catch {}
+  return null
+}
+
 export default async function DjProfile({ params }: { params: { id: string } }) {
   const dj = await fetchDj(params.id)
   if (!dj) return notFound()
   const events = await fetchDjEvents(params.id, 10)
   const similar = await fetchSimilarDjs(params.id, (dj as any).genres || [], 1)
   const images: string[] = Array.isArray((dj as any).images) ? (dj as any).images : []
+  const spotifyEmbed = getSpotifyEmbed((dj as any).spotify_embed)
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
       <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
@@ -41,6 +66,22 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
           </div>
         )}
       </div>
+      {spotifyEmbed && (
+        <div className="card p-4">
+          <div className="font-medium mb-2">Spotify</div>
+          <div className="rounded-xl border border-white/10 overflow-hidden bg-black/30">
+            <iframe
+              src={spotifyEmbed.src}
+              title="Spotify player"
+              width="100%"
+              height={spotifyEmbed.height}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="block w-full"
+            />
+          </div>
+        </div>
+      )}
       <div className="card p-4">
         <div className="font-medium mb-2"><T k="dj.upcoming" /></div>
         <div className="space-y-2">
