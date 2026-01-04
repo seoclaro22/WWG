@@ -33,7 +33,7 @@ export function EventCard({ event, showHeart = false }: Props) {
           <div className="text-xs text-white/60">{event.date}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <ReserveButton eventId={event.id} source="discover" className="w-full sm:w-auto">{t('action.reserve')}</ReserveButton>
-            <a className="btn btn-primary text-sm px-3 py-1 w-full sm:w-auto text-center" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
+            <a className="btn btn-primary text-sm px-3 py-1 w-full sm:w-auto flex items-center justify-center text-center leading-tight" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
           </div>
         </div>
       </div>
