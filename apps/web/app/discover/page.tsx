@@ -76,7 +76,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
                     id: e.id,
                     title: e.name,
                     title_i18n: (e as any).name_i18n || undefined,
-                    date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+                    date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
                     club: e.club_name || '-',
                     image,
                   }}

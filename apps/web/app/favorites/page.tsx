@@ -149,7 +149,7 @@ export default function FavoritesPage() {
         <Link href={it.type === 'event' ? `/event/${it.id}` : it.type === 'club' ? `/club/${it.id}` : `/dj/${it.id}`} className="flex-1 min-w-0">
           <div className="font-medium truncate">{it.name}</div>
           {it.type === 'event' && (
-            <div className="text-sm text-white/60">{it.club_name} - {it.start_at ? new Date(it.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' }) : ''}</div>
+            <div className="text-sm text-white/60">{it.club_name} - {it.start_at ? new Date(it.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' }) : ''}</div>
           )}
         </Link>
         <div className="ml-3 shrink-0 flex items-center">

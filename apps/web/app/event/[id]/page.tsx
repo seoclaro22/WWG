@@ -55,7 +55,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
         <FavoriteButton eventId={(e as any).id} useLocalCache />
       </div>
       <div className="muted">
-        <LDate value={e.start_at} options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} /> ·{' '}
+        <LDate value={e.start_at} timeZone="UTC" options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} /> ·{' '}
         {clubId ? <Link className="underline hover:text-gold" href={`/club/${clubId}`}>{e.club_name || '-'}</Link> : (e.club_name || '-')}
       </div>
       {(e as any).genres && (e as any).genres.length > 0 && (
@@ -110,7 +110,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
           {moreFromClub.map(ev => (
             <Link key={ev.id} href={`/event/${ev.id}`} className="flex items-center justify-between text-sm hover:text-gold">
               <span>{ev.name}</span>
-              <span className="text-white/60"><LDate value={(ev as any).start_at} options={{ day: '2-digit', month: 'short' }} /></span>
+              <span className="text-white/60"><LDate value={(ev as any).start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /></span>
             </Link>
           ))}
         </div>

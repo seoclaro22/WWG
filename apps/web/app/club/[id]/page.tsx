@@ -73,7 +73,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
             {events.length === 0 && <div className="text-sm text-white/60">No hay eventos proximos.</div>}
             {events.map((e: any) => (
               <div key={e.id} className="flex items-center justify-between">
-                <div className="text-sm">{e.name} · {new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                <div className="text-sm">{e.name} · {new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}</div>
                 <Link className="btn btn-secondary px-3 py-1 text-sm" href={`/event/${e.id}`}><T k="action.view" /></Link>
               </div>
             ))}

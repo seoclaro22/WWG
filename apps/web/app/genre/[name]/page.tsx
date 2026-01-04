@@ -12,7 +12,7 @@ export default async function GenrePage({ params }: { params: { name: string } }
           <EventCard key={e.id} event={{
             id: e.id,
             title: e.name,
-            date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+            date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
             club: e.club_name || '-',
           }} />
         ))}
@@ -21,4 +21,3 @@ export default async function GenrePage({ params }: { params: { name: string } }
     </div>
   )
 }
-

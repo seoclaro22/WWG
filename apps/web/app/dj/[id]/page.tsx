@@ -92,7 +92,7 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
             <Link key={e.id} href={`/event/${e.id}`} className="flex items-center justify-between text-sm hover:text-gold">
               <span>{e.name}</span>
               <span className="text-white/60">
-                <LDate value={(e as any).start_at} options={{ day: '2-digit', month: 'short' }} /> · {(e as any).club_name}
+                <LDate value={(e as any).start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /> · {(e as any).club_name}
               </span>
             </Link>
           ))}
