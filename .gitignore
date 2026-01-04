@@ -10,6 +10,10 @@ out/
 .vercel/
 .turbo/
 
+# Allow API route folder named "out"
+!apps/web/app/api/out/
+!apps/web/app/api/out/route.ts
+
 # Entornos
 .env
 .env.*
