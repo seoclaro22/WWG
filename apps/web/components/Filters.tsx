@@ -82,11 +82,13 @@ export function Filters() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
-  const cols = tab === 'events' ? 'grid-cols-5' : (tab === 'djs' ? 'grid-cols-3' : 'grid-cols-4')
+  const cols = tab === 'events'
+    ? 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-5'
+    : (tab === 'djs' ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4')
   return (
     <div className={`grid ${cols} gap-2`}>
       <input
-        className="col-span-2 bg-base-card border border-white/10 rounded-xl p-2 text-sm"
+        className="col-span-1 sm:col-span-2 bg-base-card border border-white/10 rounded-xl p-2 text-sm min-w-0"
         placeholder={t('filters.search')}
         defaultValue={q}
         onKeyDown={(e) => {
@@ -116,7 +118,7 @@ export function Filters() {
           if (v) sp.set('zone', v); else sp.delete('zone')
           router.push(`${pathname}?${sp.toString()}`)
         }}
-        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm"
+        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
       >
         <option value=""><span>{t('filters.zone')}</span></option>
         {zones.map(z => (
@@ -133,7 +135,7 @@ export function Filters() {
           if (v) sp.set('date', v); else sp.delete('date')
           router.push(`${pathname}?${sp.toString()}`)
         }}
-        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm"
+        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
       >
         <option value="">{t('filters.date')}</option>
         <option value="today">{t('date.today')}</option>
@@ -151,7 +153,7 @@ export function Filters() {
           if (v) sp.set('genre', v); else sp.delete('genre')
           router.push(`${pathname}?${sp.toString()}`)
         }}
-        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm"
+        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
       >
         <option value="">{t('filters.genre')}</option>
         {genres.map(g => (
