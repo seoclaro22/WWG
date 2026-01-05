@@ -8,7 +8,7 @@ import { useDebounce } from '@/components/hooks/useDebounce'
 import { GenreSelect } from '@/components/GenreSelect'
 
 type Club = { id: string; name: string }
-type Event = { id?: string; club_id?: string | null; name: string; description?: string | null; start_at?: string; end_at?: string | null; url_referral?: string | null; status?: string; images?: any; genres?: string[] | null; zone?: string | null; contact_phone?: string | null }
+type Event = { id?: string; club_id?: string | null; name: string; description?: string | null; description_i18n?: Record<string, string> | null; start_at?: string; end_at?: string | null; url_referral?: string | null; status?: string; images?: any; genres?: string[] | null; zone?: string | null; contact_phone?: string | null }
 
 function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
 
@@ -32,7 +32,7 @@ function EventsManager() {
     const s = sb()
     const { data } = await s
       .from('events')
-      .select('id,club_id,name,description,start_at,end_at,url_referral,status,genres,zone,contact_phone,images')
+      .select('id,club_id,name,description,description_i18n,start_at,end_at,url_referral,status,genres,zone,contact_phone,images')
       .order('start_at', { ascending: false })
       .ilike('name', `%${dq}%`)
       .limit(100)
@@ -173,6 +173,26 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
         <div className="md:col-span-2">
           <label className="block text-sm">DescripciÃ³n</label>
           <textarea value={form.description || ''} onChange={e=>setForm({ ...form, description: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={3} />
+        </div>
+        <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm">Descripcion (EN)</label>
+            <textarea
+              value={(form.description_i18n?.en) || ''}
+              onChange={e=>setForm({ ...form, description_i18n: { ...(form.description_i18n || {}), en: e.target.value } })}
+              className="w-full bg-transparent border border-white/10 rounded-xl p-2"
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-sm">Descripcion (DE)</label>
+            <textarea
+              value={(form.description_i18n?.de) || ''}
+              onChange={e=>setForm({ ...form, description_i18n: { ...(form.description_i18n || {}), de: e.target.value } })}
+              className="w-full bg-transparent border border-white/10 rounded-xl p-2"
+              rows={3}
+            />
+          </div>
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm">Géneros</label>
