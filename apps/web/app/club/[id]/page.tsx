@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
+import { ShareSheet } from '@/components/ShareSheet'
 
 export default async function ClubProfile({ params }: { params: { id: string } }) {
   const club: any = await fetchClub(params.id)
@@ -79,6 +80,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
             ))}
           </div>
         </div>
+        <ShareSheet title={club.name} i18n={club.name_i18n || undefined} />
       </div>
       </div>
     </div>

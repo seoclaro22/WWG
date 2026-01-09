@@ -9,6 +9,7 @@ export type EventPublic = {
   price_max: number | null
   images: any | null
   url_referral: string | null
+  sponsored?: boolean | null
   status: string
   created_at: string
   club_id: string | null

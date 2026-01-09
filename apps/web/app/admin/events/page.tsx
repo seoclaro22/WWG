@@ -8,7 +8,7 @@ import { useDebounce } from '@/components/hooks/useDebounce'
 import { GenreSelect } from '@/components/GenreSelect'
 
 type Club = { id: string; name: string }
-type Event = { id?: string; club_id?: string | null; name: string; description?: string | null; description_i18n?: Record<string, string> | null; start_at?: string; end_at?: string | null; url_referral?: string | null; status?: string; images?: any; genres?: string[] | null; zone?: string | null; contact_phone?: string | null }
+type Event = { id?: string; club_id?: string | null; name: string; description?: string | null; description_i18n?: Record<string, string> | null; start_at?: string; end_at?: string | null; url_referral?: string | null; status?: string; images?: any; genres?: string[] | null; zone?: string | null; contact_phone?: string | null; sponsored?: boolean | null }
 
 function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
 
@@ -32,7 +32,7 @@ function EventsManager() {
     const s = sb()
     const { data } = await s
       .from('events')
-      .select('id,club_id,name,description,description_i18n,start_at,end_at,url_referral,status,genres,zone,contact_phone,images')
+      .select('id,club_id,name,description,description_i18n,start_at,end_at,url_referral,status,genres,zone,contact_phone,images,sponsored')
       .order('start_at', { ascending: false })
       .ilike('name', `%${dq}%`)
       .limit(100)
@@ -47,6 +47,9 @@ function EventsManager() {
 
   async function save(ev: Event) {
     const s = sb()
+    const shouldNotify =
+      (!ev.id && (ev.status || 'published') === 'published') ||
+      (editing?.id && editing?.status !== 'published' && ev.status === 'published')
     let eventId = ev.id
     if (ev.id) {
       const { error } = await s.from('events').update(ev).eq('id', ev.id)
@@ -63,6 +66,19 @@ function EventsManager() {
         const { error } = await s.from('event_djs').insert(rows)
         if (error) { alert('No se pudo guardar el line-up: ' + error.message) }
       }
+    }
+    if (eventId && shouldNotify) {
+      try {
+        const { data } = await s.auth.getSession()
+        const token = data.session?.access_token
+        if (token) {
+          await fetch('/api/notify-event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ eventId })
+          })
+        }
+      } catch {}
     }
     setEditing(null)
     load()
@@ -87,14 +103,17 @@ function EventsManager() {
           <Link href="/admin" className="btn btn-secondary"><span aria-hidden="true">{'<'}</span> Volver</Link>
           <h1 className="text-2xl font-semibold">Eventos</h1>
         </div>
-        <button className="btn btn-primary" onClick={()=>setEditing({ name:'', status:'published' })}>Nuevo</button>
+        <button className="btn btn-primary" onClick={()=>setEditing({ name:'', status:'published', sponsored: false })}>Nuevo</button>
       </div>
       <input className="w-full bg-transparent border border-white/10 rounded-xl p-2" placeholder="Buscar evento..." value={q} onChange={e=>setQ(e.target.value)} />
       <div className="grid gap-2">
         {items.map(e => (
           <div key={e.id} className="card p-3 flex items-center justify-between">
             <div>
-              <div className="font-medium">{e.name}</div>
+              <div className="font-medium flex items-center gap-2">
+                {e.name}
+                {e.sponsored ? <span className="text-xs px-2 py-0.5 rounded-full bg-[#d6b24d] text-black">Patrocinado</span> : null}
+              </div>
               <div className="text-sm text-white/60">{e.start_at?.toString()} Â· {e.status}</div>
             </div>
             <div className="flex gap-2">
@@ -153,6 +172,17 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
             <option value="draft">draft</option>
             <option value="archived">archived</option>
           </select>
+        </div>
+        <div>
+          <label className="block text-sm">Patrocinado</label>
+          <label className="mt-2 inline-flex items-center gap-2 text-sm text-white/80">
+            <input
+              type="checkbox"
+              checked={!!form.sponsored}
+              onChange={e=>setForm({ ...form, sponsored: e.target.checked })}
+            />
+            Evento patrocinado
+          </label>
         </div>
         <div>
           <label className="block text-sm">Inicio</label>
@@ -217,7 +247,7 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
         </div>
       </div>
       <div className="flex gap-2">
-        <button className="btn btn-primary" onClick={()=>onSave({ ...form, images: image ? [image] : [] })}>Guardar</button>
+        <button className="btn btn-primary" onClick={()=>onSave({ ...form, sponsored: !!form.sponsored, images: image ? [image] : [] })}>Guardar</button>
         <button className="btn btn-secondary" onClick={onCancel}>Cancelar</button>
       </div>
     </div>

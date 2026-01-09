@@ -9,10 +9,15 @@ function normalizeEventFromDate(from?: string) {
   return from
 }
 
-export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string }) {
+export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string; sponsoredFirst?: boolean }) {
   const sb = getSupabaseClient()
   const effectiveFrom = normalizeEventFromDate(params?.from)
-  let q = sb.from('events_public').select('*').order('start_at', { ascending: true })
+  let q = sb.from('events_public').select('*')
+  if (params?.sponsoredFirst) {
+    q = q.order('sponsored', { ascending: false }).order('start_at', { ascending: true })
+  } else {
+    q = q.order('start_at', { ascending: true })
+  }
   if (params?.q) {
     // Búsqueda simple por nombre/desc/club
     q = q.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
@@ -28,9 +33,15 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
     const msg = String(error.message || '').toLowerCase()
     const zoneMissing = msg.includes('zone')
     const statusMissing = msg.includes('status')
-    if (zoneMissing || statusMissing) {
+    const sponsoredMissing = msg.includes('sponsored')
+    if (zoneMissing || statusMissing || sponsoredMissing) {
       // Fallback si alguna columna no existe en la vista
-      let retryQ = sb.from('events_public').select('*').order('start_at', { ascending: true })
+      let retryQ = sb.from('events_public').select('*')
+      if (params?.sponsoredFirst && !sponsoredMissing) {
+        retryQ = retryQ.order('sponsored', { ascending: false }).order('start_at', { ascending: true })
+      } else {
+        retryQ = retryQ.order('start_at', { ascending: true })
+      }
       if (params?.q) {
         retryQ = retryQ.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
       }

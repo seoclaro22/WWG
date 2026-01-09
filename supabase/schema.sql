@@ -84,9 +84,13 @@ create table if not exists public.events (
   images jsonb,
   url_referral text,
   geo geography(point),
+  sponsored boolean default false,
   status text default 'draft', -- draft|published|archived
   created_at timestamptz default now()
 );
+
+alter table public.events
+  add column if not exists sponsored boolean default false;
 
 -- Follows y favoritos (polimÃ³rfico por tipo)
 create table if not exists public.follows (
@@ -132,7 +136,10 @@ create table if not exists public.clicks (
   id bigserial primary key,
   event_id uuid references public.events(id) on delete set null,
   user_id uuid references public.users(id) on delete set null,
+  device_id uuid,
+  session_id uuid,
   source text, -- e.g. discover|details
+  path text,
   referral_url text,
   ts timestamptz default now()
 );
@@ -141,17 +148,70 @@ create table if not exists public.clicks (
 create table if not exists public.search_logs (
   id bigserial primary key,
   user_id uuid references public.users(id) on delete set null,
+  device_id uuid,
+  session_id uuid,
   q text,
   zone text,
   genre text,
   tab text,
+  path text,
   ts timestamptz default now()
+);
+
+-- Analitica de dispositivos
+create table if not exists public.app_devices (
+  device_id uuid primary key,
+  user_id uuid references public.users(id) on delete set null,
+  device_type text,
+  os text,
+  lang text,
+  tz text,
+  user_agent text,
+  is_pwa boolean default false,
+  first_referrer text,
+  last_referrer text,
+  first_seen_at timestamptz default now(),
+  last_seen_at timestamptz default now()
+);
+
+-- Sesiones de usuario (anonimo o registrado)
+create table if not exists public.app_sessions (
+  id uuid primary key,
+  device_id uuid references public.app_devices(device_id) on delete cascade,
+  user_id uuid references public.users(id) on delete set null,
+  started_at timestamptz default now(),
+  last_seen_at timestamptz default now(),
+  duration_ms int default 0,
+  current_path text,
+  current_event_id uuid references public.events(id) on delete set null,
+  device_type text,
+  os text,
+  lang text,
+  tz text,
+  user_agent text,
+  is_pwa boolean default false,
+  is_new_device boolean default false
+);
+
+-- Vistas de pantalla / eventos
+create table if not exists public.app_page_views (
+  id uuid primary key,
+  session_id uuid references public.app_sessions(id) on delete cascade,
+  device_id uuid references public.app_devices(device_id) on delete cascade,
+  user_id uuid references public.users(id) on delete set null,
+  path text,
+  screen text,
+  referrer text,
+  event_id uuid references public.events(id) on delete set null,
+  started_at timestamptz default now(),
+  ended_at timestamptz,
+  duration_ms int
 );
 
 -- Vistas de apoyo
 drop view if exists public.events_public;
 create view public.events_public as
-  select e.id, e.name, e.name_i18n, e.description, e.description_i18n, e.start_at, e.end_at, e.genres,
+  select e.id, e.name, e.name_i18n, e.description, e.description_i18n, e.start_at, e.end_at, e.genres, e.sponsored,
          e.price_min, e.price_max, e.images, e.url_referral,
          e.status, e.created_at, c.id as club_id, c.name as club_name,
          c.location, e.geo, e.zone
@@ -174,6 +234,16 @@ create index if not exists idx_djs_name_trgm on public.djs using gin (name gin_t
 create index if not exists idx_event_djs_event on public.event_djs(event_id, position);
 create index if not exists idx_event_djs_dj on public.event_djs(dj_id);
 create index if not exists idx_genres_name on public.genres(name);
+create index if not exists idx_clicks_ts on public.clicks(ts desc);
+create index if not exists idx_clicks_event on public.clicks(event_id);
+create index if not exists idx_app_devices_last_seen on public.app_devices(last_seen_at desc);
+create index if not exists idx_app_devices_user on public.app_devices(user_id);
+create index if not exists idx_app_sessions_last_seen on public.app_sessions(last_seen_at desc);
+create index if not exists idx_app_sessions_started on public.app_sessions(started_at desc);
+create index if not exists idx_app_sessions_device on public.app_sessions(device_id);
+create index if not exists idx_app_page_views_started on public.app_page_views(started_at desc);
+create index if not exists idx_app_page_views_screen on public.app_page_views(screen);
+create index if not exists idx_app_page_views_event on public.app_page_views(event_id);
 
 -- RLS (borrador, ajustar en Supabase)
 alter table public.events enable row level security;
@@ -188,6 +258,9 @@ alter table public.event_djs enable row level security;
 alter table public.genres enable row level security;
 alter table public.clicks enable row level security;
 alter table public.search_logs enable row level security;
+alter table public.app_devices enable row level security;
+alter table public.app_sessions enable row level security;
+alter table public.app_page_views enable row level security;
 
 -- PolÃ­ticas abiertas de lectura pÃºblica para contenidos aprobados
 create policy if not exists events_read_public on public.events
@@ -294,6 +367,55 @@ do $$ begin
   end if;
 end $$;
 
+-- App devices/sessions/views: insercion publica, lectura moderadores
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_insert_public') then
+    create policy app_devices_insert_public on public.app_devices for insert with check (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_update_public') then
+    create policy app_devices_update_public on public.app_devices for update using (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_select_moderator') then
+    create policy app_devices_select_moderator on public.app_devices for select using (public.is_moderator(auth.uid()));
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_insert_public') then
+    create policy app_sessions_insert_public on public.app_sessions for insert with check (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_update_public') then
+    create policy app_sessions_update_public on public.app_sessions for update using (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_select_moderator') then
+    create policy app_sessions_select_moderator on public.app_sessions for select using (public.is_moderator(auth.uid()));
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_insert_public') then
+    create policy app_page_views_insert_public on public.app_page_views for insert with check (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_update_public') then
+    create policy app_page_views_update_public on public.app_page_views for update using (true);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_select_moderator') then
+    create policy app_page_views_select_moderator on public.app_page_views for select using (public.is_moderator(auth.uid()));
+  end if;
+end $$;
+
 -- Índices de soporte para estadísticas
 create index if not exists idx_search_logs_ts on public.search_logs(ts desc);
 create index if not exists idx_search_logs_zone on public.search_logs(zone);
@@ -307,6 +429,8 @@ create policy if not exists users_insert_self on public.users
   for insert with check (auth.uid() = id);
 create policy if not exists users_select_self on public.users
   for select using (auth.uid() = id);
+create policy if not exists users_select_moderator on public.users
+  for select using (public.is_moderator(auth.uid()));
 create policy if not exists users_update_self on public.users
   for update using (auth.uid() = id);
 
@@ -546,3 +670,49 @@ end $$;
 -- Update favorites type to allow DJs
 alter table public.favorites drop constraint if exists favorites_target_type_check;
 alter table public.favorites add constraint favorites_target_type_check check (target_type in (''event'',''club'',''dj''));
+
+-- Push subscriptions (web push)
+create table if not exists public.push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  endpoint text not null,
+  p256dh text not null,
+  auth text not null,
+  user_agent text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists push_subscriptions_user_endpoint
+  on public.push_subscriptions (user_id, endpoint);
+
+alter table public.push_subscriptions enable row level security;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='push_subscriptions' and policyname='push_subscriptions_select_own') then
+    create policy push_subscriptions_select_own on public.push_subscriptions for select using (auth.uid() = user_id);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='push_subscriptions' and policyname='push_subscriptions_insert_own') then
+    create policy push_subscriptions_insert_own on public.push_subscriptions for insert with check (auth.uid() = user_id);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='push_subscriptions' and policyname='push_subscriptions_update_own') then
+    create policy push_subscriptions_update_own on public.push_subscriptions for update using (auth.uid() = user_id);
+  end if;
+end $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='push_subscriptions' and policyname='push_subscriptions_delete_own') then
+    create policy push_subscriptions_delete_own on public.push_subscriptions for delete using (auth.uid() = user_id);
+  end if;
+end $$;
+
+-- Compat: columnas nuevas para analitica
+alter table public.clicks add column if not exists device_id uuid;
+alter table public.clicks add column if not exists session_id uuid;
+alter table public.clicks add column if not exists path text;
+alter table public.search_logs add column if not exists device_id uuid;
+alter table public.search_logs add column if not exists session_id uuid;
+alter table public.search_logs add column if not exists path text;

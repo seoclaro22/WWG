@@ -48,7 +48,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
   const [events, clubs, djs] = await Promise.all([
-    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
+    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 50, sponsoredFirst: true }) : Promise.resolve([] as any[]),
     tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
   ])
@@ -79,6 +79,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
                     date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
                     club: e.club_name || '-',
                     image,
+                    sponsored: (e as any).sponsored || false,
                   }}
                 />
               )

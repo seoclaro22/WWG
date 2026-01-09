@@ -58,6 +58,7 @@ const dictionaries: Record<string, Dict> = {
     'action.remove': 'Quitar',
     'action.signout': 'Cerrar sesion',
     'action.save_changes': 'Guardar',
+    'action.share': 'Compartir',
 
     'tickets.title': 'Tickets',
     'tickets.empty': 'Aun no has reservado ningun evento.',
@@ -67,6 +68,7 @@ const dictionaries: Record<string, Dict> = {
     'event.description': 'Descripcion',
     'event.lineup': 'Line-up',
     'event.no_reservations': 'Reservas no disponibles',
+    'event.sponsored': 'Patrocinado',
 
     'account.title': 'Cuenta',
     'account.email': 'Email',
@@ -104,12 +106,19 @@ const dictionaries: Record<string, Dict> = {
     'common.login_to_view': 'Inicia sesion para ver esta seccion.',
 
     'promote.title': 'Promociona tu Evento/Club',
+    'promote.type': 'Tipo',
+    'promote.type.event': 'Evento',
+    'promote.type.club': 'Club',
     'promote.name': 'Nombre del Club/Evento',
     'promote.address': 'Direccion',
     'promote.description': 'Descripcion',
     'promote.email': 'Email de Contacto',
     'promote.phone': 'Telefono',
     'promote.ref': 'Link de Referido (opcional)',
+    'promote.sponsored': 'Evento patrocinado',
+    'promote.sponsored_yes': 'Si, quiero patrocinio',
+    'promote.sponsored_no': 'No, gracias',
+    'promote.sponsored_hint': 'El patrocinio tiene un precio a convenir y lo gestionamos por email.',
     'promote.submit': 'Enviar Solicitud',
     'promote.success': 'Gracias. Revisaremos tu solicitud en breve.',
     'promote.disclaimer': 'La informacion proporcionada se utilizara para crear la ficha del evento o club. El telefono y el email de contacto se guardaran de forma privada y solo se usaran para comunicarnos contigo. No se mostraran publicamente.',
@@ -131,7 +140,8 @@ const dictionaries: Record<string, Dict> = {
     'dj.upcoming': 'Proximos eventos',
     'dj.no_upcoming': 'No hay eventos proximos.',
     'dj.similar': 'Tambien te puede gustar',
-    'action.view': 'Ver'
+    'action.view': 'Ver',
+    'share.copied': 'Enlace copiado. Pegalo en Instagram.'
   },
   en: {
     'nav.home': 'Discover',
@@ -187,6 +197,7 @@ const dictionaries: Record<string, Dict> = {
     'action.remove': 'Remove',
     'action.signout': 'Sign out',
     'action.save_changes': 'Save',
+    'action.share': 'Share',
 
     'tickets.title': 'Tickets',
     'tickets.empty': 'You have no reservations yet.',
@@ -196,6 +207,7 @@ const dictionaries: Record<string, Dict> = {
     'event.description': 'Description',
     'event.lineup': 'Line-up',
     'event.no_reservations': 'Reservations not available',
+    'event.sponsored': 'Sponsored',
 
     'account.title': 'Account',
     'account.email': 'Email',
@@ -233,12 +245,19 @@ const dictionaries: Record<string, Dict> = {
     'common.login_to_view': 'Login to view this section.',
 
     'promote.title': 'Promote your Event/Club',
+    'promote.type': 'Type',
+    'promote.type.event': 'Event',
+    'promote.type.club': 'Club',
     'promote.name': 'Club/Event name',
     'promote.address': 'Address',
     'promote.description': 'Description',
     'promote.email': 'Contact Email',
     'promote.phone': 'Phone',
     'promote.ref': 'Referral link (optional)',
+    'promote.sponsored': 'Sponsored event',
+    'promote.sponsored_yes': 'Yes, I want sponsorship',
+    'promote.sponsored_no': 'No, thanks',
+    'promote.sponsored_hint': 'Sponsorship pricing is agreed by email after submission.',
     'promote.submit': 'Send Request',
     'promote.success': 'Thanks. We will review your request soon.',
     'promote.disclaimer': 'The information you provide will be used to create the event/club listing. The contact phone and email will be kept private and used only to contact you. They will not be shown publicly.',
@@ -260,7 +279,8 @@ const dictionaries: Record<string, Dict> = {
     'dj.upcoming': 'Upcoming events',
     'dj.no_upcoming': 'No upcoming events.',
     'dj.similar': 'You may also like',
-    'action.view': 'View'
+    'action.view': 'View',
+    'share.copied': 'Link copied. Paste it in Instagram.'
   },
   de: {
     'nav.home': 'Entdecken',
@@ -316,6 +336,7 @@ const dictionaries: Record<string, Dict> = {
     'action.remove': 'Entfernen',
     'action.signout': 'Abmelden',
     'action.save_changes': 'Speichern',
+    'action.share': 'Teilen',
 
     'tickets.title': 'Tickets',
     'tickets.empty': 'Du hast noch keine Reservierungen.',
@@ -325,6 +346,7 @@ const dictionaries: Record<string, Dict> = {
     'event.description': 'Beschreibung',
     'event.lineup': 'Line-up',
     'event.no_reservations': 'Reservierungen nicht verfugbar',
+    'event.sponsored': 'Gesponsert',
 
     'account.title': 'Konto',
     'account.email': 'E-Mail',
@@ -362,12 +384,19 @@ const dictionaries: Record<string, Dict> = {
     'common.login_to_view': 'Zum Anzeigen bitte anmelden.',
 
     'promote.title': 'Event/Club bewerben',
+    'promote.type': 'Typ',
+    'promote.type.event': 'Event',
+    'promote.type.club': 'Club',
     'promote.name': 'Name des Clubs/Events',
     'promote.address': 'Adresse',
     'promote.description': 'Beschreibung',
     'promote.email': 'E-Mail',
     'promote.phone': 'Telefon',
     'promote.ref': 'Referral-Link (optional)',
+    'promote.sponsored': 'Gesponsertes Event',
+    'promote.sponsored_yes': 'Ja, Sponsoring',
+    'promote.sponsored_no': 'Nein, danke',
+    'promote.sponsored_hint': 'Preis nach Absprache, wir melden uns per E-Mail.',
     'promote.submit': 'Anfrage senden',
     'promote.success': 'Danke. Wir prufen deine Anfrage bald.',
     'promote.disclaimer': 'Die angegebenen Daten werden zur Erstellung des Event-/Clubeintrags verwendet. Telefon und E-Mail bleiben privat und dienen nur der Kontaktaufnahme. Sie werden nicht offentlich angezeigt.',
@@ -389,7 +418,8 @@ const dictionaries: Record<string, Dict> = {
     'dj.upcoming': 'Bevorstehende Events',
     'dj.no_upcoming': 'Keine bevorstehenden Events.',
     'dj.similar': 'Das koennte dir auch gefallen',
-    'action.view': 'Ansehen'
+    'action.view': 'Ansehen',
+    'share.copied': 'Link kopiert. Fuege ihn in Instagram ein.'
   }
 }
 

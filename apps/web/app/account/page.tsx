@@ -20,6 +20,10 @@ export default function AccountPage(){
   const [locale, setLocale] = useState('es')
   const [roles, setRoles] = useState<string[]>([])
   const [saved, setSaved] = useState<string | null>(null)
+  const [pushSupported, setPushSupported] = useState(true)
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushBusy, setPushBusy] = useState(false)
+  const [pushMsg, setPushMsg] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -32,6 +36,19 @@ export default function AccountPage(){
       const r = (data as any)?.roles
       const list: string[] = Array.isArray(r) ? r : (typeof r === 'string' ? r.replace(/[{}]/g,'').split(',').filter(Boolean) : [])
       setRoles(list)
+    })()
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      setPushSupported(false)
+      return
+    }
+    ;(async () => {
+      const reg = await navigator.serviceWorker.getRegistration()
+      const sub = await reg?.pushManager.getSubscription()
+      setPushEnabled(!!sub)
     })()
   }, [user])
 
@@ -68,6 +85,96 @@ export default function AccountPage(){
     window.location.href = '/'
   }
 
+  function bufferToBase64(buffer: ArrayBuffer | null) {
+    if (!buffer) return ''
+    const bytes = new Uint8Array(buffer)
+    let binary = ''
+    for (let i = 0; i < bytes.length; i += 1) {
+      binary += String.fromCharCode(bytes[i])
+    }
+    return btoa(binary)
+  }
+
+  function urlBase64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+    const raw = atob(base64)
+    const output = new Uint8Array(raw.length)
+    for (let i = 0; i < raw.length; i += 1) {
+      output[i] = raw.charCodeAt(i)
+    }
+    return output
+  }
+
+  async function enablePush() {
+    if (!user || !pushSupported) return
+    const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    if (!vapid) {
+      setPushMsg('Missing VAPID public key')
+      return
+    }
+    setPushBusy(true)
+    setPushMsg(null)
+    try {
+      const permission = await Notification.requestPermission()
+      if (permission !== 'granted') {
+        setPushMsg('Notifications not enabled')
+        return
+      }
+      const reg = await navigator.serviceWorker.register('/sw.js')
+      const existing = await reg.pushManager.getSubscription()
+      const sub = existing || await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapid)
+      })
+      const payload = {
+        user_id: user.id,
+        endpoint: sub.endpoint,
+        p256dh: bufferToBase64(sub.getKey('p256dh')),
+        auth: bufferToBase64(sub.getKey('auth')),
+        user_agent: navigator.userAgent,
+        updated_at: new Date().toISOString()
+      }
+      const { error } = await sb()
+        .from('push_subscriptions')
+        .upsert(payload, { onConflict: 'user_id,endpoint' })
+      if (error) {
+        setPushMsg('Could not save subscription')
+        return
+      }
+      setPushEnabled(true)
+      setPushMsg('Notifications enabled')
+    } catch (err) {
+      setPushMsg('Could not enable notifications')
+    } finally {
+      setPushBusy(false)
+    }
+  }
+
+  async function disablePush() {
+    if (!user || !pushSupported) return
+    setPushBusy(true)
+    setPushMsg(null)
+    try {
+      const reg = await navigator.serviceWorker.getRegistration()
+      const sub = await reg?.pushManager.getSubscription()
+      if (sub) {
+        await sub.unsubscribe()
+        await sb()
+          .from('push_subscriptions')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('endpoint', sub.endpoint)
+      }
+      setPushEnabled(false)
+      setPushMsg('Notifications disabled')
+    } catch (err) {
+      setPushMsg('Could not disable notifications')
+    } finally {
+      setPushBusy(false)
+    }
+  }
+
   const isOwner = (user.email || '').toLowerCase() === 'seoclaro22@gmail.com'
   const isMod = roles.includes('admin') || roles.includes('moderator')
 
@@ -90,6 +197,23 @@ export default function AccountPage(){
         </select>
         <button className="btn btn-primary mt-2" onClick={save}>Guardar</button>
         {saved && <div className="text-emerald-300 text-sm">{saved}</div>}
+      </div>
+
+      <div className="card p-4 space-y-2 max-w-md">
+        <div className="font-medium">Notificaciones</div>
+        <p className="text-sm text-white/70">Avisos suaves solo para tus favoritos.</p>
+        {!pushSupported && (
+          <div className="text-sm text-white/60">Este navegador no soporta notificaciones push.</div>
+        )}
+        {pushSupported && (
+          <div className="flex items-center gap-2">
+            <button className="btn btn-secondary" onClick={pushEnabled ? disablePush : enablePush} disabled={pushBusy}>
+              {pushEnabled ? 'Desactivar' : 'Activar'}
+            </button>
+            <span className="text-sm text-white/60">{pushEnabled ? 'Activas' : 'Inactivas'}</span>
+          </div>
+        )}
+        {pushMsg && <div className="text-sm text-emerald-300">{pushMsg}</div>}
       </div>
 
       {(isOwner || isMod) && (

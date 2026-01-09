@@ -1,6 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { clearAnalyticsStorage } from '@/lib/analytics-client'
 import { useI18n } from '@/lib/i18n'
 
 const KEY = 'nh-consent'
@@ -53,7 +54,12 @@ export function ResetConsentButton() {
   return (
     <button
       className="btn btn-secondary text-sm"
-      onClick={() => { try { localStorage.removeItem(KEY) } catch {}; document.cookie = `${KEY}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`; location.reload() }}
+      onClick={() => {
+        try { localStorage.removeItem(KEY) } catch {}
+        document.cookie = `${KEY}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+        clearAnalyticsStorage()
+        location.reload()
+      }}
     >
       {t('cookie.reset')}
     </button>

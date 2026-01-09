@@ -6,6 +6,7 @@ import { ReserveButton } from '@/components/ReserveButton'
 import { T } from '@/components/T'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
+import { ShareSheet } from '@/components/ShareSheet'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -104,6 +105,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
         )}
         <Link className="btn btn-secondary" href={`https://maps.google.com?q=${encodeURIComponent((e as any).club_name || 'Mallorca')}`} target="_blank"><T k="action.directions" /></Link>
       </div>
+      <ShareSheet title={(e as any).name} i18n={(e as any).name_i18n || undefined} />
       {moreFromClub.length > 0 && (
         <div className="card p-4 space-y-2">
           <div className="font-medium">Mas en {e.club_name}</div>

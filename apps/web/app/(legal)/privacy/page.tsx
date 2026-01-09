@@ -13,6 +13,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-5 text-white/80">
           <li>Identificación: email, nombre a mostrar y preferencias de idioma.</li>
           <li>Uso de la app: favoritos, clubs seguidos, reseñas, clics de reserva (atribución anónima salvo sesión iniciada).</li>
+          <li>Identificadores técnicos: device_id, session_id, pantallas visitadas y duración (solo con consentimiento de cookies analíticas).</li>
           <li>Datos técnicos: IP abreviada, dispositivo/navegador, cookies técnicas/analíticas.</li>
         </ul>
       </Section>
@@ -49,6 +50,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-5 text-white/80">
           <li>Identification: email, display name and language preference.</li>
           <li>App usage: favorites, followed clubs, reviews, referral clicks (anonymous unless you are signed in).</li>
+          <li>Technical identifiers: device_id, session_id, screens visited and duration (only with analytics consent).</li>
           <li>Technical: truncated IP, device/browser type, technical/analytics cookies.</li>
         </ul>
       </Section>
@@ -85,6 +87,7 @@ export default function PrivacyPage() {
         <ul className="list-disc pl-5 text-white/80">
           <li>Identifikation: E‑Mail, Anzeigename und Sprache.</li>
           <li>Nutzung der App: Favoriten, gefolgte Clubs, Bewertungen, Ticket‑Klicks (anonym, sofern du nicht angemeldet bist).</li>
+          <li>Technische Kennungen: device_id, session_id, besuchte Seiten und Dauer (nur mit Analytics-Einwilligung).</li>
           <li>Technisch: gekürzte IP‑Adresse, Gerät/Browser, technische/analytische Cookies.</li>
         </ul>
       </Section>

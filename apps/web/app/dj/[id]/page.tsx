@@ -5,6 +5,7 @@ import { FavoriteButton } from '@/components/FavoriteButton'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
+import { ShareSheet } from '@/components/ShareSheet'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -113,6 +114,7 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
           </div>
         </div>
       )}
+      <ShareSheet title={(dj as any).name} i18n={(dj as any).name_i18n || undefined} />
       </div>
     </div>
   )

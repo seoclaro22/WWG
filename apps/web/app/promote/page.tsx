@@ -15,6 +15,27 @@ export default function PromotePage({ searchParams }: { searchParams?: { ok?: st
         </div>
         {ok && <div className="card p-3 text-emerald-300"><T k="promote.success" /></div>}
         <form className="card p-4 space-y-3" action={submitSubmission}>
+          <div>
+            <label className="block text-sm"><T k="promote.type" /></label>
+            <select name="type" defaultValue="event" className="w-full bg-transparent border border-white/10 rounded-xl p-2 wwg-select">
+              <option value="event"><T k="promote.type.event" /></option>
+              <option value="club"><T k="promote.type.club" /></option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm"><T k="promote.sponsored" /></label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <label className="flex items-center gap-2 text-sm text-white/80 border border-white/10 rounded-xl px-3 py-2">
+                <input type="radio" name="sponsored" value="no" defaultChecked />
+                <T k="promote.sponsored_no" />
+              </label>
+              <label className="flex items-center gap-2 text-sm text-white/80 border border-white/10 rounded-xl px-3 py-2">
+                <input type="radio" name="sponsored" value="yes" />
+                <T k="promote.sponsored_yes" />
+              </label>
+            </div>
+            <div className="mt-2 text-xs text-white/60"><T k="promote.sponsored_hint" /></div>
+          </div>
           <InputField name="name" labelKey="promote.name" placeholderKey="promote.name" required />
           <InputField name="address" labelKey="promote.address" placeholderKey="promote.address" />
           <TextAreaField name="description" labelKey="promote.description" placeholderKey="promote.description" rows={3} />

@@ -3,6 +3,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/lib/auth'
+import { getAnalyticsContext, hasAnalyticsConsent } from '@/lib/analytics-client'
 
 const normalizeZone = (value: string) =>
   value
@@ -17,6 +19,7 @@ export function Filters() {
   const router = useRouter()
   const pathname = usePathname()
   const params = useSearchParams()
+  const { user } = useAuth()
   const q = params.get('q') ?? ''
   const date = params.get('date') ?? ''
   const genre = params.get('genre') ?? ''
@@ -100,9 +103,19 @@ export function Filters() {
             // Log búsqueda (solo si hay término)
             try {
               const sbc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-              if (val.trim().length >= 2){
+              if (val.trim().length >= 2 && hasAnalyticsConsent()){
                 const tab = params.get('tab') || 'events'
-                sbc.from('search_logs').insert({ q: val.trim(), zone: zone || null, genre: genre || null, tab })
+                const ctx = getAnalyticsContext()
+                sbc.from('search_logs').insert({
+                  q: val.trim(),
+                  zone: zone || null,
+                  genre: genre || null,
+                  tab,
+                  user_id: user?.id || null,
+                  device_id: ctx?.deviceId || null,
+                  session_id: ctx?.sessionId || null,
+                  path: pathname
+                })
               }
             } catch {}
           }
