@@ -1,5 +1,6 @@
 import './globals.css'
 import { ReactNode } from 'react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { I18nProvider } from '@/lib/i18n'
 import { AuthProvider } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </I18nProvider>
         </AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
