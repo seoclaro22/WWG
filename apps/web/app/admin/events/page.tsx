@@ -160,7 +160,7 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
         </div>
         <div>
           <label className="block text-sm">Club</label>
-          <select value={form.club_id || ''} onChange={e=>setForm({ ...form, club_id: e.target.value || null })} className="w-full bg-transparent border border-white/10 rounded-xl p-2">
+          <select value={form.club_id || ''} onChange={e=>setForm({ ...form, club_id: e.target.value || null })} className="w-full bg-transparent border border-white/10 rounded-xl p-2 wwg-select">
             <option value="">â€”</option>
             {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
