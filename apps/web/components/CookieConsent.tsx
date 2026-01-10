@@ -30,6 +30,7 @@ export function CookieConsent() {
     try { setCookie(KEY, value) } catch {}
     // Exponer un flag simple para scripts opcionales
     ;(window as any).__nhConsent = value
+    try { window.dispatchEvent(new Event('nh-consent-changed')) } catch {}
     setVisible(false)
   }
 

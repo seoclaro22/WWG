@@ -7,20 +7,50 @@ export default function CookiesPage() {
 
   const ES = (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Política de Cookies</h1>
-      <p className="muted">Esta política describe qué son las cookies, qué tipos utilizamos en NightHub Mallorca y cómo puedes gestionarlas. Algunas cookies son necesarias para el funcionamiento de la web. Otras nos ayudan a mejorar el servicio.</p>
-      <Section n={1} title="¿Qué son las cookies?"><p>Pequeños archivos que se almacenan en tu dispositivo cuando navegas. Permiten recordar tus preferencias, mantener la sesión o realizar analítica agregada.</p></Section>
+      <h1 className="text-2xl font-semibold">Politica de Cookies</h1>
+      <p className="muted">
+        Esta politica describe que cookies usamos en WWG (Where We Go), para que sirven y
+        como puedes gestionarlas. Algunas cookies son necesarias para el funcionamiento de la web;
+        otras solo se activan si aceptas.
+      </p>
+      <Section n={1} title="Que son las cookies?">
+        <p>
+          Archivos pequenos que se almacenan en tu dispositivo cuando navegas. Permiten recordar
+          preferencias, mantener la sesion o realizar analitica agregada.
+        </p>
+      </Section>
       <Types es />
-      <Section n={3} title="Duración"><p>Las cookies pueden ser de sesión (se borran al cerrar el navegador) o persistentes (permanecen un tiempo definido). Respetamos los plazos mínimos necesarios para cada finalidad.</p></Section>
-      <Section n={4} title="Gestión y revocación del consentimiento">
+      <Section n={3} title="Duracion">
+        <p>
+          Las cookies de consentimiento y analitica propia se guardan hasta 180 dias. Las cookies
+          de Google Analytics se guardan segun la configuracion de Google (normalmente hasta 2 anos).
+          Puedes borrarlas antes en cualquier momento.
+        </p>
+      </Section>
+      <Section n={4} title="Como borrar o cambiar cookies">
         <ul className="list-disc pl-5 text-white/80">
-          <li>Puedes configurar tu navegador para aceptar, bloquear o eliminar cookies.</li>
-          <li>Si rechazas cookies no esenciales, la app seguirá funcionando, aunque ciertas funciones podrían verse limitadas.</li>
-          <li>En móviles, también puedes gestionar identificadores publicitarios desde los ajustes del sistema.</li>
+          <li>Configura tu navegador para aceptar, bloquear o eliminar cookies.</li>
+          <li>Borra las cookies del sitio desde la configuracion de privacidad del navegador.</li>
+          <li>Usa el boton de reconfigurar preferencias al final de esta pagina.</li>
         </ul>
       </Section>
-      <Section n={5} title="Terceros"><p>Cuando sigues enlaces a webs de entradas, hoteles o transporte, esos terceros pueden instalar sus propias cookies. Consulta sus políticas para más información.</p></Section>
-      <Section n={6} title="Actualizaciones"><p>Podemos actualizar esta política. Te informaremos de cambios significativos por medios razonables.</p></Section>
+      <Section n={5} title="Guias por navegador">
+        <ul className="list-disc pl-5 text-white/80">
+          <li><a className="underline" href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noreferrer">Chrome</a></li>
+          <li><a className="underline" href="https://support.apple.com/es-es/HT201265" target="_blank" rel="noreferrer">Safari</a></li>
+          <li><a className="underline" href="https://support.mozilla.org/es/kb/borra-las-cookies-y-los-datos-del-sitio-" target="_blank" rel="noreferrer">Firefox</a></li>
+          <li><a className="underline" href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noreferrer">Edge</a></li>
+        </ul>
+      </Section>
+      <Section n={6} title="Terceros">
+        <p>
+          Usamos Google Analytics si aceptas cookies de analitica. Al seguir enlaces de venta de
+          entradas u otros servicios, esos terceros pueden instalar sus propias cookies.
+        </p>
+      </Section>
+      <Section n={7} title="Actualizaciones">
+        <p>Podemos actualizar esta politica. Te avisaremos si hay cambios importantes.</p>
+      </Section>
       <ResetConsentButton />
     </div>
   )
@@ -28,44 +58,103 @@ export default function CookiesPage() {
   const EN = (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Cookie Policy</h1>
-      <p className="muted">This policy describes what cookies are, which types we use on NightHub Mallorca and how you can manage them. Some cookies are necessary for the website to function; others help us improve the service.</p>
-      <Section n={1} title="What are cookies?"><p>Small files stored on your device while browsing. They let us remember preferences, keep you signed in or perform aggregated analytics.</p></Section>
+      <p className="muted">
+        This policy explains which cookies we use on WWG (Where We Go), what they do, and how you
+        can manage them. Some cookies are necessary; others are only enabled if you accept.
+      </p>
+      <Section n={1} title="What are cookies?">
+        <p>
+          Small files stored on your device while browsing. They help remember preferences, keep
+          sessions, or run aggregated analytics.
+        </p>
+      </Section>
       <Types />
-      <Section n={3} title="Duration"><p>Cookies may be session (removed when you close the browser) or persistent (kept for a defined period). We keep only what is necessary.</p></Section>
-      <Section n={4} title="Managing and revoking consent">
+      <Section n={3} title="Duration">
+        <p>
+          Consent and first-party analytics cookies are stored up to 180 days. Google Analytics
+          cookies are stored according to Google settings (usually up to 2 years). You can delete
+          them at any time.
+        </p>
+      </Section>
+      <Section n={4} title="How to delete or change cookies">
         <ul className="list-disc pl-5 text-white/80">
-          <li>You can configure your browser to accept, block or delete cookies.</li>
-          <li>If you reject non‑essential cookies, the app still works, with some features limited.</li>
-          <li>On mobile, you can also manage advertising identifiers in system settings.</li>
+          <li>Configure your browser to accept, block, or delete cookies.</li>
+          <li>Remove site cookies from your browser privacy settings.</li>
+          <li>Use the reset preferences button at the bottom of this page.</li>
         </ul>
       </Section>
-      <Section n={5} title="Third parties"><p>When you follow links to ticketing, hotels or transport, those sites may set their own cookies. Check their policies for details.</p></Section>
-      <Section n={6} title="Updates"><p>We may update this policy and will notify you of significant changes.</p></Section>
+      <Section n={5} title="Browser guides">
+        <ul className="list-disc pl-5 text-white/80">
+          <li><a className="underline" href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noreferrer">Chrome</a></li>
+          <li><a className="underline" href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noreferrer">Safari</a></li>
+          <li><a className="underline" href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox" target="_blank" rel="noreferrer">Firefox</a></li>
+          <li><a className="underline" href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noreferrer">Edge</a></li>
+        </ul>
+      </Section>
+      <Section n={6} title="Third parties">
+        <p>
+          We use Google Analytics if you accept analytics cookies. When you follow ticketing or
+          other service links, those third parties may set their own cookies.
+        </p>
+      </Section>
+      <Section n={7} title="Updates">
+        <p>We may update this policy and will notify you of material changes.</p>
+      </Section>
       <ResetConsentButton />
     </div>
   )
 
   const DE = (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Cookie‑Richtlinie</h1>
-      <p className="muted">Diese Richtlinie beschreibt, was Cookies sind, welche Arten wir bei NightHub Mallorca verwenden und wie du sie verwalten kannst. Einige Cookies sind für die Funktion der Website erforderlich; andere helfen uns, den Dienst zu verbessern.</p>
-      <Section n={1} title="Was sind Cookies?"><p>Kleine Dateien, die beim Surfen auf deinem Gerät gespeichert werden. Sie ermöglichen es, Einstellungen zu merken, die Sitzung aufrechtzuerhalten oder aggregierte Analysen durchzuführen.</p></Section>
+      <h1 className="text-2xl font-semibold">Cookie-Richtlinie</h1>
+      <p className="muted">
+        Diese Richtlinie erklaert, welche Cookies wir bei WWG (Where We Go) verwenden, wozu sie
+        dienen und wie du sie verwalten kannst. Einige Cookies sind notwendig; andere werden nur
+        gesetzt, wenn du zustimmst.
+      </p>
+      <Section n={1} title="Was sind Cookies?">
+        <p>
+          Kleine Dateien, die beim Surfen auf deinem Geraet gespeichert werden. Sie merken sich
+          Einstellungen, halten Sitzungen oder ermoeglichen aggregierte Analysen.
+        </p>
+      </Section>
       <Types de />
-      <Section n={3} title="Dauer"><p>Cookies können Sitzungs‑ (werden beim Schließen des Browsers entfernt) oder persistente Cookies sein (bleiben für einen definierten Zeitraum). Wir nutzen nur die nötigen Zeiträume.</p></Section>
-      <Section n={4} title="Verwaltung und Widerruf der Einwilligung">
+      <Section n={3} title="Dauer">
+        <p>
+          Einwilligungs- und First-Party-Analytics-Cookies werden bis zu 180 Tage gespeichert.
+          Google Analytics Cookies werden gemaess Google-Einstellungen gespeichert (meist bis zu 2 Jahren).
+          Du kannst sie jederzeit loeschen.
+        </p>
+      </Section>
+      <Section n={4} title="Cookies loeschen oder aendern">
         <ul className="list-disc pl-5 text-white/80">
-          <li>Du kannst deinen Browser so einstellen, dass er Cookies akzeptiert, blockiert oder löscht.</li>
-          <li>Wenn du nicht notwendige Cookies ablehnst, funktioniert die App weiterhin, ggf. mit eingeschränkten Funktionen.</li>
-          <li>Auf Mobilgeräten kannst du Werbe‑IDs in den Systemeinstellungen verwalten.</li>
+          <li>Stelle deinen Browser so ein, dass er Cookies akzeptiert, blockiert oder loescht.</li>
+          <li>Entferne Cookies dieser Seite in den Browser-Datenschutzeinstellungen.</li>
+          <li>Nutze den Button zum Zuruecksetzen der Cookie-Praeferenzen am Ende der Seite.</li>
         </ul>
       </Section>
-      <Section n={5} title="Dritte"><p>Bei Links zu Ticket‑, Hotel‑ oder Transportseiten können diese eigene Cookies setzen. Beachte deren Richtlinien.</p></Section>
-      <Section n={6} title="Aktualisierungen"><p>Wir können diese Richtlinie aktualisieren und dich bei wesentlichen Änderungen informieren.</p></Section>
+      <Section n={5} title="Browser-Anleitungen">
+        <ul className="list-disc pl-5 text-white/80">
+          <li><a className="underline" href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noreferrer">Chrome</a></li>
+          <li><a className="underline" href="https://support.apple.com/de-de/HT201265" target="_blank" rel="noreferrer">Safari</a></li>
+          <li><a className="underline" href="https://support.mozilla.org/de/kb/cookies-und-website-daten-in-firefox-loschen" target="_blank" rel="noreferrer">Firefox</a></li>
+          <li><a className="underline" href="https://support.microsoft.com/de-de/microsoft-edge/cookies-in-microsoft-edge-loschen-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noreferrer">Edge</a></li>
+        </ul>
+      </Section>
+      <Section n={6} title="Dritte">
+        <p>
+          Wir nutzen Google Analytics, wenn du Analytics-Cookies akzeptierst. Wenn du zu Ticketing
+          oder anderen Diensten weitergehst, koennen diese Drittanbieter eigene Cookies setzen.
+        </p>
+      </Section>
+      <Section n={7} title="Aktualisierungen">
+        <p>Wir koennen diese Richtlinie aktualisieren und informieren dich bei wichtigen Aenderungen.</p>
+      </Section>
       <ResetConsentButton />
     </div>
   )
 
-  return locale === 'de' ? DE : locale === 'en' ? EN : ES
+  return locale == 'de' ? DE : locale == 'en' ? EN : ES
 }
 
 function Section({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
@@ -80,12 +169,11 @@ function Section({ n, title, children }: { n: number; title: string; children: R
 function Types({ es, de }: { es?: boolean; de?: boolean }) {
   return (
     <section className="space-y-2">
-      <h2 className="font-medium">{es ? '2. Tipos de cookies que usamos' : de ? '2. Arten von Cookies' : '2. Types of cookies we use'}</h2>
+      <h2 className="font-medium">{es ? '2. Cookies que instalamos' : de ? '2. Cookies, die wir setzen' : '2. Cookies we set'}</h2>
       <ul className="list-disc pl-5 text-white/80">
-        <li><b>{es ? 'Técnicas/estrictamente necesarias' : de ? 'Technisch/unbedingt erforderlich' : 'Technical/strictly necessary'}</b>: {es ? 'imprescindibles para navegación, autenticación y seguridad. Incluyen nh-consent. No requieren consentimiento.' : de ? 'für Navigation, Authentifizierung und Sicherheit. Enthalten nh-consent. Keine Einwilligung erforderlich.' : 'required for navigation, authentication and security. Includes nh-consent. No consent required.'}</li>
-        <li><b>{es ? 'De preferencia' : de ? 'Präferenzen' : 'Preference'}</b>: {es ? 'recuerdan idioma y ajustes de interfaz.' : de ? 'merken Sprache und Interface‑Einstellungen.' : 'remember language and interface settings.'}</li>
-        <li><b>{es ? 'Analíticas' : de ? 'Analytisch' : 'Analytics'}</b>: {es ? 'usamos identificadores propios (nh-device, nh-session) para medir sesiones y pantallas de forma agregada.' : de ? 'wir nutzen eigene IDs (nh-device, nh-session) fuer Sitzungen und Screens in aggregierter Form.' : 'we use first-party IDs (nh-device, nh-session) to measure sessions and screens in aggregate.'}</li>
-        <li><b>{es ? 'Publicidad/afiliación' : de ? 'Werbung/Affiliate' : 'Advertising/affiliate'}</b>: {es ? 'algunos enlaces de reserva pueden incluir parámetros de referido.' : de ? 'einige Buchungslinks können Referral‑Parameter enthalten.' : 'some booking links may include referral parameters.'}</li>
+        <li><b>{es ? 'Necesarias' : de ? 'Notwendig' : 'Necessary'}</b>: {es ? 'nh-consent (guarda tu eleccion de cookies).' : de ? 'nh-consent (speichert deine Cookie-Wahl).' : 'nh-consent (stores your cookie choice).'}</li>
+        <li><b>{es ? 'Analitica propia (solo si aceptas)' : de ? 'Eigene Analytik (nur bei Einwilligung)' : 'First-party analytics (only if you accept)'}</b>: {es ? 'nh-device, nh-session, nh-session-ts, nh-session-start para medir sesiones y pantallas.' : de ? 'nh-device, nh-session, nh-session-ts, nh-session-start fuer Sitzungen und Screens.' : 'nh-device, nh-session, nh-session-ts, nh-session-start for sessions and screens.'}</li>
+        <li><b>{es ? 'Google Analytics (solo si aceptas)' : de ? 'Google Analytics (nur bei Einwilligung)' : 'Google Analytics (only if you accept)'}</b>: {es ? '_ga, _ga_G-G9QL4BMH1N para medicion de uso y rendimiento.' : de ? '_ga, _ga_G-G9QL4BMH1N fuer Nutzung und Leistung.' : '_ga, _ga_G-G9QL4BMH1N for usage and performance measurement.'}</li>
       </ul>
     </section>
   )

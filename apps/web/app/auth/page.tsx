@@ -95,6 +95,13 @@ export default function AuthPage() {
           </div>
         </form>
 
+        <div className="card p-3 text-xs md:text-sm text-white/70 w-full max-w-md mx-auto text-center">
+          {t('legal.notice')}{' '}
+          <a className="underline" href="/privacy" target="_blank" rel="noreferrer">{t('account.privacy_policy')}</a>
+          {' · '}
+          <a className="underline" href="/cookies" target="_blank" rel="noreferrer">{t('account.cookies')}</a>
+        </div>
+
         <div className="card p-4 space-y-2 w-full max-w-md mx-auto">
           <div className="font-medium text-sm">{t('benefits.title')}</div>
           <ul className="list-disc pl-5 text-white/80 text-xs md:text-sm space-y-1">

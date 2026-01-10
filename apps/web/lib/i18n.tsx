@@ -102,6 +102,9 @@ const dictionaries: Record<string, Dict> = {
     'cookie.accept': 'Aceptar',
     'cookie.reject': 'Rechazar',
     'cookie.reset': 'Reconfigurar preferencias de cookies',
+    'consent.accept': 'Acepto la',
+    'consent.and': 'y la',
+    'legal.notice': 'Consulta nuestras politicas:',
 
     'common.login_to_view': 'Inicia sesion para ver esta seccion.',
 
@@ -241,6 +244,9 @@ const dictionaries: Record<string, Dict> = {
     'cookie.accept': 'Accept',
     'cookie.reject': 'Reject',
     'cookie.reset': 'Reset cookie preferences',
+    'consent.accept': 'I accept the',
+    'consent.and': 'and',
+    'legal.notice': 'Review our policies:',
 
     'common.login_to_view': 'Login to view this section.',
 
@@ -380,6 +386,9 @@ const dictionaries: Record<string, Dict> = {
     'cookie.accept': 'Akzeptieren',
     'cookie.reject': 'Ablehnen',
     'cookie.reset': 'Cookie-Einstellungen zurucksetzen',
+    'consent.accept': 'Ich akzeptiere die',
+    'consent.and': 'und die',
+    'legal.notice': 'Unsere Richtlinien:',
 
     'common.login_to_view': 'Zum Anzeigen bitte anmelden.',
 

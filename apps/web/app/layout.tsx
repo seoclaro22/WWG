@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar'
 import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/Toaster'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
+import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 
 export const metadata = {
   title: 'Where We Go',
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <main className="flex-1 p-3 md:p-6">{children}</main>
               <Toaster />
               <AnalyticsTracker />
+              <GoogleAnalytics />
               <CookieConsent />
             </div>
           </I18nProvider>
