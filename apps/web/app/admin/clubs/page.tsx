@@ -20,6 +20,7 @@ type Club = {
   genres?: string[] | null
   links?: any
   logo_url?: string | null
+  featured?: boolean
 }
 
 function sb() {
@@ -95,7 +96,10 @@ function ClubsManager() {
         {items.map(c => (
           <div key={c.id} className="card p-3 flex items-center justify-between">
             <div>
-              <div className="font-medium">{c.name}</div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{c.name}</span>
+                {c.featured && <span className="text-[10px] bg-[#d8af3a]/15 text-[#d8af3a] px-2 py-0.5 rounded-full font-semibold">⭐ Destacado</span>}
+              </div>
               <div className="text-sm text-white/60">{c.address || '-'} · {c.status}</div>
             </div>
             <div className="flex gap-2">
@@ -198,6 +202,17 @@ function ClubForm({ initial, onCancel, onSave }: { initial: Club; onCancel: () =
             <input value={(form.links?.phone)||''} onChange={e=>setForm({ ...form, links: { ...(form.links||{}), phone: e.target.value } })} placeholder="Solo visible en backoffice" className="w-full bg-transparent border border-white/10 rounded-xl p-2" />
           </div>
         </div>
+      </div>
+      <div className="flex items-center gap-3 pt-1">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <div
+            onClick={() => setForm({ ...form, featured: !form.featured })}
+            className={`w-10 h-6 rounded-full transition-colors relative ${form.featured ? 'bg-[#d8af3a]' : 'bg-white/10'}`}
+          >
+            <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${form.featured ? 'left-5' : 'left-1'}`} />
+          </div>
+          <span className="text-sm text-white/70">Club destacado en home</span>
+        </label>
       </div>
       <div className="flex gap-2">
         <button className="btn btn-primary" onClick={()=>onSave({ ...form, images: image ? [image] : [], logo_url: logo })}>Guardar</button>

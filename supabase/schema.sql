@@ -561,6 +561,7 @@ end $$;
 -- Ajustes incrementales (ejecutar sin errores si ya existen)
 alter table public.clubs add column if not exists zone text;
 alter table public.clubs add column if not exists logo_url text;
+alter table public.clubs add column if not exists featured boolean default false;
 create index if not exists idx_clubs_zone_name on public.clubs(zone, name);
 -- Telefono privado para eventos (solo backoffice)
 alter table public.events add column if not exists contact_phone text;

@@ -92,12 +92,22 @@ export default function LandingPage() {
   useEffect(() => {
     ;(async () => {
       try {
-        const { data } = await sb()
+        const { data: featured } = await sb()
+          .from('clubs')
+          .select('id, name, genres, address')
+          .eq('status', 'approved')
+          .eq('featured', true)
+          .limit(3)
+        if (featured?.length) {
+          setPreviewClubs(featured as PreviewClub[])
+          return
+        }
+        const { data: fallback } = await sb()
           .from('clubs')
           .select('id, name, genres, address')
           .eq('status', 'approved')
           .limit(3)
-        if (data?.length) setPreviewClubs(data as PreviewClub[])
+        if (fallback?.length) setPreviewClubs(fallback as PreviewClub[])
       } catch {}
     })()
   }, [])
