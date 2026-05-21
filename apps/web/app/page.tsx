@@ -332,20 +332,6 @@ export default function LandingPage() {
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
-        <div className="flex items-center justify-center gap-2 anim-points flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#72f0ff] shadow-[0_0_6px_rgba(114,240,255,0.8)] shrink-0" />
-            {t('landing.point_curated')}
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ff87e0] shadow-[0_0_6px_rgba(255,135,224,0.8)] shrink-0" />
-            {t('landing.point_live')}
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8cf0a7] shadow-[0_0_6px_rgba(140,240,167,0.8)] shrink-0" />
-            {t('landing.point_multi')}
-          </span>
-        </div>
       </div>
 
       {/* Preview cards — solo se muestran si hay clubs en la base de datos */}
