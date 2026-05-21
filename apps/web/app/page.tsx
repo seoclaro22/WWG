@@ -29,6 +29,10 @@ async function reverseGeocode(lat: number, lon: number): Promise<string | null> 
   }
 }
 
+const PLACEHOLDER_CITIES = ['Palma de Mallorca', 'Ibiza', 'Barcelona', 'Madrid', 'Amsterdam']
+
+type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
+
 export default function LandingPage() {
   const { t } = useI18n()
   const router = useRouter()
@@ -37,6 +41,66 @@ export default function LandingPage() {
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const [knownZones, setKnownZones] = useState<string[]>(['Palma de Mallorca', 'Mallorca', 'Ibiza', 'Barcelona', 'Madrid'])
+  const [placeholderIdx, setPlaceholderIdx] = useState(0)
+  const [previewClubs, setPreviewClubs] = useState<PreviewClub[]>([])
+
+  useEffect(() => {
+    const id = setInterval(() => setPlaceholderIdx(i => (i + 1) % PLACEHOLDER_CITIES.length), 2200)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    function spawnFlash(x: number, y: number) {
+      const container = document.getElementById('landing-bg')
+      if (!container) return
+      const rect = container.getBoundingClientRect()
+      const cx = x - rect.left
+      const cy = y - rect.top
+
+      // Central flash
+      const flash = document.createElement('div')
+      flash.className = 'click-flash'
+      flash.style.left = cx + 'px'
+      flash.style.top = cy + 'px'
+      container.appendChild(flash)
+      setTimeout(() => flash.remove(), 600)
+
+      // Particles
+      const count = 10
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div')
+        p.className = 'click-particle'
+        const angle = (i / count) * 360
+        const dist = 28 + Math.random() * 32
+        const rad = (angle * Math.PI) / 180
+        p.style.left = cx + 'px'
+        p.style.top = cy + 'px'
+        p.style.setProperty('--tx', `${Math.cos(rad) * dist}px`)
+        p.style.setProperty('--ty', `${Math.sin(rad) * dist}px`)
+        container.appendChild(p)
+        setTimeout(() => p.remove(), 700)
+      }
+    }
+
+    const el = document.getElementById('landing-bg')
+    if (!el) return
+    const handler = (e: MouseEvent) => spawnFlash(e.clientX, e.clientY)
+    el.addEventListener('click', handler)
+    return () => el.removeEventListener('click', handler)
+  }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { data } = await sb()
+          .from('clubs')
+          .select('id, name, genres, address')
+          .eq('status', 'approved')
+          .limit(3)
+        if (data?.length) setPreviewClubs(data as PreviewClub[])
+      } catch {}
+    })()
+  }, [])
 
   const normalizeZone = (raw: string) => {
     const cleaned = raw.trim()
@@ -169,26 +233,40 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
+    <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none landing-gold-base" />
       <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
       <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 md:gap-10 min-h-[70vh]">
         <div className="anim-logo">
+          {/* Icon */}
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-[#d8af3a]/10 border border-[#d8af3a]/25 flex items-center justify-center shadow-[0_0_32px_rgba(216,175,58,0.25)]">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="13" r="5" stroke="#d8af3a" strokeWidth="2"/>
+                <path d="M16 32 C16 32 6 20 6 13 C6 7.477 10.477 3 16 3 C21.523 3 26 7.477 26 13 C26 20 16 32 16 32Z" stroke="#d8af3a" strokeWidth="2" fill="none"/>
+                <circle cx="16" cy="13" r="2" fill="#d8af3a"/>
+              </svg>
+            </div>
+          </div>
           <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-400 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
             WWG
           </div>
           <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon anim-subtitle">WHERE WE GO</div>
-          <div className="mt-4 text-base md:text-lg text-white/60 max-w-2xl anim-subtitle">
-            {t('landing.subtitle')}
+          <div className="mt-4 text-base md:text-lg text-white/55 max-w-sm anim-subtitle">
+            Descubre donde sale todo el mundo esta noche.
           </div>
         </div>
-        <form onSubmit={onSubmit} className="w-full max-w-2xl space-y-3 anim-form">
+        <form onSubmit={onSubmit} className="w-full max-w-lg space-y-3 anim-form">
           <div className="relative">
-            <div className="flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 shadow-[0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur neon-hover">
+            <div className="flex items-center bg-black/30 border border-[#d8af3a]/30 rounded-full px-5 py-2 shadow-[0_0_28px_rgba(216,175,58,0.18),0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur transition-shadow hover:shadow-[0_0_42px_rgba(216,175,58,0.32),0_15px_60px_rgba(0,0,0,0.45)]">
+            <svg className="w-4 h-4 text-[#d8af3a] mr-3 shrink-0" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M7 16 C7 16 2 10 2 6 C2 3.24 4.24 1 7 1 C9.76 1 12 3.24 12 6 C12 10 7 16 7 16Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+            </svg>
             <input
-              className="flex-1 bg-transparent outline-none text-white px-2 py-3 text-base md:text-lg placeholder:text-white/40"
-              placeholder={t('landing.placeholder')}
+              className="flex-1 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
+              placeholder={`¿A dónde vas hoy? (${PLACEHOLDER_CITIES[placeholderIdx]})`}
               value={zone}
               onChange={(e) => {
                 const val = e.target.value
@@ -244,12 +322,37 @@ export default function LandingPage() {
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
-        <div className="flex items-center gap-6 text-sm text-white/60 anim-points">
+        <div className="flex items-center gap-6 text-sm text-white/50 anim-points">
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#72f0ff]" /> {t('landing.point_curated')}</span>
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff87e0]" /> {t('landing.point_live')}</span>
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#8cf0a7]" /> {t('landing.point_multi')}</span>
         </div>
       </div>
+
+      {/* Preview cards — solo se muestran si hay clubs en la base de datos */}
+      {previewClubs.length > 0 && (
+        <div className="relative z-10 mt-2 pb-10 px-2">
+          <p className="text-center text-xs text-white/30 uppercase tracking-widest mb-4">Clubs destacados</p>
+          <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto">
+            {previewClubs.map((club, i) => (
+              <div
+                key={club.id}
+                onClick={() => router.push(`/club/${club.id}`)}
+                className="relative rounded-2xl bg-black/40 border border-white/8 backdrop-blur p-4 flex flex-col gap-1 hover:border-[#d8af3a]/30 transition-colors cursor-pointer"
+              >
+                {i === 0 && (
+                  <span className="absolute top-2 right-2 text-[10px] text-[#d8af3a] font-semibold tracking-wide">● TOP</span>
+                )}
+                <span className="text-white font-semibold text-sm leading-tight">{club.name}</span>
+                {club.address && <span className="text-white/40 text-xs truncate">{club.address.split(',')[0]}</span>}
+                {club.genres?.length > 0 && (
+                  <span className="mt-1 text-white/30 text-[10px]">{club.genres.slice(0, 2).join(' · ')}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
