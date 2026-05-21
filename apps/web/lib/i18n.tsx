@@ -14,7 +14,7 @@ const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Agenda local curada por expertos',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'La agenda local definitiva. Curada por expertos.',
+    'landing.subtitle': 'Descubre donde sale todo el mundo esta noche.',
     'landing.placeholder': 'Donde sales hoy? (Ej. Palma)',
     'landing.cta': 'Buscar planes',
     'landing.use_location': 'Usar mi ubicacion',
@@ -156,7 +156,7 @@ const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Local agenda curated by experts',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'The definitive local guide. Curated picks, live now.',
+    'landing.subtitle': 'Discover where everyone goes out tonight.',
     'landing.placeholder': 'Where are you going out? (e.g. Palma)',
     'landing.cta': 'Find plans',
     'landing.use_location': 'Use my location',
@@ -298,7 +298,7 @@ const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Lokale Agenda von Experten kuratiert',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'Der ultimative lokale Guide. Von Experten kuratiert.',
+    'landing.subtitle': 'Entdecke, wo heute Nacht alle feiern.',
     'landing.placeholder': 'Wohin gehst du heute? (z.B. Palma)',
     'landing.cta': 'Finde Plaene',
     'landing.use_location': 'Meinen Standort nutzen',

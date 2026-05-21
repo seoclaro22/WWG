@@ -254,7 +254,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon anim-subtitle">WHERE WE GO</div>
           <div className="mt-4 text-base md:text-lg text-white/55 max-w-sm anim-subtitle">
-            Descubre donde sale todo el mundo esta noche.
+            {t('landing.subtitle')}
           </div>
         </div>
         <form onSubmit={onSubmit} className="w-full max-w-lg space-y-3 anim-form">
@@ -333,20 +333,20 @@ export default function LandingPage() {
       {previewClubs.length > 0 && (
         <div className="relative z-10 mt-2 pb-10 px-2">
           <p className="text-center text-xs text-white/30 uppercase tracking-widest mb-4">Clubs destacados</p>
-          <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto">
+          <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto">
             {previewClubs.map((club, i) => (
               <div
                 key={club.id}
                 onClick={() => router.push(`/club/${club.id}`)}
-                className="relative rounded-2xl bg-black/40 border border-white/8 backdrop-blur p-4 flex flex-col gap-1 hover:border-[#d8af3a]/30 transition-colors cursor-pointer"
+                className="relative rounded-2xl bg-black/40 border border-white/8 backdrop-blur p-3 flex flex-col gap-1 hover:border-[#d8af3a]/30 transition-colors cursor-pointer min-w-0 overflow-hidden"
               >
                 {i === 0 && (
-                  <span className="absolute top-2 right-2 text-[10px] text-[#d8af3a] font-semibold tracking-wide">● TOP</span>
+                  <span className="text-[9px] text-[#d8af3a] font-semibold tracking-wide mb-0.5">● TOP</span>
                 )}
-                <span className="text-white font-semibold text-sm leading-tight">{club.name}</span>
-                {club.address && <span className="text-white/40 text-xs truncate">{club.address.split(',')[0]}</span>}
+                <span className="text-white font-semibold text-xs leading-snug line-clamp-2 break-words">{club.name}</span>
+                {club.address && <span className="text-white/40 text-[10px] truncate">{club.address.split(',')[0]}</span>}
                 {club.genres?.length > 0 && (
-                  <span className="mt-1 text-white/30 text-[10px]">{club.genres.slice(0, 2).join(' · ')}</span>
+                  <span className="mt-0.5 text-white/30 text-[9px] truncate">{club.genres.slice(0, 2).join(' · ')}</span>
                 )}
               </div>
             ))}
