@@ -174,16 +174,16 @@ export default function LandingPage() {
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-35 landing-gold" />
       <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.15), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
       <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 md:gap-10 min-h-[70vh]">
-        <div>
+        <div className="anim-logo">
           <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-400 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
             WWG
           </div>
-          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon">WHERE WE GO</div>
-          <div className="mt-4 text-base md:text-lg text-white/60 max-w-2xl">
+          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon anim-subtitle">WHERE WE GO</div>
+          <div className="mt-4 text-base md:text-lg text-white/60 max-w-2xl anim-subtitle">
             {t('landing.subtitle')}
           </div>
         </div>
-        <form onSubmit={onSubmit} className="w-full max-w-2xl space-y-3">
+        <form onSubmit={onSubmit} className="w-full max-w-2xl space-y-3 anim-form">
           <div className="relative">
             <div className="flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 shadow-[0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur neon-hover">
             <input
@@ -244,7 +244,7 @@ export default function LandingPage() {
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
-        <div className="flex items-center gap-6 text-sm text-white/60">
+        <div className="flex items-center gap-6 text-sm text-white/60 anim-points">
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#72f0ff]" /> {t('landing.point_curated')}</span>
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff87e0]" /> {t('landing.point_live')}</span>
           <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#8cf0a7]" /> {t('landing.point_multi')}</span>

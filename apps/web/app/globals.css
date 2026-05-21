@@ -7,16 +7,41 @@
 html, body { height: 100%; background: #0B0F14; }
 
 @keyframes aurora-pan {
-  0% { background-position: 0% 30%, 100% 0%; }
-  50% { background-position: 70% 60%, 20% 40%; }
+  0%   { background-position: 0% 30%, 100% 0%; }
+  25%  { background-position: 40% 55%, 60% 20%; }
+  50%  { background-position: 70% 60%, 20% 40%; }
+  75%  { background-position: 30% 20%, 85% 55%; }
   100% { background-position: 0% 30%, 100% 0%; }
 }
 
 @keyframes aurora-glow {
-  0% { opacity: 0.2; }
-  50% { opacity: 0.45; }
-  100% { opacity: 0.25; }
+  0%   { opacity: 0.18; }
+  30%  { opacity: 0.42; }
+  60%  { opacity: 0.30; }
+  100% { opacity: 0.18; }
 }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(216,175,58,0.55), 0 0 24px rgba(216,175,58,0.35); }
+  60%  { box-shadow: 0 0 0 8px rgba(216,175,58,0), 0 0 32px rgba(216,175,58,0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(216,175,58,0), 0 0 24px rgba(216,175,58,0.35); }
+}
+
+@keyframes neon-breathe {
+  0%   { text-shadow: 0 0 12px rgba(180,210,255,0.3), 0 0 28px rgba(120,170,255,0.3), 0 0 46px rgba(80,130,255,0.25); }
+  50%  { text-shadow: 0 0 18px rgba(180,210,255,0.55), 0 0 38px rgba(120,170,255,0.5), 0 0 65px rgba(80,130,255,0.4); }
+  100% { text-shadow: 0 0 12px rgba(180,210,255,0.3), 0 0 28px rgba(120,170,255,0.3), 0 0 46px rgba(80,130,255,0.25); }
+}
+
+.anim-logo     { animation: fade-up 0.85s cubic-bezier(0.22,1,0.36,1) both; }
+.anim-subtitle { animation: fade-up 0.85s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+.anim-form     { animation: fade-up 0.9s  cubic-bezier(0.22,1,0.36,1) 0.35s both; }
+.anim-points   { animation: fade-up 0.85s cubic-bezier(0.22,1,0.36,1) 0.52s both; }
 
 @keyframes gold-pan {
   0% { background-position: 50% 100%; }
@@ -70,7 +95,7 @@ html, body { height: 100%; background: #0B0F14; }
 }
 
 .cta-arrow {
-  animation: cta-jitter 2.2s ease-in-out infinite;
+  animation: pulse-ring 2.4s ease-in-out infinite;
   transform-origin: center;
 }
 
@@ -83,10 +108,7 @@ html, body { height: 100%; background: #0B0F14; }
 }
 
 .wwg-neon {
-  text-shadow:
-    0 0 12px rgba(180, 210, 255, 0.35),
-    0 0 28px rgba(120, 170, 255, 0.35),
-    0 0 46px rgba(80, 130, 255, 0.3);
+  animation: neon-breathe 4s ease-in-out infinite;
 }
 
 .neon-hover {
