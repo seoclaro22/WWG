@@ -169,10 +169,10 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-      <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-70 landing-aurora" />
-      <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-35 landing-gold" />
-      <div className="absolute inset-0 pointer-events-none mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.15), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
+      <div className="absolute inset-0 pointer-events-none landing-gold-base" />
+      <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
+      <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 md:gap-10 min-h-[70vh]">
         <div className="anim-logo">
           <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-400 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
