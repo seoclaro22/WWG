@@ -322,10 +322,19 @@ export default function LandingPage() {
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
-        <div className="flex items-center gap-6 text-sm text-white/50 anim-points">
-          <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#72f0ff]" /> {t('landing.point_curated')}</span>
-          <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff87e0]" /> {t('landing.point_live')}</span>
-          <span className="inline-flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#8cf0a7]" /> {t('landing.point_multi')}</span>
+        <div className="flex items-center justify-center gap-2 anim-points flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#72f0ff] shadow-[0_0_6px_rgba(114,240,255,0.8)] shrink-0" />
+            {t('landing.point_curated')}
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ff87e0] shadow-[0_0_6px_rgba(255,135,224,0.8)] shrink-0" />
+            {t('landing.point_live')}
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 text-[11px] text-white/60 whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8cf0a7] shadow-[0_0_6px_rgba(140,240,167,0.8)] shrink-0" />
+            {t('landing.point_multi')}
+          </span>
         </div>
       </div>
 
@@ -341,9 +350,9 @@ export default function LandingPage() {
                 className="relative rounded-2xl bg-black/40 border border-white/8 backdrop-blur p-3 flex flex-col gap-1 hover:border-[#d8af3a]/30 transition-colors cursor-pointer min-w-0 overflow-hidden"
               >
                 {i === 0 && (
-                  <span className="text-[9px] text-[#d8af3a] font-semibold tracking-wide mb-0.5">● TOP</span>
+                  <span className="absolute top-2 right-2 bg-[#d8af3a]/15 text-[#d8af3a] text-[8px] font-bold px-1.5 py-0.5 rounded-full tracking-wide">TOP</span>
                 )}
-                <span className="text-white font-semibold text-xs leading-snug line-clamp-2 break-words">{club.name}</span>
+                <span className="text-white font-semibold text-xs leading-snug line-clamp-2 break-words pr-6">{club.name}</span>
                 {club.address && <span className="text-white/40 text-[10px] truncate">{club.address.split(',')[0]}</span>}
                 {club.genres?.length > 0 && (
                   <span className="mt-0.5 text-white/30 text-[9px] truncate">{club.genres.slice(0, 2).join(' · ')}</span>
