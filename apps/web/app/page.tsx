@@ -266,7 +266,7 @@ export default function LandingPage() {
             </svg>
             <input
               className="flex-1 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
-              placeholder={`¿A dónde vas hoy? (${PLACEHOLDER_CITIES[placeholderIdx]})`}
+              placeholder={`${t('landing.placeholder')} (${PLACEHOLDER_CITIES[placeholderIdx]})`}
               value={zone}
               onChange={(e) => {
                 const val = e.target.value
