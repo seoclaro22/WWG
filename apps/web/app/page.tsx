@@ -295,11 +295,11 @@ export default function LandingPage() {
   }
 
   return (
-    <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
+    <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 pt-6 pb-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none landing-gold-base" />
       <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
       <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
-      <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 md:gap-10 min-h-[70vh]">
+      <div className="relative z-10 flex flex-col items-center justify-start text-center gap-6 md:gap-8 pt-10 md:pt-16 min-h-[70vh]">
         <div className="anim-logo">
           {/* Icon */}
           <div className="flex justify-center mb-4">
@@ -401,30 +401,6 @@ export default function LandingPage() {
         </form>
       </div>
 
-      {/* Preview cards — solo se muestran si hay clubs en la base de datos */}
-      {previewClubs.length > 0 && (
-        <div className="relative z-10 mt-2 pb-10 px-2">
-          <p className="text-center text-xs text-white/30 uppercase tracking-widest mb-4">Clubs destacados</p>
-          <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto">
-            {previewClubs.map((club, i) => (
-              <div
-                key={club.id}
-                onClick={() => router.push(`/club/${club.id}`)}
-                className="relative rounded-2xl bg-black/40 border border-white/8 backdrop-blur p-3 flex flex-col gap-1 hover:border-[#d8af3a]/30 transition-colors cursor-pointer min-w-0 overflow-hidden"
-              >
-                {i === 0 && (
-                  <span className="absolute top-2 right-2 bg-[#d8af3a]/15 text-[#d8af3a] text-[8px] font-bold px-1.5 py-0.5 rounded-full tracking-wide">TOP</span>
-                )}
-                <span className="text-white font-semibold text-xs leading-snug line-clamp-2 break-words pr-6">{club.name}</span>
-                {club.address && <span className="text-white/40 text-[10px] truncate">{club.address.split(',')[0]}</span>}
-                {club.genres?.length > 0 && (
-                  <span className="mt-0.5 text-white/30 text-[9px] truncate">{club.genres.slice(0, 2).join(' · ')}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
