@@ -1,10 +1,14 @@
 {
-  "name": "NightHub Mallorca",
-  "short_name": "NightHub",
+  "name": "Where We Go",
+  "short_name": "WWG",
+  "description": "Descubre donde sale todo el mundo esta noche.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B0F14",
-  "theme_color": "#0B0F14",
-  "icons": []
+  "background_color": "#07060a",
+  "theme_color": "#d8af3a",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
 }
 

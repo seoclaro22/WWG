@@ -7,10 +7,14 @@ import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/Toaster'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
+import { SwRegister } from '@/components/SwRegister'
 
 export const metadata = {
   title: 'Where We Go',
-  description: 'Agenda local curada. Donde vamos hoy?'
+  description: 'Descubre donde sale todo el mundo esta noche.',
+  manifest: '/manifest.json',
+  themeColor: '#d8af3a',
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'WWG' },
 }
 
 // Evita el prerender estatico en build (usa runtime siempre)
@@ -30,6 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <AnalyticsTracker />
               <GoogleAnalytics />
               <CookieConsent />
+              <SwRegister />
             </div>
           </I18nProvider>
         </AuthProvider>
