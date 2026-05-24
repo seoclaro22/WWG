@@ -41,13 +41,65 @@ export default function LandingPage() {
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const [knownZones, setKnownZones] = useState<string[]>(['Palma de Mallorca', 'Mallorca', 'Ibiza', 'Barcelona', 'Madrid'])
-  const [placeholderIdx, setPlaceholderIdx] = useState(0)
   const [previewClubs, setPreviewClubs] = useState<PreviewClub[]>([])
+  const [displayPlaceholder, setDisplayPlaceholder] = useState('')
+  const [isListening, setIsListening] = useState(false)
+  const [hasSpeech, setHasSpeech] = useState(false)
 
+  // Detectar soporte de Speech API
   useEffect(() => {
-    const id = setInterval(() => setPlaceholderIdx(i => (i + 1) % PLACEHOLDER_CITIES.length), 2200)
-    return () => clearInterval(id)
+    setHasSpeech(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))
   }, [])
+
+  // Animación de typing en el placeholder
+  useEffect(() => {
+    let cityIdx = 0
+    let charIdx = 0
+    let deleting = false
+    let timeout: ReturnType<typeof setTimeout>
+
+    function tick() {
+      const city = PLACEHOLDER_CITIES[cityIdx]
+      if (!deleting) {
+        charIdx++
+        setDisplayPlaceholder(city.slice(0, charIdx))
+        if (charIdx === city.length) {
+          deleting = true
+          timeout = setTimeout(tick, 1400) // pausa antes de borrar
+          return
+        }
+      } else {
+        charIdx--
+        setDisplayPlaceholder(city.slice(0, charIdx))
+        if (charIdx === 0) {
+          deleting = false
+          cityIdx = (cityIdx + 1) % PLACEHOLDER_CITIES.length
+        }
+      }
+      timeout = setTimeout(tick, deleting ? 40 : 65)
+    }
+    timeout = setTimeout(tick, 600)
+    return () => clearTimeout(timeout)
+  }, [])
+
+  function startVoice() {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) return
+    const rec = new SR()
+    rec.lang = 'es-ES'
+    rec.interimResults = false
+    rec.maxAlternatives = 1
+    setIsListening(true)
+    rec.start()
+    rec.onresult = (e: any) => {
+      const spoken = e.results[0][0].transcript
+      setZone(spoken)
+      setIsListening(false)
+      goToDiscover(spoken)
+    }
+    rec.onerror = () => setIsListening(false)
+    rec.onend = () => setIsListening(false)
+  }
 
   useEffect(() => {
     function spawnFlash(x: number, y: number) {
@@ -267,7 +319,8 @@ export default function LandingPage() {
             {t('landing.subtitle')}
           </div>
         </div>
-        <form onSubmit={onSubmit} className="w-full max-w-lg space-y-3 anim-form">
+        <form onSubmit={onSubmit} className="w-full max-w-lg space-y-2 anim-form">
+          <p className="text-sm text-white/50 text-center">{t('landing.placeholder')}</p>
           <div className="relative">
             <div className="flex items-center bg-black/30 border border-[#d8af3a]/30 rounded-full px-5 py-2 shadow-[0_0_28px_rgba(216,175,58,0.18),0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur transition-shadow hover:shadow-[0_0_42px_rgba(216,175,58,0.32),0_15px_60px_rgba(0,0,0,0.45)]">
             <svg className="w-4 h-4 text-[#d8af3a] mr-3 shrink-0" viewBox="0 0 16 16" fill="none">
@@ -276,7 +329,7 @@ export default function LandingPage() {
             </svg>
             <input
               className="flex-1 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
-              placeholder={`${t('landing.placeholder')} (${PLACEHOLDER_CITIES[placeholderIdx]})`}
+              placeholder={displayPlaceholder}
               value={zone}
               onChange={(e) => {
                 const val = e.target.value
@@ -296,6 +349,20 @@ export default function LandingPage() {
                 setSuggestions(matches.slice(0, 5))
               }}
             />
+            {hasSpeech && (
+              <button
+                type="button"
+                onClick={startVoice}
+                aria-label="Buscar por voz"
+                className={`ml-1 w-10 h-10 rounded-full flex items-center justify-center transition ${isListening ? 'bg-red-500/80 shadow-[0_0_16px_rgba(255,60,60,0.6)]' : 'bg-white/8 hover:bg-white/12'}`}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="5" y="1" width="6" height="9" rx="3" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M2.5 8.5A5.5 5.5 0 008 14a5.5 5.5 0 005.5-5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  <line x1="8" y1="14" x2="8" y2="16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+              </button>
+            )}
             <button
               type="submit"
               className="ml-2 w-12 h-12 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center text-xl shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
