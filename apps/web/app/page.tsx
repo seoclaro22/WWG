@@ -1,5 +1,5 @@
 "use client"
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
@@ -45,6 +45,7 @@ export default function LandingPage() {
   const [displayPlaceholder, setDisplayPlaceholder] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [hasSpeech, setHasSpeech] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Detectar soporte de Speech API
   useEffect(() => {
@@ -335,6 +336,7 @@ export default function LandingPage() {
               <path d="M7 16 C7 16 2 10 2 6 C2 3.24 4.24 1 7 1 C9.76 1 12 3.24 12 6 C12 10 7 16 7 16Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
             </svg>
             <input
+              ref={inputRef}
               className="flex-1 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
               placeholder={displayPlaceholder}
               value={zone}
@@ -346,11 +348,15 @@ export default function LandingPage() {
                 setSuggestions(matches.slice(0, 5))
               }}
               onBlur={() => {
-                // Auto-completar Palma -> Palma de Mallorca
+                // Restaurar overflow al cerrar teclado
+                document.body.style.overflow = 'hidden'
                 setZone(prev => normalizeZone(prev))
                 setTimeout(() => setSuggestions([]), 120)
               }}
               onFocus={() => {
+                // Quitar overflow para que scrollIntoView funcione con el teclado virtual
+                document.body.style.overflow = ''
+                setTimeout(() => inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150)
                 const norm = normalizeZone(zone)
                 const matches = knownZones.filter(z => normalizeZoneKey(z).startsWith(normalizeZoneKey(norm)) && norm.length >= 2)
                 setSuggestions(matches.slice(0, 5))
@@ -372,10 +378,12 @@ export default function LandingPage() {
             )}
             <button
               type="submit"
-              className="ml-2 w-12 h-12 shrink-0 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center text-xl shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
+              className="ml-2 w-12 h-12 shrink-0 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
               aria-label={t('landing.cta')}
             >
-              →
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </button>
             </div>
             {suggestions.length > 0 && (
