@@ -372,7 +372,7 @@ export default function LandingPage() {
             )}
             <button
               type="submit"
-              className="ml-2 w-12 h-12 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center text-xl shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
+              className="ml-2 w-12 h-12 shrink-0 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center text-xl shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
               aria-label={t('landing.cta')}
             >
               →
