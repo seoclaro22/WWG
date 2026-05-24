@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { useI18n } from '@/lib/i18n'
-import { getPermission, isPushSupported, saveSubscription, subscribeToPush } from '@/lib/push-client'
 
 function sb() {
   return createClient(
@@ -135,12 +134,6 @@ export function FavoriteButton({
         .maybeSingle()
       const persisted = !!verify.data
       if (persisted !== next) throw new Error('No se pudo persistir el favorito (RLS/permiso).')
-
-      // Si es un club o DJ y acaba de añadirse, ofrecer notificaciones push
-      if (next && (targetType === 'club' || targetType === 'dj')) {
-        maybeRequestPush()
-      }
-
       try {
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('nighthub-fav-changed', { detail: { id: eventId, type: targetType, added: next } }))
@@ -155,30 +148,6 @@ export function FavoriteButton({
     } finally {
       setLoading(false)
     }
-  }
-
-  async function maybeRequestPush() {
-    if (!isPushSupported()) return
-    if (getPermission() === 'denied') return
-    // Solo pedir si aun no tenemos permiso (default) o no tenemos suscripcion activa
-    if (getPermission() === 'granted') {
-      // Ya tiene permiso: refrescar la suscripcion silenciosamente
-      try {
-        const sub = await subscribeToPush()
-        if (sub) await saveSubscription(sub)
-      } catch {}
-      return
-    }
-    // Permiso 'default': mostrar dialog nativo del navegador
-    try {
-      const sub = await subscribeToPush()
-      if (sub) {
-        await saveSubscription(sub)
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message: 'Activadas las notificaciones de nuevos eventos' } }))
-        }
-      }
-    } catch {}
   }
 
   const cls = compact
