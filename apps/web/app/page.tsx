@@ -51,6 +51,12 @@ export default function LandingPage() {
     setHasSpeech(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))
   }, [])
 
+  // Bloquear scroll en la landing
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   // Animación de typing en el placeholder
   useEffect(() => {
     let cityIdx = 0
@@ -295,11 +301,12 @@ export default function LandingPage() {
   }
 
   return (
-    <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 pt-6 pb-10 min-h-[100vh] overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
+    <div className="flex flex-col" style={{ height: 'calc(100dvh - 64px)' }}>
+    <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 -mt-3 md:-mt-6 -mb-3 md:-mb-6 px-4 md:px-6 lg:px-10 flex-1 flex flex-col overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none landing-gold-base" />
       <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
       <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
-      <div className="relative z-10 flex flex-col items-center justify-start text-center gap-6 md:gap-8 pt-10 md:pt-16 min-h-[70vh]">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center gap-4 md:gap-6 px-4 md:px-6 lg:px-10">
         <div className="anim-logo">
           {/* Icon */}
           <div className="flex justify-center mb-4">
@@ -401,6 +408,7 @@ export default function LandingPage() {
         </form>
       </div>
 
+    </div>
     </div>
   )
 }
