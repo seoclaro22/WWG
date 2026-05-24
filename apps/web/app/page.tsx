@@ -308,28 +308,30 @@ export default function LandingPage() {
       <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
       <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center gap-4 md:gap-6 px-4 md:px-6 lg:px-10">
-        <div className="anim-logo">
-          {/* Icon */}
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#d8af3a]/10 border border-[#d8af3a]/25 flex items-center justify-center shadow-[0_0_32px_rgba(216,175,58,0.25)]">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="13" r="5" stroke="#d8af3a" strokeWidth="2"/>
-                <path d="M16 32 C16 32 6 20 6 13 C6 7.477 10.477 3 16 3 C21.523 3 26 7.477 26 13 C26 20 16 32 16 32Z" stroke="#d8af3a" strokeWidth="2" fill="none"/>
-                <circle cx="16" cy="13" r="2" fill="#d8af3a"/>
-              </svg>
-            </div>
+        {/* Icono — entra con scale */}
+        <div className="anim-icon flex justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#d8af3a]/10 border border-[#d8af3a]/25 flex items-center justify-center shadow-[0_0_32px_rgba(216,175,58,0.25)]">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="13" r="5" stroke="#d8af3a" strokeWidth="2"/>
+              <path d="M16 32 C16 32 6 20 6 13 C6 7.477 10.477 3 16 3 C21.523 3 26 7.477 26 13 C26 20 16 32 16 32Z" stroke="#d8af3a" strokeWidth="2" fill="none"/>
+              <circle cx="16" cy="13" r="2" fill="#d8af3a"/>
+            </svg>
           </div>
+        </div>
+        {/* Nombre — sube justo despues del icono */}
+        <div className="anim-logo -mt-2 text-center">
           <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-400 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
             WWG
           </div>
-          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon anim-subtitle">WHERE WE GO</div>
-          <div className="mt-4 text-base md:text-lg text-white/55 max-w-sm anim-subtitle">
-            {t('landing.subtitle')}
-          </div>
+          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon">WHERE WE GO</div>
         </div>
-        <form onSubmit={onSubmit} className="w-full max-w-lg space-y-2 anim-form">
-          <p className="text-sm text-white/50 text-center">{t('landing.placeholder')}</p>
-          <div className="relative">
+        {/* Subtítulo — tercera ola */}
+        <div className="anim-subtitle text-base md:text-lg text-white/55 max-w-sm -mt-2">
+          {t('landing.subtitle')}
+        </div>
+        <form onSubmit={onSubmit} className="w-full max-w-lg space-y-2">
+          <p className="text-sm text-white/50 text-center anim-label">{t('landing.placeholder')}</p>
+          <div className="relative anim-form">
             <div className="flex items-center bg-black/30 border border-[#d8af3a]/30 rounded-full px-5 py-2 shadow-[0_0_28px_rgba(216,175,58,0.18),0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur transition-shadow hover:shadow-[0_0_42px_rgba(216,175,58,0.32),0_15px_60px_rgba(0,0,0,0.45)]">
             <svg className="w-4 h-4 text-[#d8af3a] mr-3 shrink-0" viewBox="0 0 16 16" fill="none">
               <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -402,7 +404,7 @@ export default function LandingPage() {
               </div>
             )}
           </div>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 anim-points">
             <button
               type="button"
               onClick={() => requestGeo(true)}
