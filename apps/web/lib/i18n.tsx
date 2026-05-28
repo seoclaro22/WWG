@@ -33,6 +33,8 @@ const dictionaries: Record<string, Dict> = {
     'landing.point_multi': 'Multi idioma',
 
     'discover.title': 'La noche empieza aqui',
+    'discover.featured_clubs': 'Clubs destacados',
+    'discover.featured_djs': 'DJs destacados',
     'tabs.events': 'Proximos eventos',
     'tabs.clubs': 'Clubs',
     'tabs.djs': 'DJs',
@@ -175,6 +177,8 @@ const dictionaries: Record<string, Dict> = {
     'landing.point_multi': 'Multi language',
 
     'discover.title': 'The night starts here',
+    'discover.featured_clubs': 'Featured clubs',
+    'discover.featured_djs': 'Featured DJs',
     'tabs.events': 'Upcoming events',
     'tabs.clubs': 'Clubs',
     'tabs.djs': 'DJs',
@@ -317,6 +321,8 @@ const dictionaries: Record<string, Dict> = {
     'landing.point_multi': 'Mehrsprachig',
 
     'discover.title': 'Die Nacht beginnt hier',
+    'discover.featured_clubs': 'Empfohlene Clubs',
+    'discover.featured_djs': 'Empfohlene DJs',
     'tabs.events': 'Bevorstehende Events',
     'tabs.clubs': 'Clubs',
     'tabs.djs': 'DJs',

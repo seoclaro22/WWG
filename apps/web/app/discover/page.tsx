@@ -94,7 +94,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
         {/* Carousel: Clubs destacados */}
         {carouselClubs.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">Clubs destacados</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70"><T k="discover.featured_clubs" /></p>
             <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none' }}>
               {carouselClubs.map((c: any) => {
                 const img: string | undefined = Array.isArray(c.images) ? c.images[0] : (c.logo_url || undefined)
@@ -116,7 +116,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
         {/* Carousel: DJs destacados */}
         {carouselDjs.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">DJs destacados</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70"><T k="discover.featured_djs" /></p>
             <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none' }}>
               {carouselDjs.map((dj: any) => {
                 const img: string | undefined = Array.isArray(dj.images) ? dj.images[0] : undefined
