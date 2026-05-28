@@ -153,7 +153,8 @@ export default async function ClubProfile({ params }: { params: { id: string } }
         {(club.description || club.description_i18n) && (
           <div>
             <ClubDescriptionExpand
-              text={club.description || Object.values(club.description_i18n || {})[0] as string || ''}
+              text={club.description || ''}
+              i18n={club.description_i18n || null}
             />
           </div>
         )}
@@ -169,7 +170,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
             </svg>
           </div>
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5">Dirección</p>
+            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5"><T k="club.address" /></p>
             <p className="text-sm text-white/80 leading-snug">{club.address || 'Mallorca'}</p>
           </div>
         </div>
@@ -177,7 +178,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
         {/* Gallery */}
         {galleryImgs.length > 0 && (
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">Fotos</p>
+            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2"><T k="club.photos" /></p>
             <div className="grid grid-cols-2 gap-2">
               {galleryImgs.slice(0, 6).map((src, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -197,9 +198,9 @@ export default async function ClubProfile({ params }: { params: { id: string } }
 
         {/* Upcoming events */}
         <div>
-          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Próximos Eventos</p>
+          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></p>
           {events.length === 0 ? (
-            <p className="text-sm text-white/40">No hay eventos próximos.</p>
+            <p className="text-sm text-white/40"><T k="dj.no_upcoming" /></p>
           ) : (
             <div className="space-y-2">
               {events.map((e: any) => {

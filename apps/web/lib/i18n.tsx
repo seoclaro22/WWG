@@ -146,6 +146,10 @@ const dictionaries: Record<string, Dict> = {
     'dj.no_upcoming': 'No hay eventos proximos.',
     'dj.similar': 'Tambien te puede gustar',
     'action.view': 'Ver',
+    'action.show_more': 'Ver más',
+    'action.show_less': 'Ver menos',
+    'club.address': 'Dirección',
+    'club.photos': 'Fotos',
     'share.copied': 'Enlace copiado. Pegalo en Instagram.'
   },
   en: {
@@ -290,6 +294,10 @@ const dictionaries: Record<string, Dict> = {
     'dj.no_upcoming': 'No upcoming events.',
     'dj.similar': 'You may also like',
     'action.view': 'View',
+    'action.show_more': 'Show more',
+    'action.show_less': 'Show less',
+    'club.address': 'Address',
+    'club.photos': 'Photos',
     'share.copied': 'Link copied. Paste it in Instagram.'
   },
   de: {
@@ -434,6 +442,10 @@ const dictionaries: Record<string, Dict> = {
     'dj.no_upcoming': 'Keine bevorstehenden Events.',
     'dj.similar': 'Das koennte dir auch gefallen',
     'action.view': 'Ansehen',
+    'action.show_more': 'Mehr anzeigen',
+    'action.show_less': 'Weniger anzeigen',
+    'club.address': 'Adresse',
+    'club.photos': 'Fotos',
     'share.copied': 'Link kopiert. Fuege ihn in Instagram ein.'
   }
 }
