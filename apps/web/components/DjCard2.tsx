@@ -25,15 +25,11 @@ export function DjCard2({ dj, showHeart = false }: Props) {
   const image = dj.image || null
   const genres = Array.isArray(dj.genres) ? dj.genres : []
   const baseShort = (dj.short_bio || '').trim()
-  const baseBio = dj.bio || ''
-  const desc = baseShort || (baseBio ? (baseBio.length > 160 ? baseBio.slice(0, 157) + '...' : baseBio) : '')
   const shortI18n = dj.short_bio_i18n && typeof dj.short_bio_i18n === 'object' ? (dj.short_bio_i18n as any)[locale] : ''
-  const bioI18n = dj.bio_i18n && typeof dj.bio_i18n === 'object' ? (dj.bio_i18n as any)[locale] : ''
-  const localized = shortI18n || bioI18n || ''
-  const localizedDesc = localized ? (localized.length > 160 ? localized.slice(0, 157) + '...' : localized) : ''
-  const displayDesc = localizedDesc || baseShort || desc
+  const localizedShort = shortI18n || baseShort
+  const displayDesc = localizedShort ? (localizedShort.length > 120 ? localizedShort.slice(0, 117) + '...' : localizedShort) : ''
   return (
-    <div className="card card-glass overflow-hidden relative">
+    <div className="card overflow-hidden relative border border-white/10 bg-white/5 hover:border-[#d8af3a]/40 hover:shadow-[0_0_20px_rgba(216,175,58,0.12)] transition-all duration-200">
       {showHeart && (
         <div className="absolute top-2 right-2 z-30 pointer-events-auto">
           <FavoriteButton eventId={dj.id} targetType="dj" compact useLocalCache />
@@ -43,7 +39,7 @@ export function DjCard2({ dj, showHeart = false }: Props) {
         <Link href={`/dj/${dj.id}`} className="w-24 h-24 rounded-lg bg-white/5 shrink-0 block overflow-hidden">
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt={dj.name} className="w-full h-full object-cover" />
+            <img src={image} alt={dj.name} className="w-full h-full object-cover object-top" />
           ) : null}
         </Link>
         <div className="flex-1">
@@ -59,7 +55,7 @@ export function DjCard2({ dj, showHeart = false }: Props) {
             </div>
           )}
           <div className="mt-2 flex gap-2 flex-wrap">
-            <Link href={`/dj/${dj.id}`} className="btn btn-primary text-sm px-3 py-1">{t('action.view')}</Link>
+            <Link href={`/dj/${dj.id}`} className="text-sm px-4 py-1.5 rounded-full bg-[#d8af3a] text-black font-semibold shadow-[0_0_12px_rgba(216,175,58,0.35)] hover:bg-[#e8c85a] hover:shadow-[0_0_18px_rgba(216,175,58,0.55)] transition-all">{t('action.view')}</Link>
           </div>
         </div>
       </div>

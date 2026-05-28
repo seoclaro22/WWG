@@ -14,7 +14,7 @@ export function EventCard({ event, showHeart = false }: Props) {
   const { t } = useI18n()
   const isSponsored = !!event.sponsored
   return (
-    <div className={`card card-glass overflow-hidden relative ${isSponsored ? 'border-[#d6b24d]/70 bg-gradient-to-br from-[#3d2a00] via-[#171006] to-[#0b0f14] shadow-[0_0_35px_rgba(216,175,58,0.25)]' : ''}`}>
+    <div className={`card overflow-hidden relative border transition-all duration-200 ${isSponsored ? 'border-[#d6b24d]/70 bg-gradient-to-br from-[#3d2a00] via-[#171006] to-[#0b0f14] shadow-[0_0_35px_rgba(216,175,58,0.25)] hover:shadow-[0_0_45px_rgba(216,175,58,0.35)]' : 'border-white/10 bg-white/5 hover:border-[#d8af3a]/40 hover:shadow-[0_0_20px_rgba(216,175,58,0.12)]'}`}>
       {isSponsored && (
         <div className="absolute left-3 top-3 z-20 inline-flex items-center rounded-full bg-[#d6b24d] text-black text-xs font-semibold px-2 py-1 shadow-[0_0_18px_rgba(216,175,58,0.45)]">
           {t('event.sponsored')}
@@ -39,7 +39,7 @@ export function EventCard({ event, showHeart = false }: Props) {
           <div className="text-xs text-white/60">{event.date}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <ReserveButton eventId={event.id} source="discover" className="w-full sm:w-auto">{t('action.reserve')}</ReserveButton>
-            <a className="btn btn-primary text-sm px-3 py-1 w-full sm:w-auto flex items-center justify-center text-center leading-tight" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
+            <a className="text-sm px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/80 hover:bg-white/12 hover:border-[#d8af3a]/40 hover:text-white transition-colors w-full sm:w-auto flex items-center justify-center text-center leading-tight" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
           </div>
         </div>
       </div>
