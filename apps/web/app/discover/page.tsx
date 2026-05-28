@@ -53,15 +53,30 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
   ])
   return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
-      <div className="relative z-10 space-y-4">
-        <h1 className="text-2xl font-semibold"><T k="discover.title" /></h1>
-        <div className="flex items-center gap-2">
-          <a href={`/discover?tab=events${zone ? `&zone=${encodeURIComponent(zone)}` : ''}`} className={`px-3 py-1 rounded-xl border border-white/10 ${tab === 'events' ? 'bg-white/10' : ''}`}><T k="tabs.events" /></a>
-          <a href={`/discover?tab=clubs${zone ? `&zone=${encodeURIComponent(zone)}` : ''}`} className={`px-3 py-1 rounded-xl border border-white/10 ${tab === 'clubs' ? 'bg-white/10' : ''}`}><T k="tabs.clubs" /></a>
-          <a href={`/discover?tab=djs${zone ? `&zone=${encodeURIComponent(zone)}` : ''}`} className={`px-3 py-1 rounded-xl border border-white/10 ${tab === 'djs' ? 'bg-white/10' : ''}`}><T k="tabs.djs" /></a>
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-50" />
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-40" />
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
+      <div className="relative z-10 space-y-5">
+        {/* Tabs con pill gold */}
+        <div className="flex items-center gap-1 bg-white/5 rounded-2xl p-1 w-fit">
+          {([
+            { key: 'events', label: <T k="tabs.events" /> },
+            { key: 'clubs',  label: <T k="tabs.clubs" /> },
+            { key: 'djs',    label: <T k="tabs.djs" /> },
+          ] as const).map(({ key, label }) => (
+            <a
+              key={key}
+              href={`/discover?tab=${key}${zone ? `&zone=${encodeURIComponent(zone)}` : ''}`}
+              className={`relative px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+                tab === key
+                  ? 'bg-[#d8af3a] text-black shadow-[0_0_16px_rgba(216,175,58,0.4)]'
+                  : 'text-white/60 hover:text-white/90'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
         </div>
         <Filters />
         {tab === 'events' && (
