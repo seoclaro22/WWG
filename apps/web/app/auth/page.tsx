@@ -1,8 +1,10 @@
-﻿"use client"
+"use client"
 import { useAuth } from '@/lib/auth'
 import { useI18n } from '@/lib/i18n'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+const inputCls = "w-full h-12 text-base bg-white/5 border border-white/15 rounded-2xl px-4 text-white placeholder-white/30 focus:outline-none focus:border-[#d8af3a]/60 focus:bg-white/8 transition-colors"
 
 export default function AuthPage() {
   const { user, signIn, signUp, signOut } = useAuth()
@@ -15,34 +17,79 @@ export default function AuthPage() {
   const [accept, setAccept] = useState(true)
   const router = useRouter()
 
+  const pageWrap = (children: React.ReactNode) => (
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-10 min-h-[100vh] rounded-[28px] bg-[#07060a]">
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-40" />
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-30" />
+      <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
+
   if (user) {
-    return (
-      <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-        <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
-        <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-35 landing-gold" />
-        <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
-        <div className="relative z-10 space-y-4 max-w-xl mx-auto text-center">
-          <div className="text-xl">Hola, {user.email}</div>
-          <button className="btn btn-secondary" onClick={() => signOut().then(() => router.push('/'))}>{t('action.signout')}</button>
+    return pageWrap(
+      <div className="max-w-sm mx-auto text-center space-y-4 pt-10">
+        <div className="w-16 h-16 rounded-2xl bg-[#d8af3a]/10 border border-[#d8af3a]/20 flex items-center justify-center mx-auto">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d8af3a" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
         </div>
+        <p className="text-white/70 text-sm">{user.email}</p>
+        <button
+          className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/8 hover:border-[#d8af3a]/30 hover:text-white transition-all text-sm font-medium"
+          onClick={() => signOut().then(() => router.push('/'))}
+        >
+          {t('action.signout')}
+        </button>
       </div>
     )
   }
 
-  return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-35 landing-gold" />
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
-      <div className="relative z-10 space-y-6 max-w-xl mx-auto">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">{t('auth.title')}</h1>
-          <p className="muted">{t('auth.subtitle')}</p>
+  return pageWrap(
+    <div className="max-w-sm mx-auto space-y-5">
+
+      {/* Header */}
+      <div className="text-center pt-4 pb-2">
+        <div className="w-14 h-14 rounded-2xl bg-[#d8af3a]/15 border border-[#d8af3a]/25 flex items-center justify-center mx-auto mb-4">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#d8af3a"/>
+          </svg>
         </div>
-        <form
-          className="card p-5 space-y-4 w-full max-w-md mx-auto"
-          onSubmit={async (e) => {
-            e.preventDefault()
+        <h1 className="text-2xl font-bold text-white">{t('auth.title')}</h1>
+        <p className="text-sm text-white/50 mt-1">{t('auth.subtitle')}</p>
+      </div>
+
+      {/* Form */}
+      <div className="bg-white/4 border border-white/10 rounded-3xl p-5 space-y-4">
+        <div className="space-y-1">
+          <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">{t('auth.email')}</label>
+          <input value={email} onChange={e => setEmail(e.target.value)} className={inputCls} placeholder="email@ejemplo.com" autoComplete="email" />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">{t('auth.password')}</label>
+          <input value={password} onChange={e => setPassword(e.target.value)} type="password" className={inputCls} placeholder="••••••••" autoComplete={mode === 'in' ? 'current-password' : 'new-password'} />
+        </div>
+        {mode === 'up' && (
+          <div className="space-y-1">
+            <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Nombre o nick</label>
+            <input value={displayName} onChange={e => setDisplayName(e.target.value)} className={inputCls} placeholder="Tu nombre o nick" required />
+          </div>
+        )}
+        {err && (
+          <div className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-xl px-3 py-2">{err}</div>
+        )}
+        {mode === 'up' && (
+          <label className="flex items-start gap-2.5 text-xs text-white/60 leading-relaxed cursor-pointer">
+            <input type="checkbox" className="mt-0.5 accent-[#d8af3a]" checked={accept} onChange={e => setAccept(e.target.checked)} />
+            <span>
+              {t('consent.accept')} <a className="text-[#d8af3a] hover:underline" href="/privacy" target="_blank">{t('account.privacy_policy')}</a> {t('consent.and')} <a className="text-[#d8af3a] hover:underline" href="/cookies" target="_blank">{t('account.cookies')}</a>.
+            </span>
+          </label>
+        )}
+        <button
+          className="w-full py-3 rounded-2xl bg-[#d8af3a] text-black font-bold text-base shadow-[0_0_20px_rgba(216,175,58,0.35)] hover:bg-[#e8c85a] hover:shadow-[0_0_28px_rgba(216,175,58,0.5)] transition-all disabled:opacity-40"
+          disabled={mode === 'up' && !accept}
+          onClick={async () => {
             setErr(null)
             try {
               if (mode === 'in') {
@@ -55,9 +102,7 @@ export default function AuthPage() {
                   const { createClient } = await import('@supabase/supabase-js')
                   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } })
                   const u = (await sb.auth.getUser()).data.user
-                  if (u) {
-                    await sb.from('users').upsert({ id: u.id, email: u.email as string, display_name: displayName.trim() })
-                  }
+                  if (u) await sb.from('users').upsert({ id: u.id, email: u.email as string, display_name: displayName.trim() })
                 } catch {}
               }
               router.push('/')
@@ -66,54 +111,38 @@ export default function AuthPage() {
             }
           }}
         >
-          <label className="block text-sm">{t('auth.email')}</label>
-          <input value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full h-12 text-base bg-transparent border border-white/20 rounded-xl px-3" placeholder="email@ejemplo.com" />
-          <label className="block text-sm mt-2">{t('auth.password')}</label>
-          <input value={password} onChange={(e)=>setPassword(e.target.value)} type="password" className="w-full h-12 text-base bg-transparent border border-white/20 rounded-xl px-3" placeholder="********" />
-          {mode === 'up' && (
-            <>
-              <label className="block text-sm mt-2">Nombre o nick a mostrar</label>
-              <input value={displayName} onChange={(e)=>setDisplayName(e.target.value)} className="w-full h-12 text-base bg-transparent border border-white/20 rounded-xl px-3" placeholder="Tu nombre o nick" required />
-            </>
+          {mode === 'in' ? t('auth.signin') : t('auth.signup')}
+        </button>
+        <div className="text-center text-xs text-white/40">
+          {mode === 'in' ? (
+            <button type="button" className="hover:text-[#d8af3a] transition-colors" onClick={() => setMode('up')}>{t('auth.to_signup')}</button>
+          ) : (
+            <button type="button" className="hover:text-[#d8af3a] transition-colors" onClick={() => setMode('in')}>{t('auth.to_signin')}</button>
           )}
-          {err && <div className="text-red-400 text-sm">{err}</div>}
-          {mode === 'up' && (
-            <label className="flex items-start gap-2 text-xs md:text-sm text-white/80 leading-snug">
-              <input type="checkbox" className="mt-0.5" checked={accept} onChange={e=>setAccept(e.target.checked)} />
-              <span>
-                {t('consent.accept')} <a className="underline" href="/privacy" target="_blank">{t('account.privacy_policy')}</a> {t('consent.and')} <a className="underline" href="/cookies" target="_blank">{t('account.cookies')}</a>.
-              </span>
-            </label>
-          )}
-          <button className="btn btn-primary w-full mt-1 py-3 text-base" disabled={mode==='up' && !accept}>{mode === 'in' ? t('auth.signin') : t('auth.signup')}</button>
-          <div className="text-center text-xs text-white/60">
-            {mode === 'in' ? (
-              <button type="button" className="underline" onClick={()=>setMode('up')}>{t('auth.to_signup')}</button>
-            ) : (
-              <button type="button" className="underline" onClick={()=>setMode('in')}>{t('auth.to_signin')}</button>
-            )}
-          </div>
-        </form>
-
-        <div className="card p-3 text-xs md:text-sm text-white/70 w-full max-w-md mx-auto text-center">
-          {t('legal.notice')}{' '}
-          <a className="underline" href="/privacy" target="_blank" rel="noreferrer">{t('account.privacy_policy')}</a>
-          {' · '}
-          <a className="underline" href="/cookies" target="_blank" rel="noreferrer">{t('account.cookies')}</a>
         </div>
-
-        <div className="card p-4 space-y-2 w-full max-w-md mx-auto">
-          <div className="font-medium text-sm">{t('benefits.title')}</div>
-          <ul className="list-disc pl-5 text-white/80 text-xs md:text-sm space-y-1">
-            <li>{t('benefits.save')}</li>
-            <li>{t('benefits.follow')}</li>
-            <li>{t('benefits.tickets')}</li>
-            <li>{t('benefits.sync')}</li>
-            <li>{t('benefits.push')}</li>
-          </ul>
-        </div>
-
       </div>
+
+      {/* Legal */}
+      <p className="text-center text-xs text-white/30">
+        {t('legal.notice')}{' '}
+        <a className="text-white/50 hover:text-[#d8af3a] transition-colors" href="/privacy" target="_blank">{t('account.privacy_policy')}</a>
+        {' · '}
+        <a className="text-white/50 hover:text-[#d8af3a] transition-colors" href="/cookies" target="_blank">{t('account.cookies')}</a>
+      </p>
+
+      {/* Benefits */}
+      <div className="bg-white/4 border border-white/8 rounded-2xl p-4 space-y-2">
+        <p className="text-xs text-white/40 uppercase tracking-widest font-semibold">{t('benefits.title')}</p>
+        <ul className="space-y-1.5">
+          {[t('benefits.save'), t('benefits.follow'), t('benefits.tickets'), t('benefits.sync'), t('benefits.push')].map((b, i) => (
+            <li key={i} className="flex items-center gap-2 text-xs text-white/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d8af3a]/60 shrink-0" />
+              {b}
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </div>
   )
 }
