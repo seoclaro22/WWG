@@ -43,15 +43,28 @@ function rangeFromDateParam(dateParam?: string) {
   return { from: fmt(from), to: fmt(to) }
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 export default async function DiscoverPage({ searchParams }: { searchParams: { q?: string; date?: string; genre?: string; zone?: string; tab?: string } }) {
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
-  const [events, clubs, djs] = await Promise.all([
+  const [events, clubs, djs, featuredClubs, featuredDjs] = await Promise.all([
     tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 50, sponsoredFirst: true }) : Promise.resolve([] as any[]),
     tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
+    fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),
+    fetchDjsPublic({ limit: 24 }),
   ])
+  const carouselClubs = shuffle(featuredClubs).slice(0, 8)
+  const carouselDjs = shuffle(featuredDjs).slice(0, 8)
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-50" />
@@ -78,6 +91,50 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
             </a>
           ))}
         </div>
+        {/* Carousel: Clubs destacados */}
+        {carouselClubs.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">Clubs destacados</p>
+            <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+              {carouselClubs.map((c: any) => {
+                const img: string | undefined = Array.isArray(c.images) ? c.images[0] : (c.logo_url || undefined)
+                return (
+                  <a key={c.id} href={`/clubs/${c.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                    <div className="w-[100px] h-[100px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+                      {img
+                        ? <img src={img} alt={c.name} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center text-white/20 text-2xl">♣</div>
+                      }
+                    </div>
+                    <span className="text-xs text-white/80 text-center leading-tight line-clamp-2 w-full">{c.name}</span>
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+        )}
+        {/* Carousel: DJs destacados */}
+        {carouselDjs.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">DJs destacados</p>
+            <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+              {carouselDjs.map((dj: any) => {
+                const img: string | undefined = Array.isArray(dj.images) ? dj.images[0] : undefined
+                return (
+                  <a key={dj.id} href={`/djs/${dj.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                    <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-white/5 border border-white/10">
+                      {img
+                        ? <img src={img} alt={dj.name} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center text-white/20 text-2xl">♪</div>
+                      }
+                    </div>
+                    <span className="text-xs text-white/80 text-center leading-tight line-clamp-2 w-full">{dj.name}</span>
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+        )}
         <Filters />
         {tab === 'events' && (
           <div className="grid gap-3">
