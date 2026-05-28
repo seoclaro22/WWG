@@ -5,88 +5,244 @@ import { FavoriteButton } from '@/components/FavoriteButton'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
+import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 
 export default async function ClubProfile({ params }: { params: { id: string } }) {
   const club: any = await fetchClub(params.id)
   if (!club) return notFound()
   const events = await fetchClubEvents(params.id, 10)
-  let images: string[] = []; if (Array.isArray((club as any).images)) { images = (club as any).images as string[] } else if (typeof (club as any).images === "string") { try { const parsed = JSON.parse((club as any).images as string); if (Array.isArray(parsed)) images = parsed; else if (typeof parsed === "string") images = [parsed]; } catch { if ((club as any).images) images = [String((club as any).images)] } }
-  const logo: string | null = (club as any).logo_url || null
+
+  let images: string[] = []
+  if (Array.isArray(club.images)) {
+    images = club.images as string[]
+  } else if (typeof club.images === 'string') {
+    try {
+      const parsed = JSON.parse(club.images)
+      if (Array.isArray(parsed)) images = parsed
+      else if (typeof parsed === 'string') images = [parsed]
+    } catch {
+      if (club.images) images = [String(club.images)]
+    }
+  }
+
+  const logo: string | null = club.logo_url || null
   const links = (club.links || {}) as Record<string, string>
-  const mapUrl = club.address ? `https://maps.google.com?q=${encodeURIComponent(club.address)}` : (club.name ? `https://maps.google.com?q=${encodeURIComponent(club.name)}` : '#')
+  const mapUrl = club.address
+    ? `https://maps.google.com?q=${encodeURIComponent(club.address)}`
+    : `https://maps.google.com?q=${encodeURIComponent(club.name)}`
+
+  const heroImg = images[0] || logo
+  const galleryImgs = images.length > 1 ? images.slice(1) : []
+
   return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
-      <div className="relative z-10 space-y-4">
-      <div className="w-full rounded-xl bg-white/5 overflow-hidden aspect-[3/1]">
-        {(images[0] || (club as any).logo_url) ? (
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
+
+      {/* ── Hero ─────────────────────────────────────────────────── */}
+      <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] max-h-[70vh]">
+        {heroImg ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={(images[0] || (club as any).logo_url) as string} alt={club.name} className="w-full h-full object-cover" />
-        ) : null}
-      </div>
-      <div className="flex items-start gap-3">
-        {logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={logo} alt="logo" className="w-12 h-12 rounded-full border border-white/10 object-cover" />
-        ) : null}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3">
-            <h1 className="text-2xl font-semibold">{club.name}</h1>
-            <FavoriteButton eventId={club.id} targetType="club" useLocalCache />
-          </div>
-          <p className="muted">
-            <LocalText value={club.description || '-'} i18n={club.description_i18n || undefined} />
-          </p>
-          {Array.isArray(club.genres) && club.genres.length > 0 && (
-            <div className="flex gap-2 flex-wrap mt-2">
-              {club.genres.map((g: string) => (
-                <span key={g} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/10">{g}</span>
-              ))}
+          <img src={heroImg} alt={club.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-white/5" />
+        )}
+        {/* Gradient overlay bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07060a] via-[#07060a]/40 to-transparent" />
+        {/* Gradient overlay top (para que se lean los botones) */}
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#07060a]/60 to-transparent" />
+
+        {/* Favorite top-right */}
+        <div className="absolute top-4 right-4 z-20">
+          <FavoriteButton eventId={club.id} targetType="club" useLocalCache />
+        </div>
+
+        {/* Club name over hero */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 z-10">
+          <div className="flex items-end gap-3">
+            {logo && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logo}
+                alt="logo"
+                className="w-14 h-14 rounded-2xl border-2 border-white/20 object-cover shadow-lg shrink-0 mb-0.5"
+              />
+            )}
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold leading-tight text-white drop-shadow-lg">
+                {club.name}
+              </h1>
+              {club.zone && (
+                <p className="text-sm text-white/60 mt-0.5">{club.zone}</p>
+              )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Content ──────────────────────────────────────────────── */}
+      <div className="px-4 md:px-6 lg:px-10 pb-10 space-y-5 relative z-10">
+
+        {/* Quick actions */}
+        <div className="flex gap-2 pt-1 flex-wrap">
+          <a
+            href={mapUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#d8af3a] text-black text-sm font-semibold shadow-[0_0_18px_rgba(216,175,58,0.35)] hover:bg-[#e8c85a] transition-colors"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path d="M7.5 1a4.5 4.5 0 0 1 4.5 4.5c0 3.15-4.5 8.5-4.5 8.5S3 8.65 3 5.5A4.5 4.5 0 0 1 7.5 1zm0 2.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" fill="currentColor" />
+            </svg>
+            <T k="action.directions" />
+          </a>
+          {links?.instagram && (
+            <a
+              href={links.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/8 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/12 hover:text-white transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+              Instagram
+            </a>
+          )}
+          {links?.web && (
+            <a
+              href={links.web}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/8 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/12 hover:text-white transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              Web
+            </a>
+          )}
+          {links?.facebook && (
+            <a
+              href={links.facebook}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/8 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/12 hover:text-white transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Facebook
+            </a>
           )}
         </div>
-      </div>
-      <div className="grid gap-2">
-        <div className="card p-4">
-          <div className="text-sm text-white/80 break-words">{club.address || 'Mallorca'}</div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a className="btn btn-primary text-sm px-3 py-1" href={mapUrl} target="_blank" rel="noreferrer"><T k="action.directions" /></a>
-            {/* telefono privado: no se muestra en publico */}
-            {links?.web && <a className="btn btn-primary text-sm px-3 py-1" href={links.web} target="_blank" rel="noreferrer">Web</a>}
-            {links?.instagram && <a className="btn btn-primary text-sm px-3 py-1" href={links.instagram} target="_blank" rel="noreferrer">Instagram</a>}
-            {links?.facebook && <a className="btn btn-primary text-sm px-3 py-1" href={links.facebook} target="_blank" rel="noreferrer">Facebook</a>}
+
+        {/* Genres */}
+        {Array.isArray(club.genres) && club.genres.length > 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {club.genres.map((g: string) => (
+              <span
+                key={g}
+                className="text-xs px-3 py-1 rounded-full border border-[#d8af3a]/40 text-[#d8af3a]/90 bg-[#d8af3a]/8 font-medium"
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Description */}
+        {(club.description || club.description_i18n) && (
+          <div>
+            <ClubDescriptionExpand
+              text={club.description || Object.values(club.description_i18n || {})[0] as string || ''}
+            />
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="border-t border-white/8" />
+
+        {/* Address */}
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 w-8 h-8 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 15 15" fill="none">
+              <path d="M7.5 1a4.5 4.5 0 0 1 4.5 4.5c0 3.15-4.5 8.5-4.5 8.5S3 8.65 3 5.5A4.5 4.5 0 0 1 7.5 1zm0 2.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" fill="rgba(255,255,255,0.5)" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5">Dirección</p>
+            <p className="text-sm text-white/80 leading-snug">{club.address || 'Mallorca'}</p>
           </div>
         </div>
-        {images.length > 1 && (
-          <div className="card p-3">
-            <div className="flex gap-2 overflow-auto">
-              {images.slice(1).map((src, i) => (
+
+        {/* Gallery */}
+        {galleryImgs.length > 0 && (
+          <div>
+            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">Fotos</p>
+            <div className="grid grid-cols-2 gap-2">
+              {galleryImgs.slice(0, 6).map((src, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={i} src={src} alt={`img-${i}`} className="w-28 h-20 object-cover rounded-lg border border-white/10" />
+                <img
+                  key={i}
+                  src={src}
+                  alt={`foto-${i + 2}`}
+                  className={`w-full object-cover rounded-xl border border-white/10 ${i === 0 && galleryImgs.length % 2 !== 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
+                />
               ))}
             </div>
           </div>
         )}
-        <div className="card p-3">
-          <div className="font-medium mb-2">Proximos Eventos</div>
-          <div className="space-y-2">
-            {events.length === 0 && <div className="text-sm text-white/60">No hay eventos proximos.</div>}
-            {events.map((e: any) => (
-              <div key={e.id} className="flex items-center justify-between">
-                <div className="text-sm">{e.name} · {new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}</div>
-                <Link className="btn btn-secondary px-3 py-1 text-sm" href={`/event/${e.id}`}><T k="action.view" /></Link>
-              </div>
-            ))}
-          </div>
+
+        {/* Divider */}
+        <div className="border-t border-white/8" />
+
+        {/* Upcoming events */}
+        <div>
+          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Próximos Eventos</p>
+          {events.length === 0 ? (
+            <p className="text-sm text-white/40">No hay eventos próximos.</p>
+          ) : (
+            <div className="space-y-2">
+              {events.map((e: any) => {
+                const evImgs: string[] = Array.isArray(e.images) ? e.images : []
+                const evImg = evImgs[0] || null
+                return (
+                  <Link
+                    key={e.id}
+                    href={`/event/${e.id}`}
+                    className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
+                  >
+                    {evImg ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={evImg} alt={e.name} className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white leading-tight truncate group-hover:text-[#d8af3a] transition-colors">{e.name}</p>
+                      <p className="text-xs text-white/50 mt-0.5">
+                        {new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
+                      </p>
+                    </div>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white/30 group-hover:text-[#d8af3a] shrink-0 transition-colors">
+                      <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </div>
-        <ShareSheet title={club.name} i18n={club.name_i18n || undefined} />
-      </div>
+
+        {/* Share */}
+        <ShareSheet
+          title={club.name}
+          i18n={club.name_i18n || undefined}
+          buttonClassName="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
+        />
       </div>
     </div>
   )
 }
-
 
 export const revalidate = 0
 export const dynamic = 'force-dynamic'

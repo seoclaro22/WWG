@@ -99,7 +99,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               {carouselClubs.map((c: any) => {
                 const img: string | undefined = Array.isArray(c.images) ? c.images[0] : (c.logo_url || undefined)
                 return (
-                  <a key={c.id} href={`/clubs/${c.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={c.id} href={`/club/${c.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <img src={img} alt={c.name} className="w-full h-full object-cover" />
@@ -121,7 +121,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               {carouselDjs.map((dj: any) => {
                 const img: string | undefined = Array.isArray(dj.images) ? dj.images[0] : undefined
                 return (
-                  <a key={dj.id} href={`/djs/${dj.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={dj.id} href={`/dj/${dj.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <img src={img} alt={dj.name} className="w-full h-full object-cover" />
