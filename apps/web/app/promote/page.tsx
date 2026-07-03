@@ -18,6 +18,7 @@ const StarIcon = () => (
 
 export default function PromotePage({ searchParams }: { searchParams?: { ok?: string } }) {
   const ok = searchParams?.ok === '1'
+  const failed = searchParams?.ok === '0'
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] bg-[#07060a] overflow-hidden">
@@ -135,6 +136,14 @@ export default function PromotePage({ searchParams }: { searchParams?: { ok?: st
             <div className="h-px flex-1 bg-white/8" />
           </div>
 
+          {failed && (
+            <div className="flex gap-3 bg-red-400/10 border border-red-400/20 rounded-2xl p-4">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" className="shrink-0 mt-0.5" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+              </svg>
+              <p className="text-sm text-red-300"><T k="promote.error_invalid" /></p>
+            </div>
+          )}
           {ok && (
             <div className="flex gap-3 bg-emerald-400/10 border border-emerald-400/20 rounded-2xl p-4">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" className="shrink-0 mt-0.5" strokeLinecap="round">
