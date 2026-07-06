@@ -28,7 +28,7 @@ function DJsManager() {
 
   async function load() {
     const s = sb()
-    let query = s.from('djs').select('id,name,short_bio,bio,spotify_embed,genres,images,short_bio_i18n,bio_i18n').order('created_at', { ascending: false }).limit(500)
+    let query = s.from('djs').select('id,name,short_bio,bio,spotify_embed,genres,images,short_bio_i18n,bio_i18n').order('name', { ascending: true }).limit(500)
     if (dq) query = query.ilike('name', `%${dq}%`)
     const { data } = await query
     setItems(data || [])
@@ -102,22 +102,25 @@ function DJsManager() {
         <button className="btn btn-primary" onClick={()=>setEditing({ name: '' })}>Nuevo</button>
       </div>
       <input className="w-full bg-transparent border border-white/10 rounded-xl p-2" placeholder="Buscar DJ..." value={q} onChange={e=>setQ(e.target.value)} />
+      {editing && !editing.id && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
       <div className="grid gap-2">
         {items.map(d => (
-          <div key={d.id} className="card p-3 flex items-center justify-between">
-            <div>
-              <div className="font-medium">{d.name}</div>
-              <div className="text-sm text-white/60">{(d.genres || []).join(', ')}</div>
+          <div key={d.id} className="grid gap-2">
+            <div className="card p-3 flex items-center justify-between">
+              <div>
+                <div className="font-medium">{d.name}</div>
+                <div className="text-sm text-white/60">{(d.genres || []).join(', ')}</div>
+              </div>
+              <div className="flex gap-2">
+                <button className="btn btn-secondary" onClick={()=>setEditing(editing?.id === d.id ? null : d)}>{editing?.id === d.id ? 'Cerrar' : 'Editar'}</button>
+                <button className="btn btn-secondary" onClick={()=>removeDj(d.id)}>Eliminar</button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button className="btn btn-secondary" onClick={()=>setEditing(d)}>Editar</button>
-              <button className="btn btn-secondary" onClick={()=>removeDj(d.id)}>Eliminar</button>
-            </div>
+            {editing?.id === d.id && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
           </div>
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
       </div>
-      {editing && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
     </div>
   )
 }
