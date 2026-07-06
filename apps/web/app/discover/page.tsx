@@ -72,8 +72,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-40" />
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
       <div className="relative z-10 space-y-5">
-        {/* Tabs con pill gold + contador de eventos */}
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        {/* Tabs con pill gold */}
         <div className="flex items-center gap-1 bg-white/5 rounded-2xl p-1 w-fit">
           {([
             { key: 'events', label: <T k="tabs.events" /> },
@@ -90,19 +89,13 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               }`}
             >
               {label}
+              {key === 'events' && upcomingCount > 0 && (
+                <span className={`ml-1.5 text-xs font-bold px-1.5 py-0.5 rounded-full ${
+                  tab === 'events' ? 'bg-black/15 text-black' : 'bg-[#d8af3a]/15 text-[#d8af3a]'
+                }`}>{upcomingCount}</span>
+              )}
             </a>
           ))}
-        </div>
-        {upcomingCount > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#d8af3a]/10 border border-[#d8af3a]/25 text-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d8af3a] opacity-60" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d8af3a]" />
-            </span>
-            <span className="font-bold text-[#d8af3a]">{upcomingCount}</span>
-            <span className="text-white/60"><T k="discover.upcoming_count" /></span>
-          </div>
-        )}
         </div>
         {/* Carousel: Clubs destacados */}
         {carouselClubs.length > 0 && (
