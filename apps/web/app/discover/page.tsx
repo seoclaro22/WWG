@@ -64,7 +64,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
     fetchDjsPublic({ limit: 24 }),
   ])
   const carouselClubs = shuffle(featuredClubs).slice(0, 8)
-  const carouselDjs = shuffle(featuredDjs).slice(0, 8)
+  const carouselDjs = shuffle(featuredDjs.filter((dj: any) => Array.isArray(dj.images) && dj.images[0])).slice(0, 8)
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-50" />
