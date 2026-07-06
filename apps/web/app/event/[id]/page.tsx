@@ -7,6 +7,7 @@ import { T } from '@/components/T'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
 import { ShareSheet } from '@/components/ShareSheet'
+import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -41,83 +42,199 @@ export default async function EventDetail({ params }: { params: { id: string } }
   const moreFromClub = clubId ? await fetchClubEvents(clubId, 5) : []
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
   const cover = imgs.length ? imgs[0] : null
+  const description: string = (e as any).description || ''
+  const descriptionI18n = (e as any).description_i18n || null
+
   return (
-    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-white/5 bg-[radial-gradient(circle_at_20%_20%,rgba(88,57,176,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(91,12,245,0.3),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,76,181,0.28),transparent_28%),#070a14]">
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-70 landing-aurora" />
-      <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
-      <div className="relative z-10 space-y-4">
-      {cover ? (
-        <img src={cover} alt={e.name} className="w-full aspect-[3/4] object-cover rounded-xl border border-white/10" />
-      ) : (
-        <div className="aspect-[3/4] w-full rounded-xl bg-white/5" />
-      )}
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold"><LocalText value={(e as any).name} i18n={(e as any).name_i18n} /></h1>
-        <FavoriteButton eventId={(e as any).id} useLocalCache />
-      </div>
-      <div className="muted">
-        <LDate value={e.start_at} timeZone="UTC" options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} /> ·{' '}
-        {clubId ? <Link className="underline hover:text-gold" href={`/club/${clubId}`}>{e.club_name || '-'}</Link> : (e.club_name || '-')}
-      </div>
-      {(e as any).genres && (e as any).genres.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {(e as any).genres.map((g: string, i: number) => (
-            <Link key={i} href={`/genre/${encodeURIComponent(g)}`} className="text-xs px-2 py-1 rounded bg-white/10 border border-white/10 hover:text-gold">{g}</Link>
-          ))}
+    <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
+
+      {/* ── Fondo difuminado con la imagen del evento ────────────── */}
+      {cover && (
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src={cover}
+            alt=""
+            aria-hidden
+            className="w-full h-full object-cover object-top scale-110"
+            style={{ filter: 'blur(60px) brightness(0.25) saturate(1.4)' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07060a]/30 via-[#07060a]/60 to-[#07060a]" />
         </div>
       )}
-      <div className="space-y-2">
-        <details className="card p-4"><summary className="font-medium"><T k="event.description" /></summary><p className="mt-2 text-sm text-white/80"><LocalText value={(e as any).description} i18n={(e as any).description_i18n} /></p></details>
-        <div className="card p-4">
-          <div className="font-medium"><T k="event.lineup" /></div>
-          <div className="mt-3 space-y-3">
-            {lineup.length ? lineup.map(d => {
-              const embed = getSpotifyEmbed((d as any).spotify_embed)
-              return (
-                <div key={d.id} className="space-y-2">
-                  <Link href={`/dj/${d.id}`} className="underline hover:text-gold">
-                    <LocalText value={d.name} i18n={(d as any).name_i18n || undefined} />
-                  </Link>
-                  {embed && (
-                    <div className="rounded-xl border border-white/10 overflow-hidden bg-black/30">
-                      <iframe
-                        src={embed.src}
-                        title="Spotify player"
-                        width="100%"
-                        height={embed.height}
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                        className="block w-full"
-                      />
-                    </div>
-                  )}
-                </div>
-              )
-            }) : <div className="text-sm text-white/60">-</div>}
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        {(e as any).url_referral ? (
-          <ReserveButton eventId={(e as any).id} source="details"><T k="action.reserve_tickets" /></ReserveButton>
+
+      {/* ── Hero ─────────────────────────────────────────────────── */}
+      <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-h-[80vh]">
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt={(e as any).name} className="w-full h-full object-cover object-top" />
         ) : (
-          <span className="btn btn-secondary opacity-60 cursor-not-allowed"><T k="event.no_reservations" /></span>
+          <div className="w-full h-full bg-white/5" />
         )}
-        <Link className="btn btn-secondary" href={`https://maps.google.com?q=${encodeURIComponent((e as any).club_name || 'Mallorca')}`} target="_blank"><T k="action.directions" /></Link>
-      </div>
-      <ShareSheet title={(e as any).name} i18n={(e as any).name_i18n || undefined} />
-      {moreFromClub.length > 0 && (
-        <div className="card p-4 space-y-2">
-          <div className="font-medium">Mas en {e.club_name}</div>
-          {moreFromClub.map(ev => (
-            <Link key={ev.id} href={`/event/${ev.id}`} className="flex items-center justify-between text-sm hover:text-gold">
-              <span>{ev.name}</span>
-              <span className="text-white/60"><LDate value={(ev as any).start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /></span>
-            </Link>
-          ))}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07060a] via-[#07060a]/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#07060a]/50 to-transparent" />
+
+        {/* Favorite */}
+        <div className="absolute top-4 right-4 z-20">
+          <FavoriteButton eventId={(e as any).id} useLocalCache />
         </div>
-      )}
-      <div className="text-xs text-white/50">ID: {id}</div>
+
+        {/* Nombre y fecha sobre el hero */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 z-10 space-y-1">
+          <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+            <LocalText value={(e as any).name} i18n={(e as any).name_i18n} />
+          </h1>
+          <p className="text-sm text-white/70 drop-shadow">
+            <LDate value={e.start_at} timeZone="UTC" options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} />
+            {' · '}
+            {clubId ? (
+              <Link className="text-[#d8af3a] hover:text-[#e8c85a] font-medium transition-colors" href={`/club/${clubId}`}>{e.club_name || '-'}</Link>
+            ) : (e.club_name || '-')}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Content ──────────────────────────────────────────────── */}
+      <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
+
+        {/* Genres */}
+        {(e as any).genres && (e as any).genres.length > 0 && (
+          <div className="flex gap-2 flex-wrap pt-1">
+            {(e as any).genres.map((g: string, i: number) => (
+              <Link
+                key={i}
+                href={`/genre/${encodeURIComponent(g)}`}
+                className="text-xs px-3 py-1 rounded-full border border-[#d8af3a]/40 text-[#d8af3a]/90 bg-[#d8af3a]/8 font-medium hover:bg-[#d8af3a]/15 transition-colors"
+              >
+                {g}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Descripcion */}
+        {description && (
+          <ClubDescriptionExpand text={description} i18n={descriptionI18n} />
+        )}
+
+        {/* Divider */}
+        <div className="border-t border-white/8" />
+
+        {/* Line-up */}
+        <div>
+          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.lineup" /></p>
+          {lineup.length === 0 ? (
+            <p className="text-sm text-white/40">-</p>
+          ) : (
+            <div className="space-y-3">
+              {lineup.map(d => {
+                const embed = getSpotifyEmbed((d as any).spotify_embed)
+                const djImgs: string[] = Array.isArray((d as any).images) ? (d as any).images : []
+                const djImg = djImgs[0] || null
+                return (
+                  <div key={d.id} className="space-y-2">
+                    <Link
+                      href={`/dj/${d.id}`}
+                      className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
+                    >
+                      {djImg ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={djImg} alt={(d as any).name} className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
+                      ) : (
+                        <div className="w-14 h-14 rounded-full bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
+                      )}
+                      <p className="flex-1 font-medium text-white group-hover:text-[#d8af3a] transition-colors">
+                        <LocalText value={d.name} i18n={(d as any).name_i18n || undefined} />
+                      </p>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white/30 group-hover:text-[#d8af3a] shrink-0 transition-colors">
+                        <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </Link>
+                    {embed && (
+                      <div className="rounded-2xl border border-white/10 overflow-hidden bg-black/30">
+                        <iframe
+                          src={embed.src}
+                          title="Spotify player"
+                          width="100%"
+                          height={embed.height}
+                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                          loading="lazy"
+                          className="block w-full"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-white/8" />
+
+        {/* Acciones */}
+        <div className="grid grid-cols-2 gap-3">
+          {(e as any).url_referral ? (
+            <ReserveButton
+              eventId={(e as any).id}
+              source="details"
+              className="w-full py-3 rounded-2xl bg-[#d8af3a] text-black font-bold text-sm shadow-[0_0_20px_rgba(216,175,58,0.35)] hover:bg-[#e8c85a] hover:shadow-[0_0_28px_rgba(216,175,58,0.5)] transition-all"
+            >
+              <T k="action.reserve_tickets" />
+            </ReserveButton>
+          ) : (
+            <span className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 text-sm text-center cursor-not-allowed"><T k="event.no_reservations" /></span>
+          )}
+          <Link
+            className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm text-center hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
+            href={`https://maps.google.com?q=${encodeURIComponent((e as any).club_name || 'Mallorca')}`}
+            target="_blank"
+          >
+            <T k="action.directions" />
+          </Link>
+        </div>
+
+        {/* Share */}
+        <ShareSheet
+          title={(e as any).name}
+          i18n={(e as any).name_i18n || undefined}
+          buttonClassName="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
+        />
+
+        {/* Mas del club */}
+        {moreFromClub.length > 0 && (
+          <>
+            <div className="border-t border-white/8" />
+            <div>
+              <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Mas en {e.club_name}</p>
+              <div className="space-y-2">
+                {moreFromClub.map(ev => {
+                  const evImgs: string[] = Array.isArray((ev as any).images) ? (ev as any).images : []
+                  const evImg = evImgs[0] || null
+                  return (
+                    <Link
+                      key={ev.id}
+                      href={`/event/${ev.id}`}
+                      className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
+                    >
+                      {evImg ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={evImg} alt={ev.name} className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                      ) : (
+                        <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
+                      )}
+                      <p className="flex-1 min-w-0 text-sm font-medium text-white truncate group-hover:text-[#d8af3a] transition-colors">{ev.name}</p>
+                      <span className="text-xs text-white/50 shrink-0"><LDate value={(ev as any).start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /></span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="text-xs text-white/30">ID: {id}</div>
       </div>
     </div>
   )
@@ -125,4 +242,3 @@ export default async function EventDetail({ params }: { params: { id: string } }
 
 export const revalidate = 0
 export const dynamic = 'force-dynamic'
-
