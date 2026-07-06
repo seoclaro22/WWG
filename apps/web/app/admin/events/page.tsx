@@ -35,7 +35,7 @@ function EventsManager() {
       .select('id,club_id,name,description,description_i18n,start_at,end_at,url_referral,status,genres,zone,contact_phone,images,sponsored')
       .order('start_at', { ascending: false })
       .ilike('name', `%${dq}%`)
-      .limit(100)
+      .limit(500)
     setItems(data || [])
   }
   async function loadClubs() {

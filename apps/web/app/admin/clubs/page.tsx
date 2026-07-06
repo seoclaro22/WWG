@@ -48,7 +48,7 @@ function ClubsManager() {
   async function load() {
     const s = sb()
     // select('*') para tolerar esquemas sin columnas nuevas (logo_url, etc.)
-    let query = s.from('clubs').select('*').order('created_at', { ascending: false }).limit(100)
+    let query = s.from('clubs').select('*').order('created_at', { ascending: false }).limit(500)
     if (dq) query = query.ilike('name', `%${dq}%`)
     const { data } = await query
     setItems(data || [])

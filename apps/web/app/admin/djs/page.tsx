@@ -28,7 +28,7 @@ function DJsManager() {
 
   async function load() {
     const s = sb()
-    let query = s.from('djs').select('id,name,short_bio,bio,spotify_embed,genres,images,short_bio_i18n,bio_i18n').order('created_at', { ascending: false }).limit(50)
+    let query = s.from('djs').select('id,name,short_bio,bio,spotify_embed,genres,images,short_bio_i18n,bio_i18n').order('created_at', { ascending: false }).limit(500)
     if (dq) query = query.ilike('name', `%${dq}%`)
     const { data } = await query
     setItems(data || [])

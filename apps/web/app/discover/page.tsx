@@ -57,9 +57,9 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
   const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount] = await Promise.all([
-    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 50, sponsoredFirst: true }) : Promise.resolve([] as any[]),
-    tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
-    tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
+    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 300, sponsoredFirst: true }) : Promise.resolve([] as any[]),
+    tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 300 }) : Promise.resolve([] as any[]),
+    tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 500 }) : Promise.resolve([] as any[]),
     fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),
     fetchDjsPublic({ limit: 24 }),
     countUpcomingEvents({ zone: zone ?? undefined }),
