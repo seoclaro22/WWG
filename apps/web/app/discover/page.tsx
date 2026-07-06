@@ -1,6 +1,6 @@
 import { Filters } from '@/components/Filters'
 import { EventCard } from '@/components/EventCard'
-import { fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
+import { countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
 import { T } from '@/components/T'
 import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
@@ -56,12 +56,13 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
-  const [events, clubs, djs, featuredClubs, featuredDjs] = await Promise.all([
+  const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount] = await Promise.all([
     tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 50, sponsoredFirst: true }) : Promise.resolve([] as any[]),
     tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 50 }) : Promise.resolve([] as any[]),
     fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),
     fetchDjsPublic({ limit: 24 }),
+    countUpcomingEvents({ zone: zone ?? undefined }),
   ])
   const carouselClubs = shuffle(featuredClubs).slice(0, 8)
   const carouselDjs = shuffle(featuredDjs.filter((dj: any) => Array.isArray(dj.images) && dj.images[0])).slice(0, 8)
@@ -71,7 +72,8 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-40" />
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
       <div className="relative z-10 space-y-5">
-        {/* Tabs con pill gold */}
+        {/* Tabs con pill gold + contador de eventos */}
+        <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1 bg-white/5 rounded-2xl p-1 w-fit">
           {([
             { key: 'events', label: <T k="tabs.events" /> },
@@ -90,6 +92,17 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               {label}
             </a>
           ))}
+        </div>
+        {upcomingCount > 0 && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#d8af3a]/10 border border-[#d8af3a]/25 text-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d8af3a] opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d8af3a]" />
+            </span>
+            <span className="font-bold text-[#d8af3a]">{upcomingCount}</span>
+            <span className="text-white/60"><T k="discover.upcoming_count" /></span>
+          </div>
+        )}
         </div>
         {/* Carousel: Clubs destacados */}
         {carouselClubs.length > 0 && (

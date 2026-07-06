@@ -11,6 +11,7 @@ type ScreenStat = { screen: string; views: number; avgMs: number; bounceRate: nu
 type EventStat = { id: string; name: string; views: number; avgMs: number; clicks: number; ctr: number }
 type ActivityRange = { label: string; days: number; activeUsers: number; avgDaily: number; sessions: number; avgSessionMs: number; newDevices: number; returningDevices: number }
 type LastActive = { label: string; ts: string; path?: string }
+type DailyPoint = { day: string; sessions: number; views: number; clicks: number }
 
 function sb(){
   return createClient(
@@ -41,6 +42,21 @@ function formatMs(ms: number) {
   const minutes = Math.round(ms / 60000)
   if (minutes < 1) return '<1m'
   return `${minutes}m`
+}
+
+async function resolveEventNames(client: ReturnType<typeof sb>, ids: string[]) {
+  const names = new Map<string, string>()
+  if (!ids.length) return names
+  const { data } = await client.from('events_public').select('id,name').in('id', ids)
+  for (const r of (data || []) as any[]) names.set(r.id, r.name)
+  const missing = ids.filter(id => !names.has(id))
+  if (missing.length) {
+    try {
+      const { data: arch } = await client.from('events_archive').select('id,name').in('id', missing)
+      for (const r of (arch || []) as any[]) names.set(r.id, `${r.name} (finalizado)`)
+    } catch {}
+  }
+  return names
 }
 
 export default function AdminStatsPage(){
@@ -77,6 +93,8 @@ function StatsInner(){
   const [langStats, setLangStats] = useState<Bucket[]>([])
   const [realtime, setRealtime] = useState({ activeUsers: 0, activeSessions: 0, screens: [] as Bucket[], events: [] as Bucket[] })
   const [conversion, setConversion] = useState({ registrations: 0, regRate: 0, clickRate: 0 })
+  const [daily, setDaily] = useState<DailyPoint[]>([])
+  const [totalClicks, setTotalClicks] = useState(0)
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string|undefined>()
 
@@ -185,6 +203,7 @@ function StatsInner(){
         sessions: sessionRows.length,
         views: viewRows.length
       })
+      setTotalClicks(clickRows.length)
 
       const activeSet = new Set<string>()
       for (const r of sessionRows) {
@@ -194,6 +213,32 @@ function StatsInner(){
 
       const rangeDurations = sessionRows.map(r => Number(r.duration_ms || 0)).filter(n => n > 0)
       setAvgSessionMsRange(avg(rangeDurations))
+
+      // Serie diaria para la grafica
+      const dayMapDaily = new Map<string, DailyPoint>()
+      const bump = (ts: string | null | undefined, field: 'sessions'|'views'|'clicks') => {
+        if (!ts) return
+        const dk = dayKey(ts)
+        const p = dayMapDaily.get(dk) || { day: dk, sessions: 0, views: 0, clicks: 0 }
+        p[field] += 1
+        dayMapDaily.set(dk, p)
+      }
+      for (const r of sessionRows) bump(r.started_at || r.last_seen_at, 'sessions')
+      for (const r of viewRows) bump(r.started_at, 'views')
+      for (const r of clickRows) bump(r.ts, 'clicks')
+      // Rellenar dias vacios dentro del rango (max 92 puntos)
+      const dailyPoints: DailyPoint[] = []
+      if (fromIso && toIso) {
+        const start = new Date(fromIso)
+        const end = new Date(toIso)
+        for (let d = new Date(start); d <= end && dailyPoints.length < 92; d.setUTCDate(d.getUTCDate() + 1)) {
+          const dk = d.toISOString().slice(0, 10)
+          dailyPoints.push(dayMapDaily.get(dk) || { day: dk, sessions: 0, views: 0, clicks: 0 })
+        }
+      } else {
+        dailyPoints.push(...Array.from(dayMapDaily.values()).sort((a, b) => a.day.localeCompare(b.day)).slice(-92))
+      }
+      setDaily(dailyPoints)
 
       const sessionsYear = (sessionsYearRes.data || []) as any[]
       const ranges: ActivityRange[] = [
@@ -267,11 +312,7 @@ function StatsInner(){
         if (r.event_id) clickAgg.set(r.event_id, (clickAgg.get(r.event_id) || 0) + 1)
       }
       const eventIds = Array.from(eventAgg.keys())
-      const names = new Map<string, string>()
-      if (eventIds.length) {
-        const { data } = await client.from('events_public').select('id,name').in('id', eventIds)
-        for (const row of (data || [])) names.set(row.id, row.name)
-      }
+      const names = await resolveEventNames(client, eventIds)
       const eventStats: EventStat[] = Array.from(eventAgg.entries()).map(([id, v]) => {
         const clicks = clickAgg.get(id) || 0
         const ctr = v.views ? Math.round((clicks / v.views) * 100) : 0
@@ -322,12 +363,7 @@ function StatsInner(){
         screenNow.set(scr, (screenNow.get(scr) || 0) + 1)
         if (r.current_event_id) eventNow.set(r.current_event_id, (eventNow.get(r.current_event_id) || 0) + 1)
       }
-      const realtimeEventIds = Array.from(eventNow.keys())
-      const realtimeNames = new Map<string, string>()
-      if (realtimeEventIds.length) {
-        const { data } = await client.from('events_public').select('id,name').in('id', realtimeEventIds)
-        for (const row of (data || [])) realtimeNames.set(row.id, row.name)
-      }
+      const realtimeNames = await resolveEventNames(client, Array.from(eventNow.keys()))
       setRealtime({
         activeUsers: realtimeUsers.size,
         activeSessions: realtimeRows.length,
@@ -353,8 +389,8 @@ function StatsInner(){
       const byType: Record<string,string[]> = { event: [], club: [], dj: [] }
       for (const i of list){ byType[i.type]?.push(i.id) }
       if (byType.event.length){
-        const { data } = await client.from('events_public').select('id,name').in('id', byType.event)
-        for (const r of (data||[])) favNames.set(r.id, r.name)
+        const resolved = await resolveEventNames(client, byType.event)
+        for (const [id, name] of Array.from(resolved.entries())) favNames.set(id, name)
       }
       if (byType.club.length){
         const { data } = await client.from('clubs').select('id,name').in('id', byType.club)
@@ -374,12 +410,7 @@ function StatsInner(){
       const cAgg = new Map<string,number>()
       for (const r of clickRows as any[]){ if (r.event_id){ cAgg.set(r.event_id, (cAgg.get(r.event_id)||0)+1) } }
       const cTop = Array.from(cAgg.entries()).sort((a,b)=>b[1]-a[1]).slice(0,10)
-      const cIds = cTop.map(t => t[0])
-      const evNames = new Map<string,string>()
-      if (cIds.length){
-        const { data } = await client.from('events_public').select('id,name').in('id', cIds)
-        for (const r of (data||[])) evNames.set(r.id, r.name)
-      }
+      const evNames = await resolveEventNames(client, cTop.map(t => t[0]))
       setClickTop(cTop.map(([id,count]) => ({ id, name: evNames.get(id)||id, count })))
 
       // Search terms top
@@ -427,6 +458,7 @@ function StatsInner(){
       setScreenTop([]); setEventTop([]); setDeviceTypes([]); setOsStats([]); setLangStats([])
       setRealtime({ activeUsers: 0, activeSessions: 0, screens: [], events: [] })
       setConversion({ registrations: 0, regRate: 0, clickRate: 0 })
+      setDaily([]); setTotalClicks(0)
     } finally {
       setBusy(false)
     }
@@ -455,349 +487,325 @@ function StatsInner(){
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href="/admin" className="btn btn-secondary">Volver</Link>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <Link href="/admin" className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all">Volver</Link>
+          <h1 className="text-lg font-bold text-white">Panel de estadisticas</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <select value={preset} onChange={e=>setPreset(e.target.value as any)} className="bg-base-card border border-white/10 rounded-xl p-2 text-sm">
+        <div className="flex items-center gap-2 flex-wrap">
+          <select value={preset} onChange={e=>setPreset(e.target.value as any)} className="bg-white/5 border border-white/10 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-[#d8af3a]/50">
             <option value="7d">Ultimos 7 dias</option>
             <option value="30d">Ultimos 30 dias</option>
             <option value="90d">Ultimos 90 dias</option>
             <option value="all">Todo</option>
           </select>
-          <input type="date" value={from} onChange={e=>setFrom(e.target.value)} className="bg-base-card border border-white/10 rounded-xl p-2 text-sm" />
-          <span className="text-sm">a</span>
-          <input type="date" value={to} onChange={e=>setTo(e.target.value)} className="bg-base-card border border-white/10 rounded-xl p-2 text-sm" />
+          <input type="date" value={from} onChange={e=>setFrom(e.target.value)} className="bg-white/5 border border-white/10 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-[#d8af3a]/50" />
+          <span className="text-sm text-white/40">a</span>
+          <input type="date" value={to} onChange={e=>setTo(e.target.value)} className="bg-white/5 border border-white/10 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-[#d8af3a]/50" />
         </div>
       </div>
-      {busy && <div className="muted">Cargando...</div>}
-      {err && <div className="text-red-400 text-sm">{err}</div>}
+
+      {busy && <div className="text-white/50 text-sm animate-pulse">Cargando estadisticas...</div>}
+      {err && <div className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-2xl p-3">{err}</div>}
+
       {!busy && (
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="card p-4">
-            <div className="font-medium mb-2">Resumen</div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>Usuarios registrados: <span className="text-white/80">{totals.users}</span></div>
-              <div>Usuarios anonimos: <span className="text-white/80">{totals.anonDevices}</span></div>
-              <div>Sesiones (rango): <span className="text-white/80">{totals.sessions}</span></div>
-              <div>Vistas (rango): <span className="text-white/80">{totals.views}</span></div>
-              <div>Usuarios activos: <span className="text-white/80">{activeUsers}</span></div>
-              <div>Duracion media: <span className="text-white/80">{formatMs(avgSessionMsRange)}</span></div>
+        <div className="space-y-5">
+          {/* KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Kpi label="Usuarios registrados" value={totals.users} />
+            <Kpi label="Dispositivos anonimos" value={totals.anonDevices} />
+            <Kpi label="Usuarios activos" value={activeUsers} accent />
+            <Kpi label="Sesiones" value={totals.sessions} />
+            <Kpi label="Vistas" value={totals.views} />
+            <Kpi label="Duracion media" value={formatMs(avgSessionMsRange)} />
+            <Kpi label="Registros (rango)" value={conversion.registrations} accent />
+            <Kpi label="Clicks a entradas" value={totalClicks} sub={`CTR ${conversion.clickRate}%`} accent />
+          </div>
+
+          {/* Grafica actividad diaria */}
+          <SectionCard title="Actividad diaria">
+            <DailyChart data={daily} />
+            <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#d8af3a]" /> Sesiones</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-white/30" /> Vistas</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Clicks entradas</span>
             </div>
+          </SectionCard>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Tiempo real */}
+            <SectionCard title={
+              <span className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                </span>
+                Tiempo real
+              </span>
+            }>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="rounded-2xl bg-white/5 p-3 text-center">
+                  <div className="text-2xl font-bold text-[#d8af3a]">{realtime.activeUsers}</div>
+                  <div className="text-xs text-white/50">Usuarios ahora</div>
+                </div>
+                <div className="rounded-2xl bg-white/5 p-3 text-center">
+                  <div className="text-2xl font-bold text-[#d8af3a]">{realtime.activeSessions}</div>
+                  <div className="text-xs text-white/50">Sesiones activas</div>
+                </div>
+              </div>
+              <MiniList title="Pantallas" items={realtime.screens} />
+              <MiniList title="Eventos" items={realtime.events} />
+              {lastActive && (
+                <div className="mt-3 pt-3 border-t border-white/8 text-xs text-white/50">
+                  Ultimo activo: <span className="text-white/80">{lastActive.label}</span>
+                  {lastActive.ts && <> · {new Date(lastActive.ts).toLocaleString('es-ES')}</>}
+                  {lastActive.path && <> · {lastActive.path}</>}
+                </div>
+              )}
+            </SectionCard>
+
+            {/* Dispositivos / OS / Idioma */}
+            <SectionCard title="Dispositivos / OS / Idioma">
+              <div className="grid grid-cols-3 gap-3">
+                <BucketBars title="Dispositivo" items={deviceTypes} />
+                <BucketBars title="Sistema" items={osStats} />
+                <BucketBars title="Idioma" items={langStats} />
+              </div>
+            </SectionCard>
           </div>
 
-          <div className="card p-4">
-            <div className="font-medium mb-2">Conversion</div>
-            <div className="text-sm space-y-1">
-              <div>Registros (rango): <span className="text-white/80">{conversion.registrations}</span></div>
-              <div>Tasa registro: <span className="text-white/80">{conversion.regRate}%</span></div>
-              <div>CTR tickets: <span className="text-white/80">{conversion.clickRate}%</span></div>
+          {/* Actividad por rango */}
+          <SectionCard title="Actividad por rango">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-white/40 text-xs uppercase tracking-wider">
+                    <th className="text-left py-2 font-medium">Rango</th>
+                    <th className="text-right py-2 font-medium">Activos</th>
+                    <th className="text-right py-2 font-medium">Media diaria</th>
+                    <th className="text-right py-2 font-medium">Sesiones</th>
+                    <th className="text-right py-2 font-medium">Media sesion</th>
+                    <th className="text-right py-2 font-medium">Nuevos</th>
+                    <th className="text-right py-2 font-medium">Recurrentes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activityRanges.map(r => (
+                    <tr key={r.label} className="border-t border-white/5">
+                      <td className="py-2 text-white/70">{r.label}</td>
+                      <td className="py-2 text-right font-medium text-[#d8af3a]">{r.activeUsers}</td>
+                      <td className="py-2 text-right">{r.avgDaily}</td>
+                      <td className="py-2 text-right">{r.sessions}</td>
+                      <td className="py-2 text-right">{formatMs(r.avgSessionMs)}</td>
+                      <td className="py-2 text-right text-emerald-400/80">{r.newDevices}</td>
+                      <td className="py-2 text-right">{r.returningDevices}</td>
+                    </tr>
+                  ))}
+                  {activityRanges.length===0 && <tr><td colSpan={7} className="py-3 text-white/40 text-center">Sin datos</td></tr>}
+                </tbody>
+              </table>
             </div>
-          </div>
+          </SectionCard>
 
-          <div className="card p-4">
-            <div className="font-medium mb-2">Ultimo usuario registrado</div>
-            {lastUser ? (
-              <div className="text-sm">
-                <div className="truncate">{lastUser.display_name || lastUser.email || lastUser.id}</div>
-                <div className="text-white/60">{lastUser.created_at ? new Date(lastUser.created_at).toLocaleString('es-ES') : ''}</div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Eventos mas vistos */}
+            <SectionCard title="Eventos mas vistos">
+              <div className="space-y-2">
+                {eventTop.map((e, idx) => (
+                  <div key={e.id} className="flex items-center gap-3 text-sm">
+                    <span className="w-5 text-white/30 text-xs shrink-0">{idx+1}</span>
+                    <span className="flex-1 truncate">{e.name}</span>
+                    <span className="text-white/50 text-xs shrink-0">{e.views} vistas</span>
+                    <span className="text-white/50 text-xs shrink-0">{e.clicks} clicks</span>
+                    <span className={`text-xs shrink-0 font-medium ${e.ctr >= 10 ? 'text-emerald-400' : 'text-white/50'}`}>CTR {e.ctr}%</span>
+                  </div>
+                ))}
+                {eventTop.length===0 && <div className="text-white/40 text-sm">Sin datos</div>}
               </div>
-            ) : (
-              <div className="text-sm text-white/60">Sin datos</div>
-            )}
-          </div>
+            </SectionCard>
 
-          <div className="card p-4">
-            <div className="font-medium mb-2">Ultimo usuario activo</div>
-            {lastActive ? (
-              <div className="text-sm space-y-1">
-                <div className="truncate">{lastActive.label}</div>
-                <div className="text-white/60">{lastActive.ts ? new Date(lastActive.ts).toLocaleString('es-ES') : ''}</div>
-                {lastActive.path && <div className="text-white/60 truncate">{lastActive.path}</div>}
+            {/* Pantallas mas visitadas */}
+            <SectionCard title="Pantallas mas visitadas">
+              <div className="space-y-2">
+                {screenTop.map((s, idx) => (
+                  <div key={s.screen} className="flex items-center gap-3 text-sm">
+                    <span className="w-5 text-white/30 text-xs shrink-0">{idx+1}</span>
+                    <span className="flex-1 truncate">{s.screen}</span>
+                    <span className="text-white/50 text-xs shrink-0">{s.views} vistas</span>
+                    <span className="text-white/50 text-xs shrink-0">avg {formatMs(s.avgMs)}</span>
+                    <span className={`text-xs shrink-0 ${s.bounceRate > 60 ? 'text-red-400/80' : 'text-white/50'}`}>rebote {s.bounceRate}%</span>
+                  </div>
+                ))}
+                {screenTop.length===0 && <div className="text-white/40 text-sm">Sin datos</div>}
               </div>
-            ) : (
-              <div className="text-sm text-white/60">Sin datos</div>
-            )}
+            </SectionCard>
           </div>
 
-          <div className="card p-4 md:col-span-2">
-            <div className="font-medium mb-2">Actividad por rango</div>
-            <div className="grid gap-2 text-sm">
-              {activityRanges.map(r => (
-                <div key={r.label} className="flex flex-wrap justify-between gap-2">
-                  <span className="text-white/70">{r.label}</span>
-                  <span>Activos: {r.activeUsers}</span>
-                  <span>Media diaria: {r.avgDaily}</span>
-                  <span>Sesiones: {r.sessions}</span>
-                  <span>Media sesion: {formatMs(r.avgSessionMs)}</span>
-                  <span>Nuevos: {r.newDevices}</span>
-                  <span>Recurrentes: {r.returningDevices}</span>
+          <div className="grid md:grid-cols-2 gap-4">
+            <SectionCard title="Top reservas (clicks a entradas)">
+              <GoldBars items={clickTop.map(i => ({ label: i.name, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Top favoritos">
+              <GoldBars items={favTop.map(i => ({ label: `[${i.type}] ${i.name}`, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Favoritos - Eventos">
+              <GoldBars items={favEvents.map(i => ({ label: i.name, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Favoritos - Clubs">
+              <GoldBars items={favClubs.map(i => ({ label: i.name, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Favoritos - DJs">
+              <GoldBars items={favDjs.map(i => ({ label: i.name, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="DJs mas buscados">
+              <GoldBars items={djsSearched.map(i => ({ label: i.name, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Busquedas mas frecuentes">
+              <GoldBars items={searchTop.map(i => ({ label: i.term, count: i.count }))} />
+            </SectionCard>
+            <SectionCard title="Zonas mas usadas">
+              <GoldBars items={zoneTop.map(i => ({ label: i.zone, count: i.count }))} />
+            </SectionCard>
+          </div>
+
+          {/* Usuarios */}
+          <SectionCard title="Ultimos 20 usuarios">
+            {lastUser && (
+              <div className="mb-3 pb-3 border-b border-white/8 text-sm">
+                <span className="text-white/50">Ultimo registro: </span>
+                <span className="text-[#d8af3a] font-medium">{lastUser.display_name || lastUser.email || lastUser.id}</span>
+                {lastUser.created_at && <span className="text-white/40"> · {new Date(lastUser.created_at).toLocaleString('es-ES')}</span>}
+              </div>
+            )}
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1">
+              {latestUsers.map(u => (
+                <div key={u.id} className="flex items-center justify-between gap-3 text-sm py-0.5">
+                  <span className="truncate">{u.display_name || u.email || u.id}</span>
+                  <span className="text-white/40 text-xs shrink-0">{u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : ''}</span>
                 </div>
               ))}
-              {activityRanges.length===0 && <div className="text-white/60">Sin datos</div>}
+              {latestUsers.length===0 && <div className="text-white/40 text-sm">Sin datos</div>}
             </div>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Tiempo real</div>
-            <div className="text-sm space-y-1">
-              <div>Usuarios activos ahora: <span className="text-white/80">{realtime.activeUsers}</span></div>
-              <div>Sesiones activas: <span className="text-white/80">{realtime.activeSessions}</span></div>
-            </div>
-            <div className="mt-3 text-sm">
-              <div className="text-white/60">Pantallas</div>
-              <ul className="space-y-1">
-                {realtime.screens.map(s => (
-                  <li key={s.label} className="flex justify-between"><span className="truncate">{s.label}</span><span className="text-white/60">{s.count}</span></li>
-                ))}
-                {realtime.screens.length===0 && <li className="text-white/60">Sin datos</li>}
-              </ul>
-            </div>
-            <div className="mt-3 text-sm">
-              <div className="text-white/60">Eventos</div>
-              <ul className="space-y-1">
-                {realtime.events.map(e => (
-                  <li key={e.label} className="flex justify-between"><span className="truncate">{e.label}</span><span className="text-white/60">{e.count}</span></li>
-                ))}
-                {realtime.events.length===0 && <li className="text-white/60">Sin datos</li>}
-              </ul>
-            </div>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Dispositivos / OS / Idioma</div>
-            <div className="grid gap-3 text-sm">
-              <div>
-                <div className="text-white/60 mb-1">Dispositivos</div>
-                <ul className="space-y-1">
-                  {deviceTypes.map(d => (
-                    <li key={d.label} className="flex justify-between"><span>{d.label}</span><span className="text-white/60">{d.count}</span></li>
-                  ))}
-                  {deviceTypes.length===0 && <li className="text-white/60">Sin datos</li>}
-                </ul>
-              </div>
-              <div>
-                <div className="text-white/60 mb-1">Sistema operativo</div>
-                <ul className="space-y-1">
-                  {osStats.map(o => (
-                    <li key={o.label} className="flex justify-between"><span>{o.label}</span><span className="text-white/60">{o.count}</span></li>
-                  ))}
-                  {osStats.length===0 && <li className="text-white/60">Sin datos</li>}
-                </ul>
-              </div>
-              <div>
-                <div className="text-white/60 mb-1">Idioma</div>
-                <ul className="space-y-1">
-                  {langStats.map(l => (
-                    <li key={l.label} className="flex justify-between"><span>{l.label}</span><span className="text-white/60">{l.count}</span></li>
-                  ))}
-                  {langStats.length===0 && <li className="text-white/60">Sin datos</li>}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div className="card p-4 md:col-span-2">
-            <div className="font-medium mb-2">Pantallas mas visitadas</div>
-            <ul className="space-y-1 text-sm">
-              {screenTop.map((s, idx) => (
-                <li key={s.screen} className="flex flex-wrap justify-between gap-2">
-                  <span className="truncate">{idx+1}. {s.screen}</span>
-                  <span className="text-white/60">{s.views} vistas</span>
-                  <span className="text-white/60">avg {formatMs(s.avgMs)}</span>
-                  <span className="text-white/60">rebote {s.bounceRate}%</span>
-                </li>
-              ))}
-              {screenTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4 md:col-span-2">
-            <div className="font-medium mb-2">Eventos mas vistos</div>
-            <ul className="space-y-1 text-sm">
-              {eventTop.map((e, idx) => (
-                <li key={e.id} className="flex flex-wrap justify-between gap-2">
-                  <span className="truncate">{idx+1}. {e.name}</span>
-                  <span className="text-white/60">{e.views} vistas</span>
-                  <span className="text-white/60">avg {formatMs(e.avgMs)}</span>
-                  <span className="text-white/60">{e.clicks} clicks</span>
-                  <span className="text-white/60">CTR {e.ctr}%</span>
-                </li>
-              ))}
-              {eventTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Ultimos 20 usuarios</div>
-            <ul className="space-y-1 text-sm">
-              {latestUsers.map(u => (
-                <li key={u.id} className="flex items-center justify-between gap-3">
-                  <span className="truncate">{u.display_name || u.email || u.id}</span>
-                  <span className="text-white/60 text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : ''}</span>
-                </li>
-              ))}
-              {latestUsers.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Top Favoritos (todo)</div>
-            <ul className="space-y-1 text-sm">
-              {favTop.map((i,idx)=>{
-                const max = favTop[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.type+':'+i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. [{i.type}] {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {favTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Favoritos - Eventos</div>
-            <ul className="space-y-1 text-sm">
-              {favEvents.map((i,idx)=>{
-                const max = favEvents[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {favEvents.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Favoritos - Clubs</div>
-            <ul className="space-y-1 text-sm">
-              {favClubs.map((i,idx)=>{
-                const max = favClubs[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {favClubs.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Favoritos - DJs</div>
-            <ul className="space-y-1 text-sm">
-              {favDjs.map((i,idx)=>{
-                const max = favDjs[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {favDjs.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Top Reservas (clicks a entradas)</div>
-            <ul className="space-y-1 text-sm">
-              {clickTop.map((i,idx)=>{
-                const max = clickTop[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {clickTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Busquedas mas frecuentes</div>
-            <ul className="space-y-1 text-sm">
-              {searchTop.map((i,idx)=>(<li key={i.term} className="flex justify-between">
-                <span>{idx+1}. {i.term}</span>
-                <span className="text-white/60">{i.count}</span>
-              </li>))}
-              {searchTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">Zonas mas usadas</div>
-            <ul className="space-y-1 text-sm">
-              {zoneTop.map((i,idx)=>(<li key={i.zone} className="flex justify-between">
-                <span>{idx+1}. {i.zone}</span>
-                <span className="text-white/60">{i.count}</span>
-              </li>))}
-              {zoneTop.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
-
-          <div className="card p-4">
-            <div className="font-medium mb-2">DJs mas buscados</div>
-            <ul className="space-y-1 text-sm">
-              {djsSearched.map((i,idx)=>{
-                const max = djsSearched[0]?.count || 1
-                const pct = Math.round((i.count/max)*100)
-                return (
-                  <li key={i.id} className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>{idx+1}. {i.name}</span>
-                      <span className="text-white/60">{i.count}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded">
-                      <div className="h-2 bg-gold rounded" style={{ width: `${pct}%` }} />
-                    </div>
-                  </li>
-                )
-              })}
-              {djsSearched.length===0 && <li className="text-white/60">Sin datos</li>}
-            </ul>
-          </div>
+          </SectionCard>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ── UI helpers ─────────────────────────────────────────────── */
+
+function Kpi({ label, value, sub, accent }: { label: string; value: number | string; sub?: string; accent?: boolean }) {
+  return (
+    <div className={`rounded-2xl p-4 border ${accent ? 'bg-[#d8af3a]/8 border-[#d8af3a]/25' : 'bg-white/4 border-white/8'}`}>
+      <div className={`text-2xl font-bold ${accent ? 'text-[#d8af3a]' : 'text-white'}`}>{value}</div>
+      <div className="text-xs text-white/50 mt-0.5">{label}</div>
+      {sub && <div className="text-xs text-white/40 mt-0.5">{sub}</div>}
+    </div>
+  )
+}
+
+function SectionCard({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="rounded-3xl bg-white/4 border border-white/8 p-5">
+      <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{title}</p>
+      {children}
+    </div>
+  )
+}
+
+function GoldBars({ items }: { items: { label: string; count: number }[] }) {
+  const max = items[0]?.count || 1
+  return (
+    <div className="space-y-2">
+      {items.map((i, idx) => (
+        <div key={`${i.label}-${idx}`} className="space-y-1">
+          <div className="flex justify-between text-sm gap-3">
+            <span className="truncate">{idx+1}. {i.label}</span>
+            <span className="text-white/50 shrink-0">{i.count}</span>
+          </div>
+          <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[#d8af3a] to-[#e8c85a] rounded-full" style={{ width: `${Math.round((i.count/max)*100)}%` }} />
+          </div>
+        </div>
+      ))}
+      {items.length===0 && <div className="text-white/40 text-sm">Sin datos</div>}
+    </div>
+  )
+}
+
+function MiniList({ title, items }: { title: string; items: Bucket[] }) {
+  return (
+    <div className="mt-2 text-sm">
+      <div className="text-white/40 text-xs uppercase tracking-wider mb-1">{title}</div>
+      <ul className="space-y-1">
+        {items.map(s => (
+          <li key={s.label} className="flex justify-between gap-3"><span className="truncate">{s.label}</span><span className="text-white/50 shrink-0">{s.count}</span></li>
+        ))}
+        {items.length===0 && <li className="text-white/40">Sin datos</li>}
+      </ul>
+    </div>
+  )
+}
+
+function BucketBars({ title, items }: { title: string; items: Bucket[] }) {
+  const max = items[0]?.count || 1
+  return (
+    <div>
+      <div className="text-white/40 text-xs uppercase tracking-wider mb-2">{title}</div>
+      <div className="space-y-1.5">
+        {items.map(i => (
+          <div key={i.label}>
+            <div className="flex justify-between text-xs gap-2">
+              <span className="truncate">{i.label}</span>
+              <span className="text-white/50 shrink-0">{i.count}</span>
+            </div>
+            <div className="h-1 bg-white/8 rounded-full overflow-hidden mt-0.5">
+              <div className="h-full bg-[#d8af3a]/70 rounded-full" style={{ width: `${Math.round((i.count/max)*100)}%` }} />
+            </div>
+          </div>
+        ))}
+        {items.length===0 && <div className="text-white/40 text-xs">Sin datos</div>}
+      </div>
+    </div>
+  )
+}
+
+function DailyChart({ data }: { data: DailyPoint[] }) {
+  if (!data.length) return <div className="text-white/40 text-sm py-8 text-center">Sin datos en el rango seleccionado</div>
+  const W = 720, H = 180, PAD = 4
+  const max = Math.max(1, ...data.map(d => Math.max(d.sessions, d.views)))
+  const maxClicks = Math.max(1, ...data.map(d => d.clicks))
+  const n = data.length
+  const slot = (W - PAD * 2) / n
+  const barW = Math.max(2, Math.min(14, slot * 0.36))
+  const y = (v: number) => H - 18 - (v / max) * (H - 30)
+  const yClicks = (v: number) => H - 18 - (v / maxClicks) * (H - 30)
+  const labelEvery = Math.max(1, Math.ceil(n / 12))
+  return (
+    <div className="overflow-x-auto">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full min-w-[520px]" role="img" aria-label="Actividad diaria">
+        {/* grid */}
+        {[0.25, 0.5, 0.75].map(f => (
+          <line key={f} x1={PAD} x2={W-PAD} y1={y(max*f)} y2={y(max*f)} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+        ))}
+        {data.map((d, i) => {
+          const cx = PAD + slot * i + slot / 2
+          return (
+            <g key={d.day}>
+              <rect x={cx - barW} y={y(d.views)} width={barW} height={Math.max(0, H - 18 - y(d.views))} fill="rgba(255,255,255,0.25)" rx="1.5" />
+              <rect x={cx} y={y(d.sessions)} width={barW} height={Math.max(0, H - 18 - y(d.sessions))} fill="#d8af3a" rx="1.5" />
+              {d.clicks > 0 && <circle cx={cx} cy={yClicks(d.clicks)} r="2.5" fill="#34d399" />}
+              {i % labelEvery === 0 && (
+                <text x={cx} y={H - 4} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.35)">{d.day.slice(8, 10)}/{d.day.slice(5, 7)}</text>
+              )}
+              <title>{`${d.day}: ${d.sessions} sesiones, ${d.views} vistas, ${d.clicks} clicks`}</title>
+            </g>
+          )
+        })}
+      </svg>
     </div>
   )
 }

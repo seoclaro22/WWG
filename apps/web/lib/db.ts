@@ -63,6 +63,26 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
   return (data || []) as EventPublic[]
 }
 
+export async function countUpcomingEvents(params?: { zone?: string }) {
+  const sb = getSupabaseClient()
+  const nowIso = new Date().toISOString()
+  let q = sb.from('events_public').select('id', { count: 'exact', head: true }).gte('start_at', nowIso)
+  if (params?.zone) q = (q as any).eq('zone', params.zone)
+  q = (q as any).eq('status', 'published')
+  let { count, error } = await q
+  if (error) {
+    // Fallback si status/zone no existen en la vista
+    const retry = await sb.from('events_public').select('id', { count: 'exact', head: true }).gte('start_at', nowIso)
+    count = retry.count
+    error = retry.error
+  }
+  if (error) {
+    console.error('countUpcomingEvents error', error)
+    return 0
+  }
+  return count || 0
+}
+
 export async function fetchClubsPublic(params?: { q?: string; limit?: number; zone?: string; genre?: string }) {
   const sb = getSupabaseClient()
   let q = sb.from('clubs').select('*').eq('status','approved').order('name', { ascending: true })
