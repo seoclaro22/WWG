@@ -1,4 +1,5 @@
 import { Filters } from '@/components/Filters'
+import { QuickDateChips } from '@/components/QuickDateChips'
 import { EventCard } from '@/components/EventCard'
 import { countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
 import { T } from '@/components/T'
@@ -142,6 +143,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
           </div>
         )}
         <Filters />
+        {tab === 'events' && <QuickDateChips />}
         {tab === 'events' && (
           <div className="grid gap-3">
             {events.map((e: any) => {
