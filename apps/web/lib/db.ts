@@ -134,7 +134,7 @@ export async function fetchEventLineup(eventId: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
     .from('event_djs')
-    .select('position,djs(id,name,name_i18n,spotify_embed)')
+    .select('position,djs(id,name,name_i18n,spotify_embed,images)')
     .eq('event_id', eventId)
     .order('position', { ascending: true })
   if (error) { console.error('fetchEventLineup error', error); return [] }
@@ -143,6 +143,7 @@ export async function fetchEventLineup(eventId: string) {
     name: r.djs?.name,
     name_i18n: r.djs?.name_i18n || null,
     spotify_embed: r.djs?.spotify_embed || null,
+    images: r.djs?.images || null,
     position: r.position
   }))
 }
