@@ -13,7 +13,6 @@ export function Filters() {
   const params = useSearchParams()
   const { user } = useAuth()
   const q = params.get('q') ?? ''
-  const date = params.get('date') ?? ''
   const genre = params.get('genre') ?? ''
   const zone = params.get('zone') ?? ''
   const tab = params.get('tab') ?? 'events'
@@ -73,13 +72,11 @@ export function Filters() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
-  const cols = tab === 'events'
-    ? 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-5'
-    : (tab === 'djs' ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4')
+  const cols = tab === 'djs' ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'
   return (
     <div className={`grid ${cols} gap-2`}>
       <input
-        className="col-span-1 sm:col-span-2 bg-base-card border border-white/10 rounded-xl p-2 text-sm min-w-0"
+        className="col-span-2 bg-base-card border border-white/10 rounded-xl p-2 text-sm min-w-0"
         placeholder={t('filters.search')}
         defaultValue={q}
         onKeyDown={(e) => {
@@ -127,25 +124,6 @@ export function Filters() {
         ))}
       </select>
       )}
-      {tab === 'events' && (
-      <select
-        value={date}
-        onChange={(e)=>{
-          const sp = new URLSearchParams(params as any)
-          const v = e.target.value
-          if (v) sp.set('date', v); else sp.delete('date')
-          router.push(`${pathname}?${sp.toString()}`)
-        }}
-        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
-      >
-        <option value="">{t('filters.date')}</option>
-        <option value="today">{t('date.today')}</option>
-        <option value="tomorrow">{t('date.tomorrow')}</option>
-        <option value="weekend">{t('date.weekend')}</option>
-        <option value="week">{t('date.week')}</option>
-        <option value="month">{t('date.month')}</option>
-      </select>
-      )}
       <select
         value={genre}
         onChange={(e)=>{
@@ -154,7 +132,7 @@ export function Filters() {
           if (v) sp.set('genre', v); else sp.delete('genre')
           router.push(`${pathname}?${sp.toString()}`)
         }}
-        className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
+        className={`bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0 ${tab === 'djs' ? 'col-span-2 sm:col-span-1' : ''}`}
       >
         <option value="">{t('filters.genre')}</option>
         {genres.map(g => (
