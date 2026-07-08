@@ -116,7 +116,7 @@ function DJsManager() {
                 <button className="btn btn-secondary" onClick={()=>removeDj(d.id)}>Eliminar</button>
               </div>
             </div>
-            {editing?.id === d.id && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
+            {editing && editing.id === d.id && <DJForm initial={editing} onCancel={()=>setEditing(null)} onSave={save} saving={saving} />}
           </div>
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
