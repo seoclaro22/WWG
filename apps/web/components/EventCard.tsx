@@ -40,7 +40,7 @@ export function EventCard({ event, showHeart = false }: Props) {
           <div className="text-xs text-white/60">{event.date}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <ReserveButton eventId={event.id} source="discover" className="w-full sm:w-auto">{t('action.reserve')}</ReserveButton>
-            <a className="text-sm px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/80 hover:bg-white/12 hover:border-[#d8af3a]/40 hover:text-white transition-colors w-full sm:w-auto flex items-center justify-center text-center leading-tight" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
+            <a className="text-sm px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/80 hover:bg-white/12 hover:border-[#d8af3a]/40 hover:text-white transition-colors w-full sm:w-auto flex items-center justify-center whitespace-nowrap" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
           </div>
         </div>
       </div>
