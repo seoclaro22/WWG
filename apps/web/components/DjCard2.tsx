@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { FavoriteButton } from './FavoriteButton'
 import { LocalText } from './LocalText'
 import { useI18n } from '@/lib/i18n'
@@ -38,8 +39,7 @@ export function DjCard2({ dj, showHeart = false }: Props) {
       <div className="flex gap-3 p-3 items-start">
         <Link href={`/dj/${dj.id}`} className="w-24 h-24 rounded-lg bg-white/5 shrink-0 block overflow-hidden">
           {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt={dj.name} className="w-full h-full object-cover object-top" />
+            <SafeImage src={image} alt={dj.name} width={96} height={96} sizes="96px" className="w-full h-full object-cover object-top" />
           ) : null}
         </Link>
         <div className="flex-1">

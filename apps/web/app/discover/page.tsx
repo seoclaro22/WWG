@@ -1,3 +1,4 @@
+import { SafeImage } from '@/components/SafeImage'
 import { Filters } from '@/components/Filters'
 import { QuickDateChips } from '@/components/QuickDateChips'
 import { EventCard } from '@/components/EventCard'
@@ -109,7 +110,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
                   <a key={c.id} href={`/club/${c.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
                       {img
-                        ? <img src={img} alt={c.name} className="w-full h-full object-cover" />
+                        ? <SafeImage src={img} alt={c.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center text-white/20 text-2xl">♣</div>
                       }
                     </div>
@@ -131,7 +132,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
                   <a key={dj.id} href={`/dj/${dj.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-white/5 border border-white/10">
                       {img
-                        ? <img src={img} alt={dj.name} className="w-full h-full object-cover" />
+                        ? <SafeImage src={img} alt={dj.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center text-white/20 text-2xl">♪</div>
                       }
                     </div>

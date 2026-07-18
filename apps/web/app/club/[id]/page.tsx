@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { fetchClub, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
@@ -8,9 +9,8 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 
 export default async function ClubProfile({ params }: { params: { id: string } }) {
-  const club: any = await fetchClub(params.id)
+  const [club, events] = await Promise.all([fetchClub(params.id) as Promise<any>, fetchClubEvents(params.id, 10)])
   if (!club) return notFound()
-  const events = await fetchClubEvents(params.id, 10)
 
   let images: string[] = []
   if (Array.isArray(club.images)) {
@@ -40,8 +40,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] max-h-[70vh]">
         {heroImg ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={heroImg} alt={club.name} className="w-full h-full object-cover" />
+          <SafeImage src={heroImg} alt={club.name} fill priority sizes="100vw" className="object-cover" />
         ) : (
           <div className="w-full h-full bg-white/5" />
         )}
@@ -59,10 +58,12 @@ export default async function ClubProfile({ params }: { params: { id: string } }
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 z-10">
           <div className="flex items-end gap-3">
             {logo && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <SafeImage
                 src={logo}
                 alt="logo"
+                width={56}
+                height={56}
+                sizes="56px"
                 className="w-14 h-14 rounded-2xl border-2 border-white/20 object-cover shadow-lg shrink-0 mb-0.5"
               />
             )}
@@ -181,13 +182,12 @@ export default async function ClubProfile({ params }: { params: { id: string } }
             <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2"><T k="club.photos" /></p>
             <div className="grid grid-cols-2 gap-2">
               {galleryImgs.slice(0, 6).map((src, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <div
                   key={i}
-                  src={src}
-                  alt={`foto-${i + 2}`}
-                  className={`w-full object-cover rounded-xl border border-white/10 ${i === 0 && galleryImgs.length % 2 !== 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
-                />
+                  className={`relative w-full overflow-hidden rounded-xl border border-white/10 ${i === 0 && galleryImgs.length % 2 !== 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
+                >
+                  <SafeImage src={src} alt={`foto-${i + 2}`} fill sizes="(max-width: 640px) 50vw, 300px" className="object-cover" />
+                </div>
               ))}
             </div>
           </div>
@@ -213,8 +213,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
                     className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                   >
                     {evImg ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={evImg} alt={e.name} className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                      <SafeImage src={evImg} alt={e.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                     )}
@@ -245,5 +244,4 @@ export default async function ClubProfile({ params }: { params: { id: string } }
   )
 }
 
-export const revalidate = 0
-export const dynamic = 'force-dynamic'
+export const revalidate = 60

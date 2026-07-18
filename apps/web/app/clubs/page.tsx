@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { fetchClubsPublic } from '@/lib/db'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
@@ -15,8 +16,7 @@ export default async function ClubsIndex() {
           return (
             <div key={c.id} className="card p-3 flex items-center gap-3">
               {cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt={c.name} className="w-24 h-16 object-cover rounded-lg border border-white/10" />
+                <SafeImage src={cover} alt={c.name} width={96} height={64} sizes="96px" className="w-24 h-16 object-cover rounded-lg border border-white/10" />
               ) : (
                 <div className="w-24 h-16 rounded-lg bg-white/5 border border-white/10" />
               )}
@@ -36,3 +36,5 @@ export default async function ClubsIndex() {
     </div>
   )
 }
+
+export const revalidate = 60

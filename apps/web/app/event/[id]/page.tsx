@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { fetchEvent, fetchEventLineup, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
@@ -35,9 +36,8 @@ function getSpotifyEmbed(input?: string | null) {
 
 export default async function EventDetail({ params }: { params: { id: string } }) {
   const { id } = params
-  const e = await fetchEvent(id)
+  const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
   if (!e) return notFound()
-  const lineup = await fetchEventLineup(id)
   const clubId = (e as any).club_id as string | null
   const moreFromClub = clubId ? await fetchClubEvents(clubId, 5) : []
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
@@ -51,11 +51,14 @@ export default async function EventDetail({ params }: { params: { id: string } }
       {/* ── Fondo difuminado con la imagen del evento ────────────── */}
       {cover && (
         <div className="absolute inset-0 pointer-events-none">
-          <img
+          <SafeImage
             src={cover}
             alt=""
             aria-hidden
-            className="w-full h-full object-cover object-top scale-110"
+            fill
+            sizes="100vw"
+            quality={20}
+            className="object-cover object-top scale-110"
             style={{ filter: 'blur(60px) brightness(0.25) saturate(1.4)' }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#07060a]/30 via-[#07060a]/60 to-[#07060a]" />
@@ -65,8 +68,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-h-[80vh]">
         {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt={(e as any).name} className="w-full h-full object-cover object-top" />
+          <SafeImage src={cover} alt={(e as any).name} fill priority sizes="100vw" className="object-cover object-top" />
         ) : (
           <div className="w-full h-full bg-white/5" />
         )}
@@ -138,8 +140,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
                       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                     >
                       {djImg ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={djImg} alt={(d as any).name} className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
+                        <SafeImage src={djImg} alt={(d as any).name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
                       ) : (
                         <div className="w-14 h-14 rounded-full bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                       )}
@@ -219,8 +220,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
                       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                     >
                       {evImg ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={evImg} alt={ev.name} className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                        <SafeImage src={evImg} alt={ev.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
                       ) : (
                         <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                       )}
@@ -240,5 +240,4 @@ export default async function EventDetail({ params }: { params: { id: string } }
   )
 }
 
-export const revalidate = 0
-export const dynamic = 'force-dynamic'
+export const revalidate = 60

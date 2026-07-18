@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { FavoriteButton } from './FavoriteButton'
 import { useI18n } from '@/lib/i18n'
 // Removed Seguir/Quitar button from list cards per request
@@ -22,8 +23,7 @@ export function ClubCard({ club, showHeart = false }: Props) {
       <div className="flex gap-3 p-3 items-start">
         <Link href={`/club/${club.id}`} className="w-24 h-24 rounded-lg bg-white/5 shrink-0 block overflow-hidden">
           {club.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={club.image} alt={club.name} className="w-full h-full object-cover" />
+            <SafeImage src={club.image} alt={club.name} width={96} height={96} sizes="96px" className="w-full h-full object-cover" />
           ) : null}
         </Link>
         <div className="flex-1">

@@ -1,5 +1,5 @@
 import './globals.css'
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { I18nProvider } from '@/lib/i18n'
 import { AuthProvider } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
@@ -13,10 +13,6 @@ export const metadata = {
   description: 'Agenda local curada. Donde vamos hoy?'
 }
 
-// Evita el prerender estatico en build (usa runtime siempre)
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="es" className="dark">
@@ -27,7 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Navbar />
               <main className="flex-1 p-3 md:p-6">{children}</main>
               <Toaster />
-              <AnalyticsTracker />
+              <Suspense fallback={null}><AnalyticsTracker /></Suspense>
               <GoogleAnalytics />
               <CookieConsent />
             </div>

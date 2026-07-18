@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link'
+import { SafeImage } from '@/components/SafeImage'
 import { ReserveButton } from './ReserveButton'
 import { FavoriteButton } from './FavoriteButton'
 import { useI18n } from '@/lib/i18n'
@@ -28,7 +29,7 @@ export function EventCard({ event, showHeart = false }: Props) {
       <div className="flex gap-3 p-3">
         <Link href={`/event/${event.id}`} className="shrink-0 block">
           {event.image ? (
-            <img src={event.image} alt={event.title} className="w-24 h-24 rounded-lg object-cover border border-white/10" />
+            <SafeImage src={event.image} alt={event.title} width={96} height={96} sizes="96px" className="w-24 h-24 rounded-lg object-cover border border-white/10" />
           ) : (
             <div className="w-24 h-24 rounded-lg bg-white/5" />
           )}

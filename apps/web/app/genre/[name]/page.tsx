@@ -21,3 +21,5 @@ export default async function GenrePage({ params }: { params: { name: string } }
     </div>
   )
 }
+
+export const revalidate = 60
