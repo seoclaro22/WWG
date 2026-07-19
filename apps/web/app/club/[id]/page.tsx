@@ -8,6 +8,26 @@ import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const club: any = await fetchClub(params.id)
+  if (!club) return { title: 'Club no encontrado' }
+  const images: string[] = Array.isArray(club.images) ? club.images : []
+  const description = (club.description || '').slice(0, 155) || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta en ${club.zone || 'Mallorca'} con Where We Go.`
+  return {
+    title: `${club.name} — discoteca en ${club.zone || 'Mallorca'}`,
+    description,
+    openGraph: {
+      title: club.name,
+      description,
+      type: 'website',
+      url: `/club/${club.id}`,
+      images: images.length ? [{ url: images[0] }] : (club.logo_url ? [{ url: club.logo_url }] : undefined),
+    },
+    twitter: { card: 'summary_large_image' },
+    alternates: { canonical: `/club/${club.id}` },
+  }
+}
+
 export default async function ClubProfile({ params }: { params: { id: string } }) {
   const [club, events] = await Promise.all([fetchClub(params.id) as Promise<any>, fetchClubEvents(params.id, 10)])
   if (!club) return notFound()

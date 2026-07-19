@@ -33,6 +33,27 @@ function getSpotifyEmbed(input?: string | null) {
   return null
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const dj: any = await fetchDj(params.id)
+  if (!dj) return { title: 'DJ no encontrado' }
+  const images: string[] = Array.isArray(dj.images) ? dj.images : []
+  const genres = Array.isArray(dj.genres) && dj.genres.length ? dj.genres.slice(0, 3).join(', ') : ''
+  const description = (dj.short_bio || dj.bio || '').slice(0, 155) || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`
+  return {
+    title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}`,
+    description,
+    openGraph: {
+      title: dj.name,
+      description,
+      type: 'profile',
+      url: `/dj/${dj.id}`,
+      images: images.length ? [{ url: images[0] }] : undefined,
+    },
+    twitter: { card: 'summary_large_image' },
+    alternates: { canonical: `/dj/${dj.id}` },
+  }
+}
+
 export default async function DjProfile({ params }: { params: { id: string } }) {
   const [dj, events] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 10)])
   if (!dj) return notFound()

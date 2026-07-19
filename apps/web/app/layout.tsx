@@ -9,8 +9,12 @@ import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 
 export const metadata = {
-  title: 'Where We Go',
-  description: 'Agenda local curada. Donde vamos hoy?'
+  metadataBase: new URL('https://www.wherewego.site'),
+  title: {
+    default: 'Where We Go — Discotecas y eventos en Mallorca',
+    template: '%s | Where We Go'
+  },
+  description: 'Descubre discotecas, eventos y DJs en Mallorca. Agenda local curada: donde vamos hoy?'
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

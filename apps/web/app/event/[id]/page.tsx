@@ -34,6 +34,27 @@ function getSpotifyEmbed(input?: string | null) {
   return null
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const e: any = await fetchEvent(params.id)
+  if (!e) return { title: 'Evento no encontrado' }
+  const date = new Date(e.start_at).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
+  const imgs: string[] = Array.isArray(e.images) ? e.images : []
+  const description = (e.description || '').slice(0, 155) || `${e.name} en ${e.club_name || 'Mallorca'}, ${date}. Reserva tus entradas en Where We Go.`
+  return {
+    title: `${e.name} — ${e.club_name || 'Mallorca'}`,
+    description,
+    openGraph: {
+      title: `${e.name} · ${date}`,
+      description,
+      type: 'website',
+      url: `/event/${e.id}`,
+      images: imgs.length ? [{ url: imgs[0] }] : undefined,
+    },
+    twitter: { card: 'summary_large_image' },
+    alternates: { canonical: `/event/${e.id}` },
+  }
+}
+
 export default async function EventDetail({ params }: { params: { id: string } }) {
   const { id } = params
   const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
@@ -45,8 +66,38 @@ export default async function EventDetail({ params }: { params: { id: string } }
   const description: string = (e as any).description || ''
   const descriptionI18n = (e as any).description_i18n || null
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicEvent',
+    name: (e as any).name,
+    startDate: (e as any).start_at,
+    ...((e as any).end_at ? { endDate: (e as any).end_at } : {}),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    ...(description ? { description: description.slice(0, 500) } : {}),
+    ...(cover ? { image: [cover] } : {}),
+    location: {
+      '@type': 'Place',
+      name: (e as any).club_name || 'Mallorca',
+      address: { '@type': 'PostalAddress', addressLocality: (e as any).zone || 'Mallorca', addressCountry: 'ES' },
+    },
+    ...(lineup.length ? {
+      performer: lineup.map((d: any) => ({ '@type': 'MusicGroup', name: d.name })),
+    } : {}),
+    ...((e as any).url_referral ? {
+      offers: {
+        '@type': 'Offer',
+        url: `https://www.wherewego.site/event/${id}`,
+        availability: 'https://schema.org/InStock',
+        ...((e as any).price_min != null ? { price: (e as any).price_min, priceCurrency: 'EUR' } : {}),
+      },
+    } : {}),
+    organizer: { '@type': 'Organization', name: 'Where We Go', url: 'https://www.wherewego.site' },
+  }
+
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
       {/* ── Fondo difuminado con la imagen del evento ────────────── */}
       {cover && (
