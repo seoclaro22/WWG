@@ -9,7 +9,7 @@ import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 
 export const metadata = {
-  metadataBase: new URL('https://www.wherewego.site'),
+  metadataBase: new URL('https://wherewego.site'),
   title: {
     default: 'Where We Go — Discotecas y eventos en Mallorca',
     template: '%s | Where We Go'

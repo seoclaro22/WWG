@@ -87,12 +87,12 @@ export default async function EventDetail({ params }: { params: { id: string } }
     ...((e as any).url_referral ? {
       offers: {
         '@type': 'Offer',
-        url: `https://www.wherewego.site/event/${id}`,
+        url: `https://wherewego.site/event/${id}`,
         availability: 'https://schema.org/InStock',
         ...((e as any).price_min != null ? { price: (e as any).price_min, priceCurrency: 'EUR' } : {}),
       },
     } : {}),
-    organizer: { '@type': 'Organization', name: 'Where We Go', url: 'https://www.wherewego.site' },
+    organizer: { '@type': 'Organization', name: 'Where We Go', url: 'https://wherewego.site' },
   }
 
   return (
