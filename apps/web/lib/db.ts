@@ -148,6 +148,58 @@ export async function fetchEventLineup(eventId: string) {
   }))
 }
 
+export async function fetchRelatedEvents(eventId: string, genres: string[] | null | undefined, zone: string | null | undefined, limit = 4) {
+  const sb = getSupabaseClient()
+  const nowIso = new Date().toISOString()
+  const base = () => {
+    let q = sb.from('events_public').select('*').neq('id', eventId).gte('start_at', nowIso).order('start_at', { ascending: true }).limit(limit)
+    q = (q as any).eq('status', 'published')
+    return q
+  }
+  if (genres && genres.length) {
+    const { data } = await (base() as any).overlaps('genres', genres)
+    if (data?.length) return data as any[]
+  }
+  if (zone) {
+    const { data } = await (base() as any).eq('zone', zone)
+    if (data?.length) return data as any[]
+  }
+  const { data } = await base()
+  return (data || []) as any[]
+}
+
+export function slugifyZone(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+export async function fetchZonesMap() {
+  const sb = getSupabaseClient()
+  const [clubsRes, eventsRes] = await Promise.all([
+    sb.from('clubs').select('zone').eq('status', 'approved').not('zone', 'is', null).limit(1000),
+    sb.from('events_public').select('zone').not('zone', 'is', null).limit(1000),
+  ])
+  const rows = [...(clubsRes.data || []), ...(eventsRes.data || [])] as Array<{ zone?: string | null }>
+  const map = new Map<string, string>()
+  for (const row of rows) {
+    const zone = (row.zone || '').trim()
+    if (!zone) continue
+    const slug = slugifyZone(zone)
+    if (!slug || map.has(slug)) continue
+    map.set(slug, zone)
+  }
+  return map
+}
+
+export async function resolveZoneSlug(slug: string) {
+  const map = await fetchZonesMap()
+  return map.get(slug) || null
+}
+
 export async function fetchClub(id: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
