@@ -3,6 +3,7 @@ import { ReactNode, Suspense } from 'react'
 import { I18nProvider } from '@/lib/i18n'
 import { AuthProvider } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/Toaster'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <div className="mx-auto w-full max-w-3xl md:max-w-4xl lg:max-w-5xl min-h-screen flex flex-col px-4">
               <Navbar />
               <main className="flex-1 p-3 md:p-6">{children}</main>
+              <Footer />
               <Toaster />
               <Suspense fallback={null}><AnalyticsTracker /></Suspense>
               <GoogleAnalytics />
