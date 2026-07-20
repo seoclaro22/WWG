@@ -9,6 +9,7 @@ import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -149,6 +150,14 @@ export default async function EventDetail({ params }: { params: { id: string } }
 
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
+
+        <Breadcrumbs items={[
+          { name: 'Inicio', href: '/' },
+          { name: 'Descubrir', href: '/discover?tab=events' },
+          { name: 'Clubs', href: '/clubs' },
+          ...(clubId ? [{ name: e.club_name || 'Club', href: `/club/${clubId}` }] : []),
+          { name: (e as any).name },
+        ]} />
 
         {/* Genres */}
         {(e as any).genres && (e as any).genres.length > 0 && (

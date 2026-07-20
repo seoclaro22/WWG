@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export async function generateMetadata({ params }: { params: { name: string } }) {
   const name = decodeURIComponent(params.name)
@@ -26,6 +27,11 @@ export default async function GenrePage({ params }: { params: { name: string } }
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
       <div className="relative z-10 space-y-5">
+        <Breadcrumbs items={[
+          { name: 'Inicio', href: '/' },
+          { name: `Genero: ${name}` },
+        ]} />
+
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">Genero musical</p>
           <h1 className="text-3xl font-bold text-white">Eventos de {name}</h1>

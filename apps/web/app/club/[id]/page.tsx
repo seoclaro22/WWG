@@ -7,6 +7,7 @@ import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const club: any = await fetchClub(params.id)
@@ -54,8 +55,22 @@ export default async function ClubProfile({ params }: { params: { id: string } }
   const heroImg = images[0] || logo
   const galleryImgs = images.length > 1 ? images.slice(1) : []
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NightClub',
+    name: club.name,
+    ...(club.description ? { description: String(club.description).slice(0, 500) } : {}),
+    ...(heroImg ? { image: [heroImg] } : {}),
+    address: { '@type': 'PostalAddress', streetAddress: club.address || undefined, addressLocality: club.zone || 'Mallorca', addressCountry: 'ES' },
+    ...(links?.instagram || links?.facebook || links?.web ? {
+      sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
+    } : {}),
+    url: `https://wherewego.site/club/${club.id}`,
+  }
+
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] max-h-[70vh]">
@@ -101,6 +116,12 @@ export default async function ClubProfile({ params }: { params: { id: string } }
 
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="px-4 md:px-6 lg:px-10 pb-10 space-y-5 relative z-10">
+
+        <Breadcrumbs items={[
+          { name: 'Inicio', href: '/' },
+          { name: 'Discotecas', href: '/clubs' },
+          { name: club.name },
+        ]} />
 
         {/* Quick actions */}
         <div className="flex gap-2 pt-1 flex-wrap">

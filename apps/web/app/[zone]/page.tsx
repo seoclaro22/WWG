@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { fetchEvents, fetchClubsPublic, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export async function generateStaticParams() {
   const map = await fetchZonesMap()
@@ -38,6 +39,11 @@ export default async function ZonePage({ params }: { params: { zone: string } })
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
       <div className="relative z-10 space-y-6">
+        <Breadcrumbs items={[
+          { name: 'Inicio', href: '/' },
+          { name: zoneName },
+        ]} />
+
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">Zona</p>
           <h1 className="text-3xl font-bold text-white">Discotecas y eventos en {zoneName}</h1>

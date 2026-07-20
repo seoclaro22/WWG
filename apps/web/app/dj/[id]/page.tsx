@@ -8,6 +8,7 @@ import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -64,8 +65,19 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
   const bio: string = (dj as any).bio || ''
   const bioI18n = (dj as any).bio_i18n || null
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: (dj as any).name,
+    ...(bio ? { description: bio.slice(0, 500) } : {}),
+    ...(heroImg ? { image: [heroImg] } : {}),
+    jobTitle: 'DJ',
+    url: `https://wherewego.site/dj/${(dj as any).id}`,
+  }
+
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
 
       {/* ── Fondo difuminado con la foto del DJ ─────────────────── */}
       {heroImg && (
@@ -110,6 +122,13 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
 
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
+
+        <Breadcrumbs items={[
+          { name: 'Inicio', href: '/' },
+          { name: 'Descubrir', href: '/discover?tab=events' },
+          { name: 'DJs', href: '/discover?tab=djs' },
+          { name: (dj as any).name },
+        ]} />
 
         {/* Genres */}
         {Array.isArray((dj as any).genres) && (dj as any).genres.length > 0 && (
