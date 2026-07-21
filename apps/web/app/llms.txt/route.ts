@@ -1,4 +1,5 @@
 import { getSupabaseClient } from '@/lib/supabase'
+import { fetchZonesMap } from '@/lib/db'
 
 export const revalidate = 3600
 
@@ -8,7 +9,7 @@ export async function GET() {
   const sb = getSupabaseClient()
   const nowIso = new Date().toISOString()
 
-  const [eventsRes, clubsRes, djsRes] = await Promise.all([
+  const [eventsRes, clubsRes, djsRes, zonesMap] = await Promise.all([
     sb.from('events_public')
       .select('id,name,club_name,start_at,zone')
       .gte('start_at', nowIso)
@@ -24,7 +25,11 @@ export async function GET() {
       .select('id,name,genres')
       .order('name', { ascending: true })
       .limit(60),
+    fetchZonesMap(),
   ])
+
+  // Ciudades reales en base de datos: se mantiene solo al abrir ciudad nueva.
+  const cities = Array.from(zonesMap.values()).sort((a, b) => a.localeCompare(b, 'es'))
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString('es-ES', {
@@ -38,9 +43,9 @@ export async function GET() {
   const lines: string[] = []
   lines.push('# Where We Go')
   lines.push('')
-  lines.push('> Where We Go (WWG) es una guia de vida nocturna para descubrir discotecas, eventos y DJs en Mallorca (Espana), con expansion prevista a Amsterdam, Madrid y Barcelona. Los usuarios exploran la agenda de fiestas, ven los line-ups de DJs y reservan entradas a traves de la plataforma.')
+  lines.push('> Where We Go (WWG) es una guia de vida nocturna para descubrir donde salir de fiesta en tu ciudad: discotecas, eventos y DJs. Los usuarios exploran la agenda de fiestas, ven los line-ups de DJs y reservan entradas a traves de la plataforma.')
   lines.push('')
-  lines.push('Zona principal: Mallorca (Palma, Magaluf, El Arenal, Paseo Maritimo). Idiomas: espanol, ingles, aleman. Modelo: descubrimiento de eventos y afiliacion de venta de entradas.')
+  lines.push(`Ciudades con agenda activa: ${cities.join(', ')}. Idiomas: espanol, ingles, aleman. Modelo: descubrimiento de eventos y afiliacion de venta de entradas.`)
   lines.push('')
   lines.push('## Paginas principales')
   lines.push(`- [Descubrir eventos](${BASE}/discover): agenda completa de discotecas, eventos y DJs con filtros por zona, fecha y genero musical.`)
@@ -51,7 +56,7 @@ export async function GET() {
   if (events.length) {
     lines.push('## Proximos eventos')
     for (const e of events) {
-      const where = e.club_name || e.zone || 'Mallorca'
+      const where = [e.club_name, e.zone].filter(Boolean).join(', ')
       lines.push(`- [${e.name}](${BASE}/event/${e.id}): ${where}, ${fmtDate(e.start_at)}.`)
     }
     lines.push('')

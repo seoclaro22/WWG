@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
+import { siteMeta } from '@/lib/seo'
 import { I18nProvider } from '@/lib/i18n'
 import { AuthProvider } from '@/lib/auth'
 import { Navbar } from '@/components/Navbar'
@@ -13,13 +14,13 @@ import { Toaster } from '@/components/Toaster'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 
-export const metadata = {
-  metadataBase: new URL('https://wherewego.site'),
-  title: {
-    default: 'Where We Go — Discotecas y eventos en Mallorca',
-    template: '%s | Where We Go'
-  },
-  description: 'Descubre discotecas, eventos y DJs en Mallorca. Agenda local curada: donde vamos hoy?'
+export function generateMetadata({ params }: { params: { locale: string } }) {
+  const { title, description } = siteMeta(params.locale)
+  return {
+    metadataBase: new URL('https://wherewego.site'),
+    title: { default: title, template: '%s | Where We Go' },
+    description,
+  }
 }
 
 export function generateStaticParams() {

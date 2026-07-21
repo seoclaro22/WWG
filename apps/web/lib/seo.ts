@@ -70,3 +70,90 @@ export const HOME_META: Record<string, { title: string; description: string; tag
 export function homeMeta(locale: string) {
   return HOME_META[locale] || HOME_META[routing.defaultLocale]
 }
+
+// Metadata por defecto del layout. Solo la heredan paginas sin titulo propio
+// (cuenta, auth, favoritos...), pero igualmente no debe atarse a una ciudad.
+export const SITE_META: Record<string, { title: string; description: string }> = {
+  es: {
+    title: 'Where We Go — Discotecas y eventos en tu ciudad',
+    description: 'Descubre discotecas, fiestas y DJs en tu ciudad. Agenda actualizada a diario.',
+  },
+  en: {
+    title: 'Where We Go — Clubs and events in your city',
+    description: 'Discover clubs, parties and DJs in your city. Listings updated daily.',
+  },
+  de: {
+    title: 'Where We Go — Clubs und Events in deiner Stadt',
+    description: 'Entdecke Clubs, Partys und DJs in deiner Stadt. Täglich aktualisiert.',
+  },
+}
+
+export function siteMeta(locale: string) {
+  return SITE_META[locale] || SITE_META[routing.defaultLocale]
+}
+
+// Listados generales. Son transversales a todas las ciudades: quien busca por
+// ciudad aterriza en /[zona], no aqui.
+const LIST_META: Record<string, Record<'discover' | 'clubs', { title: string; description: string }>> = {
+  es: {
+    discover: {
+      title: 'Agenda de eventos y fiestas',
+      description: 'Todas las fiestas, discotecas y DJs de tu ciudad en un solo sitio. Filtra por zona, género o fecha y reserva tus entradas con Where We Go.',
+    },
+    clubs: {
+      title: 'Discotecas y clubs',
+      description: 'Descubre las discotecas de tu ciudad: fotos, ubicación, géneros musicales y su agenda de próximos eventos. Encuentra dónde salir esta noche.',
+    },
+  },
+  en: {
+    discover: {
+      title: 'Events and Parties',
+      description: 'Every party, club and DJ in your city in one place. Filter by area, genre or date and book your tickets with Where We Go.',
+    },
+    clubs: {
+      title: 'Clubs and Venues',
+      description: 'Discover the clubs in your city: photos, location, music genres and their upcoming events. Find where to go out tonight.',
+    },
+  },
+  de: {
+    discover: {
+      title: 'Events und Partys',
+      description: 'Alle Partys, Clubs und DJs deiner Stadt an einem Ort. Filtere nach Gegend, Genre oder Datum und buche deine Tickets mit Where We Go.',
+    },
+    clubs: {
+      title: 'Clubs und Locations',
+      description: 'Entdecke die Clubs deiner Stadt: Fotos, Lage, Musikrichtungen und kommende Events. Finde heraus, wo du heute Nacht feierst.',
+    },
+  },
+}
+
+export function listMeta(page: 'discover' | 'clubs', locale: string) {
+  return (LIST_META[locale] || LIST_META[routing.defaultLocale])[page]
+}
+
+// Paginas de genero. Antes decian "en Mallorca" en duro, lo que era falso en
+// cuanto el genero tenia eventos en otra ciudad, y ademas solo existian en
+// espanol aunque la URL fuese /en o /de.
+export function genreMeta(name: string, locale: string) {
+  const copy: Record<string, { title: string; description: string; eyebrow: string; intro: string }> = {
+    es: {
+      title: `Eventos de ${name}`,
+      description: `Descubre los próximos eventos de ${name}: discotecas, DJs y fiestas de música ${name}. Agenda actualizada a diario con Where We Go.`,
+      eyebrow: 'Género musical',
+      intro: `Las próximas fiestas y sesiones de ${name}: discotecas, DJs y line-ups actualizados a diario.`,
+    },
+    en: {
+      title: `${name} Events`,
+      description: `Discover upcoming ${name} events: clubs, DJs and ${name} parties. Listings updated daily with Where We Go.`,
+      eyebrow: 'Music genre',
+      intro: `Upcoming ${name} parties and sets: clubs, DJs and line-ups updated daily.`,
+    },
+    de: {
+      title: `${name} Events`,
+      description: `Entdecke kommende ${name} Events: Clubs, DJs und ${name} Partys. Täglich aktualisiert mit Where We Go.`,
+      eyebrow: 'Musikrichtung',
+      intro: `Kommende ${name} Partys und Sets: Clubs, DJs und Line-ups, täglich aktualisiert.`,
+    },
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}

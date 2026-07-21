@@ -6,10 +6,16 @@ import { countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } fr
 import { T } from '@/components/T'
 import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
-import { buildAlternates, localePath } from '@/lib/seo'
+import { buildAlternates, localePath, listMeta } from '@/lib/seo'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
-  return { alternates: buildAlternates('/discover', params.locale) }
+  const { title, description } = listMeta('discover', params.locale)
+  return {
+    title,
+    description,
+    alternates: buildAlternates('/discover', params.locale),
+    openGraph: { title, description, type: 'website' },
+  }
 }
 
 function rangeFromDateParam(dateParam?: string) {

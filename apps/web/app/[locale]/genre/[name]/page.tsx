@@ -2,12 +2,11 @@ import { Link } from '@/lib/navigation'
 import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { buildAlternates } from '@/lib/seo'
+import { buildAlternates, genreMeta } from '@/lib/seo'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
-  const title = `Eventos de ${name} en Mallorca`
-  const description = `Descubre los proximos eventos de ${name} en Mallorca: discotecas, DJs y fiestas de musica ${name}. Agenda actualizada a diario con Where We Go.`
+  const { title, description } = genreMeta(name, params.locale)
   return {
     title,
     description,
@@ -17,8 +16,9 @@ export async function generateMetadata({ params }: { params: { locale: string; n
   }
 }
 
-export default async function GenrePage({ params }: { params: { name: string } }) {
+export default async function GenrePage({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
+  const { title, eyebrow, intro } = genreMeta(name, params.locale)
   const events = await fetchEvents({ genre: name, limit: 30 })
 
   return (
@@ -30,15 +30,13 @@ export default async function GenrePage({ params }: { params: { name: string } }
       <div className="relative z-10 space-y-5">
         <Breadcrumbs items={[
           { name: 'Inicio', href: '/' },
-          { name: `Genero: ${name}` },
+          { name: `${eyebrow}: ${name}` },
         ]} />
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">Genero musical</p>
-          <h1 className="text-3xl font-bold text-white">Eventos de {name}</h1>
-          <p className="text-sm text-white/60 mt-2 max-w-xl">
-            Las proximas fiestas y sesiones de {name} en Mallorca: discotecas, DJs y line-ups actualizados a diario.
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">{eyebrow}</p>
+          <h1 className="text-3xl font-bold text-white">{title}</h1>
+          <p className="text-sm text-white/60 mt-2 max-w-xl">{intro}</p>
         </div>
 
         <div className="grid gap-3">

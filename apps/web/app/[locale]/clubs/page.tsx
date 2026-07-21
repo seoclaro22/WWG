@@ -3,10 +3,16 @@ import { SafeImage } from '@/components/SafeImage'
 import { fetchClubsPublic } from '@/lib/db'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
-import { buildAlternates } from '@/lib/seo'
+import { buildAlternates, listMeta } from '@/lib/seo'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
-  return { alternates: buildAlternates('/clubs', params.locale) }
+  const { title, description } = listMeta('clubs', params.locale)
+  return {
+    title,
+    description,
+    alternates: buildAlternates('/clubs', params.locale),
+    openGraph: { title, description, type: 'website' },
+  }
 }
 
 export default async function ClubsIndex() {

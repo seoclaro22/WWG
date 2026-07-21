@@ -14,9 +14,12 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   const club: any = await fetchClub(params.id)
   if (!club) return { title: 'Club no encontrado' }
   const images: string[] = Array.isArray(club.images) ? club.images : []
-  const description = (club.description || '').slice(0, 155) || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta en ${club.zone || 'Mallorca'} con Where We Go.`
+  // Sin inventar ciudad: si el club no tiene zona, se omite en vez de
+  // atribuirlo por defecto a Mallorca.
+  const place = club.zone ? ` en ${club.zone}` : ''
+  const description = (club.description || '').slice(0, 155) || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`
   return {
-    title: `${club.name} — discoteca en ${club.zone || 'Mallorca'}`,
+    title: `${club.name} — discoteca${place}`,
     description,
     openGraph: {
       title: club.name,
@@ -62,7 +65,11 @@ export default async function ClubProfile({ params }: { params: { id: string } }
     name: club.name,
     ...(club.description ? { description: String(club.description).slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
-    address: { '@type': 'PostalAddress', streetAddress: club.address || undefined, addressLocality: club.zone || 'Mallorca', addressCountry: 'ES' },
+    address: {
+      '@type': 'PostalAddress',
+      ...(club.address ? { streetAddress: club.address } : {}),
+      ...(club.zone ? { addressLocality: club.zone } : {}),
+    },
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
     } : {}),
@@ -214,7 +221,7 @@ export default async function ClubProfile({ params }: { params: { id: string } }
           </div>
           <div>
             <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5"><T k="club.address" /></p>
-            <p className="text-sm text-white/80 leading-snug">{club.address || 'Mallorca'}</p>
+            <p className="text-sm text-white/80 leading-snug">{club.address || club.zone || '—'}</p>
           </div>
         </div>
 

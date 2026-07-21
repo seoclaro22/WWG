@@ -41,9 +41,12 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   if (!e) return { title: 'Evento no encontrado' }
   const date = new Date(e.start_at).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
   const imgs: string[] = Array.isArray(e.images) ? e.images : []
-  const description = (e.description || '').slice(0, 155) || `${e.name} en ${e.club_name || 'Mallorca'}, ${date}. Reserva tus entradas en Where We Go.`
+  // El sitio ya no es solo Mallorca: si falta el club se usa la zona real y,
+  // si tampoco la hay, se omite en vez de inventarla.
+  const venue = e.club_name || e.zone || ''
+  const description = (e.description || '').slice(0, 155) || `${e.name}${venue ? ` en ${venue}` : ''}, ${date}. Reserva tus entradas en Where We Go.`
   return {
-    title: `${e.name} — ${e.club_name || 'Mallorca'}`,
+    title: venue ? `${e.name} — ${venue}` : e.name,
     description,
     openGraph: {
       title: `${e.name} · ${date}`,
@@ -80,8 +83,12 @@ export default async function EventDetail({ params }: { params: { id: string } }
     ...(cover ? { image: [cover] } : {}),
     location: {
       '@type': 'Place',
-      name: (e as any).club_name || 'Mallorca',
-      address: { '@type': 'PostalAddress', addressLocality: (e as any).zone || 'Mallorca', addressCountry: 'ES' },
+      name: (e as any).club_name || (e as any).zone || (e as any).name,
+      address: {
+        '@type': 'PostalAddress',
+        // Sin pais en duro: 'ES' era falso para Amsterdam.
+        ...((e as any).zone ? { addressLocality: (e as any).zone } : {}),
+      },
     },
     ...(lineup.length ? {
       performer: lineup.map((d: any) => ({ '@type': 'MusicGroup', name: d.name })),
@@ -250,7 +257,7 @@ export default async function EventDetail({ params }: { params: { id: string } }
           )}
           <Link
             className="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm text-center hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
-            href={`https://maps.google.com?q=${encodeURIComponent((e as any).club_name || 'Mallorca')}`}
+            href={`https://maps.google.com?q=${encodeURIComponent([(e as any).club_name, (e as any).zone].filter(Boolean).join(', ') || (e as any).name)}`}
             target="_blank"
           >
             <T k="action.directions" />

@@ -29,7 +29,10 @@ async function reverseGeocode(lat: number, lon: number): Promise<string | null> 
   }
 }
 
-const PLACEHOLDER_CITIES = ['Palma de Mallorca', 'Ibiza', 'Barcelona', 'Madrid', 'Amsterdam']
+// Semilla hasta que llegan las zonas reales de la base de datos. Antes anunciaba
+// Ibiza, Barcelona y Madrid, donde no hay agenda, y omitia Valencia, que es la
+// ciudad con mas eventos.
+const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
 
 type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
 
@@ -40,7 +43,7 @@ export function LandingPage() {
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
-  const [knownZones, setKnownZones] = useState<string[]>(['Palma de Mallorca', 'Mallorca', 'Ibiza', 'Barcelona', 'Madrid'])
+  const [knownZones, setKnownZones] = useState<string[]>(SEED_CITIES)
   const [previewClubs, setPreviewClubs] = useState<PreviewClub[]>([])
   const [displayPlaceholder, setDisplayPlaceholder] = useState('')
   const [isListening, setIsListening] = useState(false)
@@ -60,13 +63,16 @@ export function LandingPage() {
 
   // Animación de typing en el placeholder
   useEffect(() => {
+    // Se anima con las ciudades que realmente tienen agenda, asi el placeholder
+    // se actualiza solo cuando se abre una ciudad nueva.
+    const cities = knownZones.length ? knownZones : SEED_CITIES
     let cityIdx = 0
     let charIdx = 0
     let deleting = false
     let timeout: ReturnType<typeof setTimeout>
 
     function tick() {
-      const city = PLACEHOLDER_CITIES[cityIdx]
+      const city = cities[cityIdx]
       if (!deleting) {
         charIdx++
         setDisplayPlaceholder(city.slice(0, charIdx))
@@ -80,14 +86,14 @@ export function LandingPage() {
         setDisplayPlaceholder(city.slice(0, charIdx))
         if (charIdx === 0) {
           deleting = false
-          cityIdx = (cityIdx + 1) % PLACEHOLDER_CITIES.length
+          cityIdx = (cityIdx + 1) % cities.length
         }
       }
       timeout = setTimeout(tick, deleting ? 40 : 65)
     }
     timeout = setTimeout(tick, 600)
     return () => clearTimeout(timeout)
-  }, [])
+  }, [knownZones])
 
   function startVoice() {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
