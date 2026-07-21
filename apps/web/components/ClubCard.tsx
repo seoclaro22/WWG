@@ -1,5 +1,5 @@
 "use client"
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { FavoriteButton } from './FavoriteButton'
 import { useI18n } from '@/lib/i18n'

@@ -1,8 +1,13 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchClubsPublic } from '@/lib/db'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
+import { buildAlternates } from '@/lib/seo'
+
+export function generateMetadata({ params }: { params: { locale: string } }) {
+  return { alternates: buildAlternates('/clubs', params.locale) }
+}
 
 export default async function ClubsIndex() {
   const clubs = await fetchClubsPublic({ limit: 200 })

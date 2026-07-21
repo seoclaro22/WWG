@@ -1,16 +1,17 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { buildAlternates } from '@/lib/seo'
 
-export async function generateMetadata({ params }: { params: { name: string } }) {
+export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
   const title = `Eventos de ${name} en Mallorca`
   const description = `Descubre los proximos eventos de ${name} en Mallorca: discotecas, DJs y fiestas de musica ${name}. Agenda actualizada a diario con Where We Go.`
   return {
     title,
     description,
-    alternates: { canonical: `/genre/${encodeURIComponent(name)}` },
+    alternates: buildAlternates(`/genre/${encodeURIComponent(name)}`, params.locale),
     openGraph: { title, description, type: 'website', url: `/genre/${encodeURIComponent(name)}` },
     twitter: { card: 'summary_large_image' },
   }
