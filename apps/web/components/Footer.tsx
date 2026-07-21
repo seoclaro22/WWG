@@ -49,6 +49,18 @@ export async function Footer() {
             <li><Link href="/cookies" className="hover:text-gold" prefetch={false}>Cookies</Link></li>
           </ul>
         </div>
+
+        {/* Anclas planas a proposito: el Link de next-intl prefijaria el idioma
+            activo y romperia estos enlaces (en /de, "/en" seria "/de/en").
+            Ademas dan a Google una via rastreable hacia cada arbol de idioma. */}
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-2">Idioma</p>
+          <ul className="space-y-1">
+            <li><a href="/" hrefLang="es" className="hover:text-gold">Español</a></li>
+            <li><a href="/en" hrefLang="en" className="hover:text-gold">English</a></li>
+            <li><a href="/de" hrefLang="de" className="hover:text-gold">Deutsch</a></li>
+          </ul>
+        </div>
       </div>
 
       <p className="mt-6 text-xs text-white/30">© {new Date().getFullYear()} Where We Go</p>
