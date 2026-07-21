@@ -6,6 +6,22 @@ import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { reverseGeocode } from '@/lib/geo-client'
 import { whenMeta, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
+import { GradientBackground } from '@/components/ui/gradient-background'
+import { GlowingShadow } from '@/components/ui/glowing-shadow'
+import { SparklesCore } from '@/components/ui/sparkles'
+import { NumberTicker } from '@/components/ui/number-ticker'
+
+// Mismo look que landing-gold-base/aurora (fondo casi negro con brillos ambar)
+// pero como gradientes solidos que el componente cruza con transicion suave.
+// Manteniendo el tono oscuro de base la legibilidad del texto blanco/dorado
+// encima no cambia respecto al fondo anterior.
+const WWG_HERO_GRADIENTS = [
+  'linear-gradient(135deg, #07060a 0%, #2b1d05 100%)',
+  'linear-gradient(135deg, #120d02 0%, #3d2c0a 100%)',
+  'linear-gradient(135deg, #07060a 0%, #4a3410 100%)',
+  'linear-gradient(135deg, #1a1206 0%, #07060a 100%)',
+  'linear-gradient(135deg, #07060a 0%, #2b1d05 100%)',
+]
 
 type GeoStatus = 'idle' | 'locating' | 'success' | 'error'
 
@@ -24,8 +40,17 @@ const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
 
 type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
 type City = { slug: string; name: string }
+type Stats = { events: number; clubs: number; cities: number }
 
-export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; locale?: string }) {
+export function LandingPage({
+  cities = [],
+  locale = 'es',
+  stats,
+}: {
+  cities?: City[]
+  locale?: string
+  stats?: Stats
+}) {
   const { t } = useI18n()
   const router = useRouter()
   const [zone, setZone] = useState('')
@@ -102,46 +127,6 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
     rec.onerror = () => setIsListening(false)
     rec.onend = () => setIsListening(false)
   }
-
-  useEffect(() => {
-    function spawnFlash(x: number, y: number) {
-      const container = document.getElementById('landing-bg')
-      if (!container) return
-      const rect = container.getBoundingClientRect()
-      const cx = x - rect.left
-      const cy = y - rect.top
-
-      // Central flash
-      const flash = document.createElement('div')
-      flash.className = 'click-flash'
-      flash.style.left = cx + 'px'
-      flash.style.top = cy + 'px'
-      container.appendChild(flash)
-      setTimeout(() => flash.remove(), 600)
-
-      // Particles
-      const count = 10
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div')
-        p.className = 'click-particle'
-        const angle = (i / count) * 360
-        const dist = 28 + Math.random() * 32
-        const rad = (angle * Math.PI) / 180
-        p.style.left = cx + 'px'
-        p.style.top = cy + 'px'
-        p.style.setProperty('--tx', `${Math.cos(rad) * dist}px`)
-        p.style.setProperty('--ty', `${Math.sin(rad) * dist}px`)
-        container.appendChild(p)
-        setTimeout(() => p.remove(), 700)
-      }
-    }
-
-    const el = document.getElementById('landing-bg')
-    if (!el) return
-    const handler = (e: MouseEvent) => spawnFlash(e.clientX, e.clientY)
-    el.addEventListener('click', handler)
-    return () => el.removeEventListener('click', handler)
-  }, [])
 
   useEffect(() => {
     ;(async () => {
@@ -299,8 +284,25 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
   return (
     <div className="flex flex-col" style={{ height: 'calc(100dvh - 64px)' }}>
     <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 -mt-3 md:-mt-6 -mb-3 md:-mb-6 px-4 md:px-6 lg:px-10 flex-1 flex flex-col overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
-      <div className="absolute inset-0 pointer-events-none landing-gold-base" />
-      <div className="absolute inset-0 pointer-events-none landing-gold-aurora" />
+      <GradientBackground
+        gradients={WWG_HERO_GRADIENTS}
+        animationDuration={10}
+        animationDelay={0.3}
+        className="absolute inset-0 min-h-0 pointer-events-none"
+      />
+      {/* Polvo dorado por encima del gradiente y por debajo del contenido.
+          Densidad baja a proposito: el hero ya tiene un fondo en movimiento y
+          la idea es sugerir ambiente, no competir con el buscador. */}
+      <SparklesCore
+        id="wwg-hero-sparkles"
+        className="absolute inset-0 pointer-events-none"
+        background="transparent"
+        particleColor="#d8af3a"
+        particleDensity={55}
+        minSize={0.4}
+        maxSize={1.2}
+        speed={1.5}
+      />
       <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center gap-4 md:gap-6 px-4 md:px-6 lg:px-10">
         {/* Icono — entra con scale */}
@@ -378,15 +380,19 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
                 </svg>
               </button>
             )}
-            <button
-              type="submit"
-              className="ml-2 w-12 h-12 shrink-0 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
-              aria-label={t('landing.cta')}
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+            <div className="ml-2 shrink-0">
+              <GlowingShadow width="72px" aspectRatio="1/1" radius="999px" contentColor="transparent">
+                <button
+                  type="submit"
+                  className="w-12 h-12 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
+                  aria-label={t('landing.cta')}
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </GlowingShadow>
+            </div>
             </div>
             {suggestions.length > 0 && (
               <div className="absolute left-0 right-0 mt-2 rounded-2xl bg-black/70 border border-white/10 backdrop-blur shadow-glow text-left text-sm overflow-hidden">
@@ -432,6 +438,28 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
                 {whenMeta('today', c.name, locale).eyebrow} · {c.name}
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Cifras reales de la agenda. Ademas de dar contexto de tamano al
+            visitante, mete dos enlaces internos mas hacia /discover y /clubs,
+            que hasta ahora solo colgaban del pie. */}
+        {stats && stats.events > 0 && (
+          <div className="anim-points flex items-center gap-4 text-xs text-white/45">
+            <Link href="/discover" prefetch={false} className="hover:text-[#d8af3a] transition">
+              <NumberTicker target={stats.events} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
+              {t('landing.stats_events')}
+            </Link>
+            <span aria-hidden="true" className="text-white/20">·</span>
+            <Link href="/clubs" prefetch={false} className="hover:text-[#d8af3a] transition">
+              <NumberTicker target={stats.clubs} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
+              {t('landing.stats_clubs')}
+            </Link>
+            <span aria-hidden="true" className="text-white/20">·</span>
+            <span>
+              <NumberTicker target={stats.cities} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
+              {t('landing.stats_cities')}
+            </span>
           </div>
         )}
       </div>

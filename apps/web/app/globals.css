@@ -142,42 +142,6 @@ html, body { height: 100%; background: #0B0F14; }
   background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(7,6,10,0.7) 75%, #07060a 100%);
 }
 
-/* Click flash effect */
-@keyframes click-flash-anim {
-  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
-  60%  { transform: translate(-50%, -50%) scale(2.2); opacity: 0.6; }
-  100% { transform: translate(-50%, -50%) scale(3);   opacity: 0; }
-}
-
-@keyframes click-particle-anim {
-  0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-}
-
-.click-flash {
-  position: absolute;
-  pointer-events: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,220,100,0.95) 0%, rgba(216,175,58,0.6) 40%, transparent 70%);
-  box-shadow: 0 0 24px 8px rgba(216,175,58,0.5);
-  animation: click-flash-anim 0.55s ease-out forwards;
-  z-index: 20;
-}
-
-.click-particle {
-  position: absolute;
-  pointer-events: none;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255, 210, 80, 0.9);
-  box-shadow: 0 0 6px rgba(216,175,58,0.8);
-  animation: click-particle-anim 0.65s ease-out forwards;
-  z-index: 20;
-}
-
 .cta-arrow {
   animation: pulse-ring 2.4s ease-in-out infinite;
   transform-origin: center;

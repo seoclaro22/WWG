@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { LandingPage } from '@/components/LandingPage'
 import { buildAlternates, homeMeta, localizedUrl } from '@/lib/seo'
-import { fetchZonesMap } from '@/lib/db'
+import { countUpcomingEvents, fetchClubsPublic, fetchZonesMap } from '@/lib/db'
 
 // La portada es un componente de servidor solo para poder declarar su
 // metadata por idioma; toda la interaccion vive en <LandingPage /> (cliente).
@@ -32,8 +32,15 @@ export default async function Home({ params: { locale } }: { params: { locale: s
   // sola ciudad, ficha o pagina temporal: todo el peso se quedaba en si misma.
   // Se pasan las zonas reales a LandingPage para que renderice un enlace por
   // ciudad, real y en el HTML inicial, no solo alcanzable escribiendo en el buscador.
-  const zonesMap = await fetchZonesMap()
+  const [zonesMap, eventCount, clubs] = await Promise.all([
+    fetchZonesMap(),
+    countUpcomingEvents(),
+    fetchClubsPublic({ limit: 1000 }),
+  ])
   const cities = Array.from(zonesMap.entries()).map(([slug, name]) => ({ slug, name }))
+  // Cifras reales de la agenda, no rotulos fijos: si un dia no hay eventos
+  // publicados la franja se oculta sola en vez de anunciar un catalogo vacio.
+  const stats = { events: eventCount, clubs: clubs.length, cities: cities.length }
 
   // WebSite + Organization: consolida el nombre de marca y el logo de cara a
   // como Google presenta el sitio en resultados.
@@ -78,7 +85,7 @@ export default async function Home({ params: { locale } }: { params: { locale: s
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <LandingPage cities={cities} locale={locale} />
+      <LandingPage cities={cities} locale={locale} stats={stats} />
     </>
   )
 }
