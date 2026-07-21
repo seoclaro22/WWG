@@ -4,6 +4,7 @@ import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
+import { reverseGeocode } from '@/lib/geo-client'
 
 type GeoStatus = 'idle' | 'locating' | 'success' | 'error'
 
@@ -14,20 +15,6 @@ function sb() {
   )
 }
 
-async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
-  try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-    if (!res.ok) return null
-    const json = await res.json()
-    const city = json?.address?.city || json?.address?.town || json?.address?.village || json?.address?.county
-    const state = json?.address?.state || ''
-    const country = json?.address?.country || ''
-    const parts = [city, state, country].filter(Boolean)
-    return parts[0] ? parts.slice(0, 2).join(', ') : null
-  } catch {
-    return null
-  }
-}
 
 // Semilla hasta que llegan las zonas reales de la base de datos. Antes anunciaba
 // Ibiza, Barcelona y Madrid, donde no hay agenda, y omitia Valencia, que es la

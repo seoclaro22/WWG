@@ -28,3 +28,9 @@ build/
 .cache/
 .idea/
 .vscode/
+
+# Artefactos locales
+apps/web/dev.err
+apps/web/*.tsbuildinfo
+.claude/
+apps/web/.claude/

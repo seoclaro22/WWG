@@ -36,6 +36,22 @@ export function buildAlternates(path: string, locale: string) {
   }
 }
 
+// Variante para rutas cuyo slug se traduce (/mallorca/hoy -> /en/mallorca/today,
+// /salir-de-fiesta-cerca-de-mi -> /en/nightlife-near-me).
+//
+// Con buildAlternates estas paginas anunciaban como version inglesa el slug
+// espanol bajo /en, que es un 404: un hreflang que apunta a una URL rota
+// invalida el grupo entero para Google.
+export function buildAlternatesFor(pathFor: (locale: string) => string, locale: string) {
+  const languages: Record<string, string> = {}
+  for (const l of routing.locales) languages[l] = localizedUrl(pathFor(l), l)
+  languages['x-default'] = languages[routing.defaultLocale]
+  return {
+    canonical: localizedUrl(pathFor(locale), locale),
+    languages,
+  }
+}
+
 // Titulo y descripcion de la portada por idioma.
 //
 // Criterio: la portada NO persigue consultas de ciudad, genero, club ni DJ;

@@ -10,6 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
+import { homeCrumb } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   }
 }
 
-export default async function DjProfile({ params }: { params: { id: string } }) {
+export default async function DjProfile({ params }: { params: { locale: string; id: string } }) {
   const [dj, events] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 10)])
   if (!dj) return notFound()
   const similar = await fetchSimilarDjs(params.id, (dj as any).genres || [], 1)
@@ -124,8 +125,8 @@ export default async function DjProfile({ params }: { params: { id: string } }) 
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
 
-        <Breadcrumbs items={[
-          { name: 'Inicio', href: '/' },
+        <Breadcrumbs locale={params.locale} items={[
+          { name: homeCrumb(params.locale), href: '/' },
           { name: 'Descubrir', href: '/discover?tab=events' },
           { name: 'DJs', href: '/discover?tab=djs' },
           { name: (dj as any).name },

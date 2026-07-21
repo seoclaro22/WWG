@@ -3,16 +3,22 @@ import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta } from '@/lib/seo'
+import { MIN_EVENTS_TO_INDEX, homeCrumb } from '@/lib/seo-pages'
+import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
   const { title, description } = genreMeta(name, params.locale)
+  // Mismo umbral que los cruces zona x genero: un genero sin agenda es una
+  // pagina vacia, y ofrecerla a Google solo resta calidad al dominio.
+  const count = (await fetchEvents({ genre: name, limit: MIN_EVENTS_TO_INDEX })).length
   return {
     title,
     description,
     alternates: buildAlternates(`/genre/${encodeURIComponent(name)}`, params.locale),
     openGraph: { title, description, type: 'website', url: `/genre/${encodeURIComponent(name)}` },
     twitter: { card: 'summary_large_image' },
+    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 
@@ -28,8 +34,9 @@ export default async function GenrePage({ params }: { params: { locale: string; 
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
       <div className="relative z-10 space-y-5">
-        <Breadcrumbs items={[
-          { name: 'Inicio', href: '/' },
+        <EventListJsonLd events={events} locale={params.locale} name={title} />
+        <Breadcrumbs locale={params.locale} items={[
+          { name: homeCrumb(params.locale), href: '/' },
           { name: `${eyebrow}: ${name}` },
         ]} />
 

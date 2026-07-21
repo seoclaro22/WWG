@@ -1,10 +1,16 @@
 import { notFound } from 'next/navigation'
-import { fetchEvents, fetchClubsPublic, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
+import { Link } from '@/lib/navigation'
+import { fetchEvents, fetchClubsPublic, fetchZoneGenreCounts, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
 import { buildAlternates } from '@/lib/seo'
+import { dictionaries } from '@/lib/dictionaries'
+import {
+  MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug, zoneMeta,
+} from '@/lib/seo-pages'
+import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateStaticParams() {
   const map = await fetchZonesMap()
@@ -14,9 +20,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { locale: string; zone: string } }) {
   const zoneName = await resolveZoneSlug(params.zone)
-  if (!zoneName) return { title: 'Zona no encontrada' }
-  const title = `Discotecas y eventos en ${zoneName}`
-  const description = `Descubre las mejores discotecas, fiestas y DJs en ${zoneName}. Agenda de eventos nocturnos actualizada a diario con Where We Go.`
+  // El notFound() va aqui y no solo en el componente: con loading.tsx la
+  // respuesta se envia en streaming, asi que para cuando renderiza la pagina
+  // la cabecera 200 ya salio y el notFound() daria un soft 404. generateMetadata
+  // se resuelve antes de abrir el stream, y ahi si se puede devolver 404.
+  if (!zoneName) notFound()
+  const { title, description } = zoneMeta(zoneName, params.locale)
   return {
     title,
     description,
@@ -26,14 +35,27 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   }
 }
 
-export default async function ZonePage({ params }: { params: { zone: string } }) {
+export default async function ZonePage({ params }: { params: { locale: string; zone: string } }) {
   const zoneName = await resolveZoneSlug(params.zone)
   if (!zoneName) return notFound()
 
-  const [events, clubs] = await Promise.all([
+  const [events, clubs, genreCounts] = await Promise.all([
     fetchEvents({ zone: zoneName, limit: 30, sponsoredFirst: true }),
     fetchClubsPublic({ zone: zoneName, limit: 20 }),
+    fetchZoneGenreCounts(zoneName),
   ])
+
+  const copy = zoneMeta(zoneName, params.locale)
+  const labels = relatedLinksLabels(params.locale)
+  const dict = dictionaries[params.locale] || dictionaries[routing.defaultLocale]
+
+  // Solo se enlazan los generos con agenda real en esta zona: son exactamente
+  // los mismos que se indexan, asi no mandamos ni al usuario ni a Google a
+  // paginas vacias.
+  const genres = Array.from(genreCounts.entries())
+    .filter(([, n]) => n >= MIN_EVENTS_TO_INDEX)
+    .sort((a, b) => b[1] - a[1])
+    .map(([g]) => g)
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
@@ -42,22 +64,47 @@ export default async function ZonePage({ params }: { params: { zone: string } })
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
       <div className="relative z-10 space-y-6">
-        <Breadcrumbs items={[
-          { name: 'Inicio', href: '/' },
+        <EventListJsonLd events={events} locale={params.locale} name={copy.title} />
+        <Breadcrumbs locale={params.locale} items={[
+          { name: dict['nav.home'] || 'Inicio', href: '/' },
           { name: zoneName },
         ]} />
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">Zona</p>
-          <h1 className="text-3xl font-bold text-white">Discotecas y eventos en {zoneName}</h1>
-          <p className="text-sm text-white/60 mt-2 max-w-xl">
-            La agenda nocturna de {zoneName}: discotecas, fiestas y DJs actualizados a diario. Encuentra tu plan y reserva entradas con Where We Go.
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-1">{copy.eyebrow}</p>
+          <h1 className="text-3xl font-bold text-white">{copy.title}</h1>
+          <p className="text-sm text-white/60 mt-2 max-w-xl">{copy.intro}</p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{labels.heading}</p>
+          <div className="flex flex-wrap gap-2">
+            {WHEN_KEYS.map((k) => (
+              <Link
+                key={k}
+                href={`/${params.zone}/${whenSlug(k, params.locale)}`}
+                className="text-xs px-3 py-1.5 rounded-full border border-[#d8af3a]/30 text-[#d8af3a] hover:bg-[#d8af3a]/10 transition-colors"
+                prefetch={false}
+              >
+                {whenMeta(k, zoneName, params.locale).eyebrow}
+              </Link>
+            ))}
+            {genres.map((g) => (
+              <Link
+                key={g}
+                href={`/${params.zone}/genre/${encodeURIComponent(g)}`}
+                className="text-xs px-3 py-1.5 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 transition-colors"
+                prefetch={false}
+              >
+                {g}
+              </Link>
+            ))}
+          </div>
         </div>
 
         {clubs.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">Discotecas en {zoneName}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.clubs}</p>
             <div className="grid gap-3">
               {clubs.map((c: any) => {
                 const images: string[] = Array.isArray(c.images) ? c.images : []
@@ -69,7 +116,7 @@ export default async function ZonePage({ params }: { params: { zone: string } })
         )}
 
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">Proximos eventos en {zoneName}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.events}</p>
           <div className="grid gap-3">
             {events.map((e: any) => {
               const imgs: string[] = Array.isArray(e.images) ? e.images : []
@@ -80,7 +127,7 @@ export default async function ZonePage({ params }: { params: { zone: string } })
                     id: e.id,
                     title: e.name,
                     title_i18n: e.name_i18n || undefined,
-                    date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
+                    date: formatEventDate(e.start_at, params.locale),
                     club: e.club_name || '-',
                     image: imgs[0],
                     sponsored: e.sponsored || false,
@@ -88,7 +135,9 @@ export default async function ZonePage({ params }: { params: { zone: string } })
                 />
               )
             })}
-            {events.length === 0 && <div className="text-sm text-white/50 py-6 text-center">No hay eventos programados en {zoneName} ahora mismo.</div>}
+            {events.length === 0 && (
+              <div className="text-sm text-white/50 py-6 text-center">{copy.empty}</div>
+            )}
           </div>
         </div>
       </div>

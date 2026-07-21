@@ -83,6 +83,20 @@ export async function countUpcomingEvents(params?: { zone?: string }) {
   return count || 0
 }
 
+// Generos con eventos proximos en una zona, y cuantos. Alimenta tanto los
+// enlaces internos de /[zona] como el sitemap: solo se publica el cruce
+// zona x genero que tiene agenda real detras.
+export async function fetchZoneGenreCounts(zone: string) {
+  const events = await fetchEvents({ zone, limit: 500 })
+  const counts = new Map<string, number>()
+  for (const e of events) {
+    for (const g of (e.genres || [])) {
+      counts.set(g, (counts.get(g) || 0) + 1)
+    }
+  }
+  return counts
+}
+
 export async function fetchClubsPublic(params?: { q?: string; limit?: number; zone?: string; genre?: string }) {
   const sb = getSupabaseClient()
   let q = sb.from('clubs').select('*').eq('status','approved').order('name', { ascending: true })

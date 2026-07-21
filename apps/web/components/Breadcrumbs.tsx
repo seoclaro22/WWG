@@ -1,11 +1,17 @@
 import { Link } from '@/lib/navigation'
+import { localizedUrl } from '@/lib/seo'
+import { routing } from '@/i18n/routing'
 
 export interface Crumb {
   name: string
   href?: string
 }
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({ items, locale }: { items: Crumb[]; locale?: string }) {
+  // Las URLs del JSON-LD tienen que llevar el prefijo de idioma de la pagina.
+  // Sin el, las migas de /en/* y /de/* apuntaban al arbol espanol, que es una
+  // contradiccion entre la ruta declarada y la real.
+  const lang = locale || routing.defaultLocale
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -13,7 +19,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      ...(item.href ? { item: `https://wherewego.site${item.href}` } : {}),
+      ...(item.href ? { item: localizedUrl(item.href, lang) } : {}),
     })),
   }
 

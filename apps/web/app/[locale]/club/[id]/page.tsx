@@ -9,6 +9,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
+import { homeCrumb } from '@/lib/seo-pages'
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const club: any = await fetchClub(params.id)
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   }
 }
 
-export default async function ClubProfile({ params }: { params: { id: string } }) {
+export default async function ClubProfile({ params }: { params: { locale: string; id: string } }) {
   const [club, events] = await Promise.all([fetchClub(params.id) as Promise<any>, fetchClubEvents(params.id, 10)])
   if (!club) return notFound()
 
@@ -125,8 +126,8 @@ export default async function ClubProfile({ params }: { params: { id: string } }
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="px-4 md:px-6 lg:px-10 pb-10 space-y-5 relative z-10">
 
-        <Breadcrumbs items={[
-          { name: 'Inicio', href: '/' },
+        <Breadcrumbs locale={params.locale} items={[
+          { name: homeCrumb(params.locale), href: '/' },
           { name: 'Discotecas', href: '/clubs' },
           { name: club.name },
         ]} />

@@ -11,6 +11,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
+import { homeCrumb } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   }
 }
 
-export default async function EventDetail({ params }: { params: { id: string } }) {
+export default async function EventDetail({ params }: { params: { locale: string; id: string } }) {
   const { id } = params
   const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
   if (!e) return notFound()
@@ -159,8 +160,8 @@ export default async function EventDetail({ params }: { params: { id: string } }
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
 
-        <Breadcrumbs items={[
-          { name: 'Inicio', href: '/' },
+        <Breadcrumbs locale={params.locale} items={[
+          { name: homeCrumb(params.locale), href: '/' },
           { name: 'Descubrir', href: '/discover?tab=events' },
           { name: 'Clubs', href: '/clubs' },
           ...(clubId ? [{ name: e.club_name || 'Club', href: `/club/${clubId}` }] : []),

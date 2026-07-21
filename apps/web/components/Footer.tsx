@@ -3,6 +3,7 @@ import { fetchZonesMap } from '@/lib/db'
 import { getSupabaseClient } from '@/lib/supabase'
 import { dictionaries } from '@/lib/dictionaries'
 import { routing } from '@/i18n/routing'
+import { nearMeta, nearSlug } from '@/lib/seo-pages'
 
 async function fetchActiveGenres() {
   const sb = getSupabaseClient()
@@ -26,6 +27,11 @@ export async function Footer({ locale }: { locale: string }) {
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-2">{t('footer.zones')}</p>
             <ul className="space-y-1">
+              {/* Primero el hub "cerca de mi": es la pagina que reune todas las
+                  ciudades, asi que enlazarla desde todo el sitio la refuerza. */}
+              <li>
+                <Link href={`/${nearSlug(locale)}`} className="hover:text-gold" prefetch={false}>{nearMeta(locale).eyebrow}</Link>
+              </li>
               {zones.map(([slug, name]) => (
                 <li key={slug}>
                   <Link href={`/${slug}`} className="hover:text-gold" prefetch={false}>{name}</Link>
