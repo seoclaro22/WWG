@@ -35,3 +35,32 @@ export function buildAlternates(path: string, locale: string) {
     languages: hreflangMap(path),
   }
 }
+
+// Titulo y descripcion de la portada por idioma.
+// Criterio: la keyword primero (Google ya muestra el dominio encima, asi que
+// abrir con la marca gasta espacio util) y descripcion aprovechando los ~155
+// caracteres que Google recorta, cerrando con llamada a la accion.
+export const HOME_META: Record<string, { title: string; description: string; tagline: string }> = {
+  es: {
+    title: 'Discotecas y eventos en Mallorca | Where We Go',
+    description:
+      'Descubre qué discotecas y fiestas hay hoy en Mallorca: line-ups, DJs y entradas. Agenda actualizada a diario. Encuentra tu plan para esta noche.',
+    tagline: 'La noche de Mallorca, cada día',
+  },
+  en: {
+    title: 'Clubs and Events in Mallorca | Where We Go',
+    description:
+      "Find out which clubs and parties are on tonight in Mallorca: line-ups, DJs and tickets. Updated daily. Find tonight's plan in seconds.",
+    tagline: 'Mallorca nightlife, updated daily',
+  },
+  de: {
+    title: 'Clubs und Events auf Mallorca | Where We Go',
+    description:
+      'Entdecke, welche Clubs und Partys heute auf Mallorca stattfinden: Line-ups, DJs und Tickets. Täglich aktualisiert. Finde deinen Plan für heute Nacht.',
+    tagline: 'Mallorcas Nachtleben, täglich aktuell',
+  },
+}
+
+export function homeMeta(locale: string) {
+  return HOME_META[locale] || HOME_META[routing.defaultLocale]
+}
