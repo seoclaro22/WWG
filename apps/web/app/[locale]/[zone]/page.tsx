@@ -3,13 +3,16 @@ import { fetchEvents, fetchClubsPublic, resolveZoneSlug, fetchZonesMap } from '@
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { routing } from '@/i18n/routing'
+import { buildAlternates } from '@/lib/seo'
 
 export async function generateStaticParams() {
   const map = await fetchZonesMap()
-  return Array.from(map.keys()).map(zone => ({ zone }))
+  const zones = Array.from(map.keys())
+  return routing.locales.flatMap((locale) => zones.map((zone) => ({ locale, zone })))
 }
 
-export async function generateMetadata({ params }: { params: { zone: string } }) {
+export async function generateMetadata({ params }: { params: { locale: string; zone: string } }) {
   const zoneName = await resolveZoneSlug(params.zone)
   if (!zoneName) return { title: 'Zona no encontrada' }
   const title = `Discotecas y eventos en ${zoneName}`
@@ -17,7 +20,7 @@ export async function generateMetadata({ params }: { params: { zone: string } })
   return {
     title,
     description,
-    alternates: { canonical: `/${params.zone}` },
+    alternates: buildAlternates(`/${params.zone}`, params.locale),
     openGraph: { title, description, type: 'website', url: `/${params.zone}` },
     twitter: { card: 'summary_large_image' },
   }

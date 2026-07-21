@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchEvent, fetchEventLineup, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -10,6 +10,7 @@ import { LocalText } from '@/components/LocalText'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { buildAlternates } from '@/lib/seo'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -35,7 +36,7 @@ function getSpotifyEmbed(input?: string | null) {
   return null
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const e: any = await fetchEvent(params.id)
   if (!e) return { title: 'Evento no encontrado' }
   const date = new Date(e.start_at).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
@@ -52,7 +53,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       images: imgs.length ? [{ url: imgs[0] }] : undefined,
     },
     twitter: { card: 'summary_large_image' },
-    alternates: { canonical: `/event/${e.id}` },
+    alternates: buildAlternates(`/event/${e.id}`, params.locale),
   }
 }
 

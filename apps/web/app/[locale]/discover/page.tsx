@@ -6,6 +6,11 @@ import { countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } fr
 import { T } from '@/components/T'
 import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
+import { buildAlternates, localePath } from '@/lib/seo'
+
+export function generateMetadata({ params }: { params: { locale: string } }) {
+  return { alternates: buildAlternates('/discover', params.locale) }
+}
 
 function rangeFromDateParam(dateParam?: string) {
   if (!dateParam) return {}
@@ -54,7 +59,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-export default async function DiscoverPage({ searchParams }: { searchParams: { q?: string; date?: string; genre?: string; zone?: string; tab?: string } }) {
+export default async function DiscoverPage({ params, searchParams }: { params: { locale: string }; searchParams: { q?: string; date?: string; genre?: string; zone?: string; tab?: string } }) {
+  const lp = (p: string) => localePath(p, params.locale)
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
@@ -83,7 +89,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
           ] as const).map(({ key, label }) => (
             <a
               key={key}
-              href={`/discover?tab=${key}${zone ? `&zone=${encodeURIComponent(zone)}` : ''}`}
+              href={lp(`/discover?tab=${key}${zone ? `&zone=${encodeURIComponent(zone)}` : ""}`)}
               className={`relative px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                 tab === key
                   ? 'bg-[#d8af3a] text-black shadow-[0_0_16px_rgba(216,175,58,0.4)]'
@@ -107,7 +113,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               {carouselClubs.map((c: any) => {
                 const img: string | undefined = Array.isArray(c.images) ? c.images[0] : (c.logo_url || undefined)
                 return (
-                  <a key={c.id} href={`/club/${c.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={c.id} href={lp(`/club/${c.id}`)} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <SafeImage src={img} alt={c.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />
@@ -129,7 +135,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { q
               {carouselDjs.map((dj: any) => {
                 const img: string | undefined = Array.isArray(dj.images) ? dj.images[0] : undefined
                 return (
-                  <a key={dj.id} href={`/dj/${dj.id}`} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={dj.id} href={lp(`/dj/${dj.id}`)} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <SafeImage src={img} alt={dj.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />

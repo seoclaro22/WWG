@@ -1,5 +1,5 @@
 "use client"
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { useI18n } from '@/lib/i18n'
 import { UserMenu } from './UserMenu'

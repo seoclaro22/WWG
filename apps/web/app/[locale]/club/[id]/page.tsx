@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchClub, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -8,8 +8,9 @@ import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { buildAlternates } from '@/lib/seo'
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const club: any = await fetchClub(params.id)
   if (!club) return { title: 'Club no encontrado' }
   const images: string[] = Array.isArray(club.images) ? club.images : []
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       images: images.length ? [{ url: images[0] }] : (club.logo_url ? [{ url: club.logo_url }] : undefined),
     },
     twitter: { card: 'summary_large_image' },
-    alternates: { canonical: `/club/${club.id}` },
+    alternates: buildAlternates(`/club/${club.id}`, params.locale),
   }
 }
 

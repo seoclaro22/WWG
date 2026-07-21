@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchDj, fetchDjEvents, fetchSimilarDjs } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -9,6 +9,7 @@ import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { buildAlternates } from '@/lib/seo'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -34,7 +35,7 @@ function getSpotifyEmbed(input?: string | null) {
   return null
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const dj: any = await fetchDj(params.id)
   if (!dj) return { title: 'DJ no encontrado' }
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       images: images.length ? [{ url: images[0] }] : undefined,
     },
     twitter: { card: 'summary_large_image' },
-    alternates: { canonical: `/dj/${dj.id}` },
+    alternates: buildAlternates(`/dj/${dj.id}`, params.locale),
   }
 }
 

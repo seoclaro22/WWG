@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { fetchZonesMap } from '@/lib/db'
 import { getSupabaseClient } from '@/lib/supabase'
 

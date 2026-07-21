@@ -1,5 +1,5 @@
 "use client"
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { useAuth } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 import { useI18n } from '@/lib/i18n'

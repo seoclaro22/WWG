@@ -1,5 +1,5 @@
 "use client"
-import Link from 'next/link'
+import { Link } from '@/lib/navigation'
 import { useEffect, useState } from 'react'
 import { clearAnalyticsStorage } from '@/lib/analytics-client'
 import { useI18n } from '@/lib/i18n'
