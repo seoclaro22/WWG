@@ -12,8 +12,8 @@ export const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Agenda local curada por expertos',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'Descubre donde sale todo el mundo esta noche.',
-    'landing.placeholder': '¿En qué ciudad sales hoy?',
+    'landing.subtitle': 'Dónde salir de fiesta en tu ciudad, cada noche.',
+    'landing.placeholder': '¿En qué ciudad quieres salir de fiesta hoy?',
     'landing.cta': 'Buscar planes',
     'landing.use_location': 'Usar mi ubicacion',
     'landing.using_location': 'Detectando ubicacion...',
@@ -192,8 +192,8 @@ export const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Local agenda curated by experts',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'Discover where everyone goes out tonight.',
-    'landing.placeholder': 'Which city are you going out tonight?',
+    'landing.subtitle': 'Where to go out in your city, every night.',
+    'landing.placeholder': 'Which city do you want to party in tonight?',
     'landing.cta': 'Find plans',
     'landing.use_location': 'Use my location',
     'landing.using_location': 'Detecting location...',
@@ -372,8 +372,8 @@ export const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Lokale Agenda von Experten kuratiert',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'Entdecke, wo heute Nacht alle feiern.',
-    'landing.placeholder': 'In welcher Stadt gehst du heute aus?',
+    'landing.subtitle': 'Wo du in deiner Stadt feierst, jede Nacht.',
+    'landing.placeholder': 'In welcher Stadt willst du heute feiern?',
     'landing.cta': 'Finde Plaene',
     'landing.use_location': 'Meinen Standort nutzen',
     'landing.using_location': 'Standort wird ermittelt...',

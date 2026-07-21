@@ -421,13 +421,13 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
             autoridad del sitio y antes no enlazaba ni una ciudad ni una fecha,
             solo alcanzables escribiendo en el buscador (JS, no rastreable). */}
         {cities.length > 0 && (
-          <div className="anim-points flex flex-wrap justify-center gap-2 max-w-lg">
+          <div className="anim-points grid grid-cols-2 gap-2 w-full max-w-sm">
             {cities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/${c.slug}/${whenSlug('today', locale)}`}
                 prefetch={false}
-                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition text-xs text-white/70"
+                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition text-xs text-white/70 text-center truncate"
               >
                 {whenMeta('today', c.name, locale).eyebrow} · {c.name}
               </Link>
