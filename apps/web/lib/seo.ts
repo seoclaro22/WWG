@@ -37,27 +37,33 @@ export function buildAlternates(path: string, locale: string) {
 }
 
 // Titulo y descripcion de la portada por idioma.
-// Criterio: la keyword primero (Google ya muestra el dominio encima, asi que
-// abrir con la marca gasta espacio util) y descripcion aprovechando los ~155
-// caracteres que Google recorta, cerrando con llamada a la accion.
+//
+// Criterio: la portada NO persigue consultas de ciudad, genero, club ni DJ;
+// de eso se encargan /[zona], /genre/[x] y las fichas. Aqui se posiciona la
+// marca y el producto en generico ("tu ciudad", sin nombrarla), para no
+// competir con las paginas de zona ni quedarse obsoleta al abrir ciudades.
+//
+// Formato: keyword primero (Google ya muestra el dominio encima, abrir con la
+// marca gasta espacio util) y descripcion aprovechando los ~155 caracteres
+// que Google recorta, cerrando con llamada a la accion.
 export const HOME_META: Record<string, { title: string; description: string; tagline: string }> = {
   es: {
-    title: 'Discotecas y eventos en Mallorca | Where We Go',
+    title: 'Dónde salir de fiesta en tu ciudad | Where We Go',
     description:
-      'Descubre qué discotecas y fiestas hay hoy en Mallorca: line-ups, DJs y entradas. Agenda actualizada a diario. Encuentra tu plan para esta noche.',
-    tagline: 'La noche de Mallorca, cada día',
+      'Descubre las mejores discotecas, fiestas y DJs de tu ciudad. Agenda actualizada a diario con line-ups, horarios y entradas. Encuentra tu plan en segundos.',
+    tagline: 'La noche de tu ciudad, cada día',
   },
   en: {
-    title: 'Clubs and Events in Mallorca | Where We Go',
+    title: 'Where to Go Out in Your City | Where We Go',
     description:
-      "Find out which clubs and parties are on tonight in Mallorca: line-ups, DJs and tickets. Updated daily. Find tonight's plan in seconds.",
-    tagline: 'Mallorca nightlife, updated daily',
+      "Discover the best clubs, parties and DJs in your city. Daily updated listings with line-ups, times and tickets. Find tonight's plan in seconds.",
+    tagline: "Your city's nightlife, updated daily",
   },
   de: {
-    title: 'Clubs und Events auf Mallorca | Where We Go',
+    title: 'Wo du in deiner Stadt feierst | Where We Go',
     description:
-      'Entdecke, welche Clubs und Partys heute auf Mallorca stattfinden: Line-ups, DJs und Tickets. Täglich aktualisiert. Finde deinen Plan für heute Nacht.',
-    tagline: 'Mallorcas Nachtleben, täglich aktuell',
+      'Entdecke die besten Clubs, Partys und DJs in deiner Stadt. Täglich aktualisiert mit Line-ups, Zeiten und Tickets. Finde deinen Plan in Sekunden.',
+    tagline: 'Das Nachtleben deiner Stadt, täglich aktuell',
   },
 }
 

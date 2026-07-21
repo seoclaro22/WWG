@@ -51,10 +51,8 @@ export default function Home({ params: { locale } }: { params: { locale: string 
           '@type': 'ImageObject',
           url: 'https://wherewego.site/icon.svg',
         },
-        areaServed: [
-          { '@type': 'Place', name: 'Mallorca' },
-          { '@type': 'Place', name: 'Amsterdam' },
-        ],
+        // Sin areaServed a proposito: la cobertura crece con cada ciudad nueva
+        // y son las paginas de zona las que declaran el ambito geografico.
       },
     ],
   }
