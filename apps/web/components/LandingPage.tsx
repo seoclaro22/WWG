@@ -320,12 +320,17 @@ export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; l
           </div>
           <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon">WHERE WE GO</div>
         </div>
-        {/* Subtítulo — tercera ola */}
-        <div className="anim-subtitle text-base md:text-lg text-white/55 max-w-sm -mt-2">
+        {/* Subtitulo, y unico h1 de la pagina. "WWG"/"WHERE WE GO" de arriba son
+            el logotipo, no contenido: la portada no tenia ningun h1, y el
+            titulo visual no describe de que trata el sitio. */}
+        <h1 className="anim-subtitle text-base md:text-lg font-normal text-white/55 max-w-sm -mt-2">
           {t('landing.subtitle')}
-        </div>
+        </h1>
         <form onSubmit={onSubmit} className="w-full max-w-lg space-y-2">
-          <p className="text-sm text-white/50 text-center anim-label">{t('landing.placeholder')}</p>
+          {/* Ya era el texto que presentaba el buscador; solo cambia la
+              etiqueta, de p a h2, para que la pagina tenga una jerarquia real
+              bajo el h1 en vez de saltar directo a contenido sin encabezado. */}
+          <h2 className="text-sm font-normal text-white/50 text-center anim-label">{t('landing.placeholder')}</h2>
           <div className="relative anim-form">
             <div className="flex items-center bg-black/30 border border-[#d8af3a]/30 rounded-full px-5 py-2 shadow-[0_0_28px_rgba(216,175,58,0.18),0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur transition-shadow hover:shadow-[0_0_42px_rgba(216,175,58,0.32),0_15px_60px_rgba(0,0,0,0.45)]">
             <svg className="w-4 h-4 text-[#d8af3a] mr-3 shrink-0" viewBox="0 0 16 16" fill="none">
