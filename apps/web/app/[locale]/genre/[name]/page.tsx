@@ -2,22 +2,23 @@ import { Link } from '@/lib/navigation'
 import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { buildAlternates, genreMeta } from '@/lib/seo'
+import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
 import { MIN_EVENTS_TO_INDEX, homeCrumb } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
-  const { title, description } = genreMeta(name, params.locale)
+  const { title, description, eyebrow } = genreMeta(name, params.locale)
   // Mismo umbral que los cruces zona x genero: un genero sin agenda es una
   // pagina vacia, y ofrecerla a Google solo resta calidad al dominio.
   const count = (await fetchEvents({ genre: name, limit: MIN_EVENTS_TO_INDEX })).length
+  const images = ogImage({ eyebrow, title: name, subtitle: description })
   return {
     title,
     description,
     alternates: buildAlternates(`/genre/${encodeURIComponent(name)}`, params.locale),
-    openGraph: { title, description, type: 'website', url: `/genre/${encodeURIComponent(name)}` },
-    twitter: { card: 'summary_large_image' },
+    openGraph: { title, description, type: 'website', url: `/genre/${encodeURIComponent(name)}`, images },
+    twitter: { card: 'summary_large_image', images },
     ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }

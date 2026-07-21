@@ -63,6 +63,9 @@ export default async function ClubProfile({ params }: { params: { locale: string
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NightClub',
+    // Mismo @id que usan las fichas de evento al declarar su location: es lo
+    // que le dice a Google que hablan del mismo local y no de dos entidades.
+    '@id': `https://wherewego.site/club/${club.id}#club`,
     name: club.name,
     ...(club.description ? { description: String(club.description).slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),

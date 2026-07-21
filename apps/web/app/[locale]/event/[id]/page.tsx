@@ -1,6 +1,6 @@
 import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
-import { fetchEvent, fetchEventLineup, fetchClubEvents } from '@/lib/db'
+import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReserveButton } from '@/components/ReserveButton'
@@ -46,9 +46,20 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // si tampoco la hay, se omite en vez de inventarla.
   const venue = e.club_name || e.zone || ''
   const description = (e.description || '').slice(0, 155) || `${e.name}${venue ? ` en ${venue}` : ''}, ${date}. Reserva tus entradas en Where We Go.`
+
+  // Un evento terminado ya no le sirve a quien llega desde Google, pero la URL
+  // debe seguir resolviendo para quien la tenga guardada o compartida. El cron
+  // de archivado borra el evento a los 7 dias y a partir de ahi la ficha da 404
+  // sola: esto solo cubre esa ventana.
+  const endedAt = e.end_at
+    ? new Date(e.end_at)
+    : new Date(new Date(e.start_at).getTime() + 12 * 60 * 60 * 1000)
+  const hasEnded = endedAt.getTime() < Date.now()
+
   return {
     title: venue ? `${e.name} — ${venue}` : e.name,
     description,
+    ...(hasEnded ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: `${e.name} · ${date}`,
       description,
@@ -66,7 +77,13 @@ export default async function EventDetail({ params }: { params: { locale: string
   const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
   if (!e) return notFound()
   const clubId = (e as any).club_id as string | null
-  const moreFromClub = clubId ? await fetchClubEvents(clubId, 5) : []
+  const [moreFromClub, club] = clubId
+    ? await Promise.all([fetchClubEvents(clubId, 5), fetchClub(clubId)])
+    : [[], null]
+  // Muchos eventos apuntan a un club cuya ficha no es publica: /club/<id>
+  // devuelve 404. Enlazarlo igualmente desde el schema mandaria a Google a una
+  // URL rota, que es peor que no declarar la relacion.
+  const clubUrl = club ? `https://wherewego.site/club/${clubId}` : null
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
   const cover = imgs.length ? imgs[0] : null
   const description: string = (e as any).description || ''
@@ -82,26 +99,52 @@ export default async function EventDetail({ params }: { params: { locale: string
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     ...(description ? { description: description.slice(0, 500) } : {}),
     ...(cover ? { image: [cover] } : {}),
-    location: {
-      '@type': 'Place',
-      name: (e as any).club_name || (e as any).zone || (e as any).name,
-      address: {
-        '@type': 'PostalAddress',
-        // Sin pais en duro: 'ES' era falso para Amsterdam.
-        ...((e as any).zone ? { addressLocality: (e as any).zone } : {}),
-      },
-    },
+    // El local se identifica con el @id de su ficha, no como un Place suelto.
+    // Asi Google une evento y club como la misma entidad en vez de deducirlo,
+    // y hereda de la ficha del club la direccion, las redes y la valoracion.
+    location: clubUrl
+      ? {
+          '@type': 'NightClub',
+          '@id': `https://wherewego.site/club/${clubId}#club`,
+          name: (e as any).club_name || (e as any).zone || (e as any).name,
+          url: clubUrl,
+          ...((e as any).zone
+            ? { address: { '@type': 'PostalAddress', addressLocality: (e as any).zone } }
+            : {}),
+        }
+      : {
+          '@type': 'Place',
+          name: (e as any).club_name || (e as any).zone || (e as any).name,
+          address: {
+            '@type': 'PostalAddress',
+            // Sin pais en duro: 'ES' era falso para Amsterdam.
+            ...((e as any).zone ? { addressLocality: (e as any).zone } : {}),
+          },
+        },
     ...(lineup.length ? {
-      performer: lineup.map((d: any) => ({ '@type': 'MusicGroup', name: d.name })),
+      // Person, no MusicGroup: es el mismo @id que declara la ficha del DJ, y
+      // dos tipos distintos sobre el mismo identificador se contradicen.
+      performer: lineup.map((d: any) => ({
+        '@type': 'Person',
+        '@id': `https://wherewego.site/dj/${d.id}#dj`,
+        name: d.name,
+        url: `https://wherewego.site/dj/${d.id}`,
+      })),
     } : {}),
-    ...((e as any).url_referral ? {
-      offers: {
-        '@type': 'Offer',
-        url: `https://wherewego.site/event/${id}`,
-        availability: 'https://schema.org/InStock',
-        ...((e as any).price_min != null ? { price: (e as any).price_min, priceCurrency: 'EUR' } : {}),
-      },
-    } : {}),
+    // offers va siempre, no solo cuando hay enlace de entradas: sin el, el
+    // MusicEvent no es elegible para el resultado enriquecido de eventos de
+    // Google. Si no hay venta externa, la oferta apunta a la propia ficha,
+    // que es donde el usuario continua.
+    offers: {
+      '@type': 'Offer',
+      url: `https://wherewego.site/event/${id}`,
+      availability: 'https://schema.org/InStock',
+      // El precio solo se declara si lo sabemos: poner 0 por defecto seria
+      // afirmar que la entrada es gratis, y eso es dato falso en el schema.
+      ...((e as any).price_min != null
+        ? { price: (e as any).price_min, priceCurrency: 'EUR' }
+        : {}),
+    },
     organizer: { '@type': 'Organization', name: 'Where We Go', url: 'https://wherewego.site' },
   }
 

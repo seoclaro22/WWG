@@ -67,16 +67,19 @@ function EventsManager() {
         if (error) { alert('No se pudo guardar el line-up: ' + error.message) }
       }
     }
-    if (eventId && shouldNotify) {
+    if (eventId) {
       try {
         const { data } = await s.auth.getSession()
         const token = data.session?.access_token
         if (token) {
-          await fetch('/api/notify-event', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ eventId })
-          })
+          const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+          const payload = JSON.stringify({ eventId })
+          // La push solo al publicar por primera vez; el aviso a los buscadores
+          // en cada guardado, porque tambien cambia la ficha al editarla.
+          if (shouldNotify) {
+            await fetch('/api/notify-event', { method: 'POST', headers, body: payload })
+          }
+          await fetch('/api/indexnow', { method: 'POST', headers, body: payload })
         }
       } catch {}
     }

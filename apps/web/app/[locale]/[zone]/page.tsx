@@ -5,7 +5,7 @@ import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
-import { buildAlternates } from '@/lib/seo'
+import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import {
   MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug, zoneMeta,
@@ -25,13 +25,14 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   // la cabecera 200 ya salio y el notFound() daria un soft 404. generateMetadata
   // se resuelve antes de abrir el stream, y ahi si se puede devolver 404.
   if (!zoneName) notFound()
-  const { title, description } = zoneMeta(zoneName, params.locale)
+  const { title, description, eyebrow } = zoneMeta(zoneName, params.locale)
+  const images = ogImage({ eyebrow, title: zoneName, subtitle: description })
   return {
     title,
     description,
     alternates: buildAlternates(`/${params.zone}`, params.locale),
-    openGraph: { title, description, type: 'website', url: `/${params.zone}` },
-    twitter: { card: 'summary_large_image' },
+    openGraph: { title, description, type: 'website', url: `/${params.zone}`, images },
+    twitter: { card: 'summary_large_image', images },
   }
 }
 

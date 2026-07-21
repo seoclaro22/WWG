@@ -52,6 +52,17 @@ export function buildAlternatesFor(pathFor: (locale: string) => string, locale: 
   }
 }
 
+// Imagen de compartir de las paginas de listado, generada en /og con el texto
+// de cada pagina. Absoluta a proposito: Facebook, WhatsApp y X no resuelven
+// rutas relativas en og:image.
+export function ogImage(parts: { eyebrow?: string; title: string; subtitle?: string }) {
+  const q = new URLSearchParams()
+  if (parts.eyebrow) q.set('eyebrow', parts.eyebrow)
+  q.set('title', parts.title)
+  if (parts.subtitle) q.set('subtitle', parts.subtitle)
+  return [{ url: `${BASE}/og?${q.toString()}`, width: 1200, height: 630 }]
+}
+
 // Titulo y descripcion de la portada por idioma.
 //
 // Criterio: la portada NO persigue consultas de ciudad, genero, club ni DJ;

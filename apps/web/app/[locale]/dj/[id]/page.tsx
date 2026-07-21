@@ -70,6 +70,8 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    // Mismo @id con el que las fichas de evento lo listan en performer.
+    '@id': `https://wherewego.site/dj/${(dj as any).id}#dj`,
     name: (dj as any).name,
     ...(bio ? { description: bio.slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),

@@ -8,13 +8,30 @@ import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
 import { buildAlternates, localePath, listMeta } from '@/lib/seo'
 
-export function generateMetadata({ params }: { params: { locale: string } }) {
+// Los filtros (q, date, genre, zone, tab) son navegacion facetada: cada
+// combinacion es una URL distinta con el mismo inventario reordenado. Sin
+// control, Googlebot se dedica a rastrear miles de cruces en vez de las
+// fichas y las paginas de zona, que son las que posicionan.
+//
+// El canonical ya apuntaba al /discover limpio, pero el canonical es una
+// sugerencia y no evita el rastreo. El noindex,follow si: la variante
+// filtrada no compite, y sus enlaces salientes se siguen rastreando.
+export function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: { locale: string }
+  searchParams?: Record<string, string | string[] | undefined>
+}) {
   const { title, description } = listMeta('discover', params.locale)
+  const isFiltered = Object.values(searchParams || {}).some((v) => v != null && v !== '')
+
   return {
     title,
     description,
     alternates: buildAlternates('/discover', params.locale),
     openGraph: { title, description, type: 'website' },
+    ...(isFiltered ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

@@ -3,7 +3,7 @@ import { Link } from '@/lib/navigation'
 import { countUpcomingEvents, fetchZonesMap } from '@/lib/db'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { NearMeLocator } from '@/components/NearMeLocator'
-import { buildAlternatesFor } from '@/lib/seo'
+import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { homeCrumb, nearMeta, nearSlug, whenMeta, whenSlug } from '@/lib/seo-pages'
 
 // Cuerpo compartido de la pagina "cerca de mi". Vive aqui y no en app/ porque
@@ -16,14 +16,15 @@ import { homeCrumb, nearMeta, nearSlug, whenMeta, whenSlug } from '@/lib/seo-pag
 // leer ni Google ni quien deniegue el permiso.
 
 export function nearMetadata(locale: string) {
-  const { title, description } = nearMeta(locale)
+  const { title, description, eyebrow, h1 } = nearMeta(locale)
   const path = `/${nearSlug(locale)}`
+  const images = ogImage({ eyebrow, title: h1, subtitle: description })
   return {
     title,
     description,
     alternates: buildAlternatesFor((l) => `/${nearSlug(l)}`, locale),
-    openGraph: { title, description, type: 'website', url: path },
-    twitter: { card: 'summary_large_image' },
+    openGraph: { title, description, type: 'website', url: path, images },
+    twitter: { card: 'summary_large_image', images },
   }
 }
 

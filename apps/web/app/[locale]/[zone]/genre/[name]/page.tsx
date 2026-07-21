@@ -5,7 +5,7 @@ import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
-import { buildAlternates } from '@/lib/seo'
+import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import { MIN_EVENTS_TO_INDEX, formatEventDate, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
@@ -34,16 +34,17 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   if (!zoneName) notFound()
 
   const genre = decodeURIComponent(params.name)
-  const { title, description } = zoneGenreMeta(genre, zoneName, params.locale)
+  const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
   const path = `/${params.zone}/genre/${params.name}`
   const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
+  const images = ogImage({ eyebrow, title: `${genre} · ${zoneName}`, subtitle: description })
 
   return {
     title,
     description,
     alternates: buildAlternates(path, params.locale),
-    openGraph: { title, description, type: 'website', url: path },
-    twitter: { card: 'summary_large_image' },
+    openGraph: { title, description, type: 'website', url: path, images },
+    twitter: { card: 'summary_large_image', images },
     ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
