@@ -1,6 +1,6 @@
 import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
-import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents } from '@/lib/db'
+import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, slugifyZone } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReserveButton } from '@/components/ReserveButton'
@@ -84,6 +84,7 @@ export default async function EventDetail({ params }: { params: { locale: string
   // devuelve 404. Enlazarlo igualmente desde el schema mandaria a Google a una
   // URL rota, que es peor que no declarar la relacion.
   const clubUrl = club ? `https://wherewego.site/club/${clubId}` : null
+  const zoneSlug = (e as any).zone ? slugifyZone((e as any).zone) : null
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
   const cover = imgs.length ? imgs[0] : null
   const description: string = (e as any).description || ''
@@ -193,9 +194,17 @@ export default async function EventDetail({ params }: { params: { locale: string
           <p className="text-sm text-white/70 drop-shadow">
             <LDate value={e.start_at} timeZone="UTC" options={{ weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' }} />
             {' · '}
-            {clubId ? (
+            {/* Solo se enlaza si la ficha del club es publica: mas de la mitad
+                de los eventos apuntan a un club cuyo /club/<id> da 404. */}
+            {clubUrl ? (
               <Link className="text-[#d8af3a] hover:text-[#e8c85a] font-medium transition-colors" href={`/club/${clubId}`}>{e.club_name || '-'}</Link>
             ) : (e.club_name || '-')}
+            {zoneSlug && (
+              <>
+                {' · '}
+                <Link className="text-[#d8af3a] hover:text-[#e8c85a] font-medium transition-colors" href={`/${zoneSlug}`}>{(e as any).zone}</Link>
+              </>
+            )}
           </p>
         </div>
       </div>
@@ -203,11 +212,13 @@ export default async function EventDetail({ params }: { params: { locale: string
       {/* ── Content ──────────────────────────────────────────────── */}
       <div className="relative z-10 px-4 md:px-6 lg:px-10 pb-10 space-y-5">
 
+        {/* Jerarquia real del sitio: inicio > ciudad > club > evento. Antes
+            pasaba por /discover?tab=events, que ahora es noindex, y por /clubs,
+            que no es el padre de nada. */}
         <Breadcrumbs locale={params.locale} items={[
           { name: homeCrumb(params.locale), href: '/' },
-          { name: 'Descubrir', href: '/discover?tab=events' },
-          { name: 'Clubs', href: '/clubs' },
-          ...(clubId ? [{ name: e.club_name || 'Club', href: `/club/${clubId}` }] : []),
+          ...(zoneSlug ? [{ name: (e as any).zone as string, href: `/${zoneSlug}` }] : []),
+          ...(clubUrl ? [{ name: e.club_name || 'Club', href: `/club/${clubId}` }] : []),
           { name: (e as any).name },
         ]} />
 

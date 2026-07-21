@@ -1,14 +1,23 @@
 import { Link } from '@/lib/navigation'
-import { fetchZonesMap } from '@/lib/db'
+import { fetchEvents, fetchZonesMap } from '@/lib/db'
 import { getSupabaseClient } from '@/lib/supabase'
 import { dictionaries } from '@/lib/dictionaries'
 import { routing } from '@/i18n/routing'
-import { nearMeta, nearSlug } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, nearMeta, nearSlug, whenMeta, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
+import { listMeta } from '@/lib/seo'
 
+// Solo los generos con agenda real. Un genero "activo" en la tabla puede no
+// tener ni un evento: sus paginas ya salian noindex y fuera del sitemap, pero
+// el pie las seguia enlazando desde TODAS las paginas del sitio, mandando el
+// enlazado interno justo a donde no hay nada.
 async function fetchActiveGenres() {
   const sb = getSupabaseClient()
   const { data } = await sb.from('genres').select('name').eq('status', 'active').order('name').limit(200)
-  return (data || []).map((g: any) => g.name as string)
+  const names = (data || []).map((g: any) => g.name as string)
+  const counts = await Promise.all(
+    names.map((name) => fetchEvents({ genre: name, limit: MIN_EVENTS_TO_INDEX })),
+  )
+  return names.filter((_, i) => counts[i].length >= MIN_EVENTS_TO_INDEX)
 }
 
 export async function Footer({ locale }: { locale: string }) {
@@ -32,9 +41,22 @@ export async function Footer({ locale }: { locale: string }) {
               <li>
                 <Link href={`/${nearSlug(locale)}`} className="hover:text-gold" prefetch={false}>{nearMeta(locale).eyebrow}</Link>
               </li>
+              {/* Cada ciudad con sus dos paginas temporales al lado: son las que
+                  persiguen "salir de fiesta hoy / este finde en X" y hasta ahora
+                  no las enlazaba nada del sitio. */}
               {zones.map(([slug, name]) => (
                 <li key={slug}>
                   <Link href={`/${slug}`} className="hover:text-gold" prefetch={false}>{name}</Link>
+                  <span className="ml-1.5 text-xs text-white/25">
+                    {WHEN_KEYS.map((k, i) => (
+                      <span key={k}>
+                        {i > 0 && ' · '}
+                        <Link href={`/${slug}/${whenSlug(k, locale)}`} className="hover:text-gold" prefetch={false}>
+                          {whenMeta(k, name, locale).eyebrow}
+                        </Link>
+                      </span>
+                    ))}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -57,6 +79,10 @@ export async function Footer({ locale }: { locale: string }) {
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-2">Where We Go</p>
           <ul className="space-y-1">
+            {/* /clubs y /djs no los enlazaba nada del sitio: solo se llegaba a
+                ellos via /discover?tab=..., que es noindex por ser facetado. */}
+            <li><Link href="/clubs" className="hover:text-gold" prefetch={false}>{listMeta('clubs', locale).title}</Link></li>
+            <li><Link href="/djs" className="hover:text-gold" prefetch={false}>{listMeta('djs', locale).title}</Link></li>
             <li><Link href="/promote" className="hover:text-gold" prefetch={false}>{t('nav.promote')}</Link></li>
             <li><Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link></li>
             <li><Link href="/cookies" className="hover:text-gold" prefetch={false}>Cookies</Link></li>

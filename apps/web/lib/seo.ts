@@ -121,7 +121,7 @@ export function siteMeta(locale: string) {
 
 // Listados generales. Son transversales a todas las ciudades: quien busca por
 // ciudad aterriza en /[zona], no aqui.
-const LIST_META: Record<string, Record<'discover' | 'clubs', { title: string; description: string }>> = {
+const LIST_META: Record<string, Record<'discover' | 'clubs' | 'djs', { title: string; description: string }>> = {
   es: {
     discover: {
       title: 'Agenda de eventos y fiestas',
@@ -130,6 +130,10 @@ const LIST_META: Record<string, Record<'discover' | 'clubs', { title: string; de
     clubs: {
       title: 'Discotecas y clubs',
       description: 'Descubre las discotecas de tu ciudad: fotos, ubicación, géneros musicales y su agenda de próximos eventos. Encuentra dónde salir esta noche.',
+    },
+    djs: {
+      title: 'DJs y line-ups',
+      description: 'Descubre los DJs de tu ciudad: géneros, biografía y sus próximas sesiones. Encuentra a quién ver esta noche con Where We Go.',
     },
   },
   en: {
@@ -141,6 +145,10 @@ const LIST_META: Record<string, Record<'discover' | 'clubs', { title: string; de
       title: 'Clubs and Venues',
       description: 'Discover the clubs in your city: photos, location, music genres and their upcoming events. Find where to go out tonight.',
     },
+    djs: {
+      title: 'DJs and Line-ups',
+      description: "Discover the DJs in your city: genres, bio and their upcoming sets. Find out who's playing tonight with Where We Go.",
+    },
   },
   de: {
     discover: {
@@ -151,10 +159,14 @@ const LIST_META: Record<string, Record<'discover' | 'clubs', { title: string; de
       title: 'Clubs und Locations',
       description: 'Entdecke die Clubs deiner Stadt: Fotos, Lage, Musikrichtungen und kommende Events. Finde heraus, wo du heute Nacht feierst.',
     },
+    djs: {
+      title: 'DJs und Line-ups',
+      description: 'Entdecke die DJs deiner Stadt: Genres, Bio und kommende Sets. Finde heraus, wer heute Nacht auflegt, mit Where We Go.',
+    },
   },
 }
 
-export function listMeta(page: 'discover' | 'clubs', locale: string) {
+export function listMeta(page: 'discover' | 'clubs' | 'djs', locale: string) {
   return (LIST_META[locale] || LIST_META[routing.defaultLocale])[page]
 }
 

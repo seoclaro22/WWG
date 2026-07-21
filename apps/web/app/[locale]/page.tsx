@@ -1,6 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import { LandingPage } from '@/components/LandingPage'
 import { buildAlternates, homeMeta, localizedUrl } from '@/lib/seo'
+import { fetchZonesMap } from '@/lib/db'
 
 // La portada es un componente de servidor solo para poder declarar su
 // metadata por idioma; toda la interaccion vive en <LandingPage /> (cliente).
@@ -23,9 +24,16 @@ export function generateMetadata({ params }: { params: { locale: string } }) {
   }
 }
 
-export default function Home({ params: { locale } }: { params: { locale: string } }) {
+export default async function Home({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale)
   const { description } = homeMeta(locale)
+
+  // La portada es la pagina con mas autoridad del sitio y no enlazaba ni una
+  // sola ciudad, ficha o pagina temporal: todo el peso se quedaba en si misma.
+  // Se pasan las zonas reales a LandingPage para que renderice un enlace por
+  // ciudad, real y en el HTML inicial, no solo alcanzable escribiendo en el buscador.
+  const zonesMap = await fetchZonesMap()
+  const cities = Array.from(zonesMap.entries()).map(([slug, name]) => ({ slug, name }))
 
   // WebSite + Organization: consolida el nombre de marca y el logo de cara a
   // como Google presenta el sitio en resultados.
@@ -41,6 +49,16 @@ export default function Home({ params: { locale } }: { params: { locale: string 
         description,
         inLanguage: locale,
         publisher: { '@id': 'https://wherewego.site/#organization' },
+        // Declara el buscador del sitio: es lo que habilita la caja de
+        // busqueda propia bajo el resultado de marca en Google.
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${localizedUrl('/discover', locale)}?q={search_term_string}`,
+          },
+          'query-input': 'required name=search_term_string',
+        },
       },
       {
         '@type': 'Organization',
@@ -60,7 +78,7 @@ export default function Home({ params: { locale } }: { params: { locale: string 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <LandingPage />
+      <LandingPage cities={cities} locale={locale} />
     </>
   )
 }

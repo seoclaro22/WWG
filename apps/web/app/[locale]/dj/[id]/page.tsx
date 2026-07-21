@@ -9,7 +9,7 @@ import { T } from '@/components/T'
 import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { buildAlternates } from '@/lib/seo'
+import { buildAlternates, listMeta } from '@/lib/seo'
 import { homeCrumb } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
@@ -129,8 +129,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
 
         <Breadcrumbs locale={params.locale} items={[
           { name: homeCrumb(params.locale), href: '/' },
-          { name: 'Descubrir', href: '/discover?tab=events' },
-          { name: 'DJs', href: '/discover?tab=djs' },
+          { name: listMeta('djs', params.locale).title, href: '/djs' },
           { name: (dj as any).name },
         ]} />
 

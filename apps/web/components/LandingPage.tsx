@@ -1,10 +1,11 @@
 "use client"
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { useRouter } from '@/lib/navigation'
+import { Link, useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { reverseGeocode } from '@/lib/geo-client'
+import { whenMeta, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
 
 type GeoStatus = 'idle' | 'locating' | 'success' | 'error'
 
@@ -22,8 +23,9 @@ function sb() {
 const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
 
 type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
+type City = { slug: string; name: string }
 
-export function LandingPage() {
+export function LandingPage({ cities = [], locale = 'es' }: { cities?: City[]; locale?: string }) {
   const { t } = useI18n()
   const router = useRouter()
   const [zone, setZone] = useState('')
@@ -409,6 +411,24 @@ export function LandingPage() {
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
+
+        {/* Enlaces reales, ya en el HTML: la portada es la pagina con mas
+            autoridad del sitio y antes no enlazaba ni una ciudad ni una fecha,
+            solo alcanzables escribiendo en el buscador (JS, no rastreable). */}
+        {cities.length > 0 && (
+          <div className="anim-points flex flex-wrap justify-center gap-2 max-w-lg">
+            {cities.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/${c.slug}/${whenSlug('today', locale)}`}
+                prefetch={false}
+                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition text-xs text-white/70"
+              >
+                {whenMeta('today', c.name, locale).eyebrow} · {c.name}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>
