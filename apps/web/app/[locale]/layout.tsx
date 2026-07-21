@@ -47,7 +47,7 @@ export default function LocaleLayout({
             <div className="mx-auto w-full max-w-3xl md:max-w-4xl lg:max-w-5xl min-h-screen flex flex-col px-4">
               <Navbar />
               <main className="flex-1 p-3 md:p-6">{children}</main>
-              <Footer />
+              <Footer locale={locale} />
               <Toaster />
               <Suspense fallback={null}><AnalyticsTracker /></Suspense>
               <GoogleAnalytics />

@@ -177,7 +177,10 @@ export const dictionaries: Record<string, Dict> = {
     'action.show_less': 'Ver menos',
     'club.address': 'Dirección',
     'club.photos': 'Fotos',
-    'share.copied': 'Enlace copiado. Pegalo en Instagram.'
+    'share.copied': 'Enlace copiado. Pegalo en Instagram.',
+    'footer.zones': 'Zonas',
+    'footer.genres': 'Géneros',
+    'footer.language': 'Idioma'
   },
   en: {
     'nav.home': 'Discover',
@@ -354,7 +357,10 @@ export const dictionaries: Record<string, Dict> = {
     'action.show_less': 'Show less',
     'club.address': 'Address',
     'club.photos': 'Photos',
-    'share.copied': 'Link copied. Paste it in Instagram.'
+    'share.copied': 'Link copied. Paste it in Instagram.',
+    'footer.zones': 'Zones',
+    'footer.genres': 'Genres',
+    'footer.language': 'Language'
   },
   de: {
     'nav.home': 'Entdecken',
@@ -531,6 +537,9 @@ export const dictionaries: Record<string, Dict> = {
     'action.show_less': 'Weniger anzeigen',
     'club.address': 'Adresse',
     'club.photos': 'Fotos',
-    'share.copied': 'Link kopiert. Fuege ihn in Instagram ein.'
+    'share.copied': 'Link kopiert. Fuege ihn in Instagram ein.',
+    'footer.zones': 'Zonen',
+    'footer.genres': 'Genres',
+    'footer.language': 'Sprache'
   }
 }
