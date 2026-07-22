@@ -389,9 +389,12 @@ export function LandingPage({
               <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M7 16 C7 16 2 10 2 6 C2 3.24 4.24 1 7 1 C9.76 1 12 3.24 12 6 C12 10 7 16 7 16Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
             </svg>
+            {/* min-w-0: sin esto el input no baja del ancho de su placeholder
+                (min-width:auto por defecto en un item flex) y en movil empuja
+                el boton de buscar fuera de la barra. */}
             <input
               ref={inputRef}
-              className="flex-1 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
+              className="flex-1 min-w-0 bg-transparent outline-none text-white py-3 text-base md:text-lg placeholder:text-white/35"
               placeholder={displayPlaceholder}
               value={zone}
               onChange={(e) => {
