@@ -1,23 +1,20 @@
 "use client"
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { Link, useRouter } from '@/lib/navigation'
+import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { reverseGeocode } from '@/lib/geo-client'
-import { whenMeta, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { GlowingShadow } from '@/components/ui/glowing-shadow'
-import { SafeImage } from '@/components/SafeImage'
 import { SparklesCore } from '@/components/ui/sparkles'
-import { NumberTicker } from '@/components/ui/number-ticker'
 
 // Mismo look que landing-gold-base/aurora (fondo casi negro con brillos ambar)
 // pero como gradientes solidos que el componente cruza con transicion suave.
 // Manteniendo el tono oscuro de base la legibilidad del texto blanco/dorado
 // encima no cambia respecto al fondo anterior.
-// Alto de cada zona: la ventana menos la barra de navegacion, para que la
-// siguiente asome solo al deslizar y no a medias.
+// El buscador ocupa exactamente una pantalla: la ventana menos la barra de
+// navegacion. Debajo ya no hay segunda zona, solo el pie del sitio.
 const SECTION_HEIGHT = 'calc(100dvh - 64px)'
 
 const WWG_HERO_GRADIENTS = [
@@ -44,45 +41,8 @@ function sb() {
 const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
 
 type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
-type City = { slug: string; name: string }
-// Fecha corta y en el idioma de la pagina: "vie 24 jul, 23:00". El servidor y
-// el cliente formatean con la misma zona horaria fija para que no cambie el
-// texto en la hidratacion.
-function formatEventDate(iso: string, locale: string) {
-  try {
-    return new Intl.DateTimeFormat(locale, {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Europe/Madrid',
-    }).format(new Date(iso))
-  } catch {
-    return ''
-  }
-}
 
-type Stats = { events: number; clubs: number; cities: number }
-type NextEvent = {
-  id: string
-  name: string
-  start_at: string
-  club_name: string | null
-  image: string | null
-}
-
-export function LandingPage({
-  cities = [],
-  locale = 'es',
-  stats,
-  events = [],
-}: {
-  cities?: City[]
-  locale?: string
-  stats?: Stats
-  events?: NextEvent[]
-}) {
+export function LandingPage() {
   const { t } = useI18n()
   const router = useRouter()
   const [zone, setZone] = useState('')
@@ -99,20 +59,6 @@ export function LandingPage({
   // Detectar soporte de Speech API
   useEffect(() => {
     setHasSpeech(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))
-  }, [])
-
-  // La portada pasa a tener dos zonas de pantalla completa, asi que ya no
-  // bloquea el scroll: lo guia. Con 'proximity' el navegador solo ayuda a
-  // encajar la zona cuando el gesto se queda cerca, y no secuestra el scroll
-  // hacia el pie ni en teclado ni en movil.
-  useEffect(() => {
-    const html = document.documentElement
-    html.style.scrollSnapType = 'y proximity'
-    html.style.scrollBehavior = 'smooth'
-    return () => {
-      html.style.scrollSnapType = ''
-      html.style.scrollBehavior = ''
-    }
   }, [])
 
   // Animación de typing en el placeholder
@@ -350,10 +296,10 @@ export function LandingPage({
         <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       </div>
 
-      {/* Zona 1: identidad y buscador, sin nada mas que distraiga. */}
+      {/* Unica zona: identidad y buscador, sin nada mas que distraiga. */}
       <section
         className="relative z-10 flex flex-col items-center justify-center text-center gap-4 md:gap-6"
-        style={{ minHeight: SECTION_HEIGHT, scrollSnapAlign: 'start' }}
+        style={{ height: SECTION_HEIGHT }}
       >
         {/* Icono — entra con scale */}
         <div className="anim-icon flex justify-center">
@@ -471,125 +417,6 @@ export function LandingPage({
             {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
           </div>
         </form>
-
-        {/* Sin esto la segunda zona no se anuncia: la portada cabia en una
-            pantalla y nadie tenia motivo para deslizar. */}
-        <button
-          type="button"
-          onClick={() => document.getElementById('landing-zona-2')?.scrollIntoView({ behavior: 'smooth' })}
-          className="anim-points absolute bottom-6 inline-flex flex-col items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-white/30 hover:text-[#d8af3a] transition"
-        >
-          {t('landing.scroll_hint')}
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M8 3v9M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-      </section>
-
-      {/* Zona 2: a donde ir. Todo lo que antes se apretaba bajo el buscador
-          vive aqui, con sitio y con encabezado propio. */}
-      <section
-        id="landing-zona-2"
-        className="relative z-10 flex flex-col items-center justify-center text-center gap-8 md:gap-10"
-        style={{ minHeight: SECTION_HEIGHT, scrollSnapAlign: 'start' }}
-      >
-        {/* Enlaces reales, ya en el HTML: la portada es la pagina con mas
-            autoridad del sitio y antes no enlazaba ni una ciudad ni una fecha,
-            solo alcanzables escribiendo en el buscador (JS, no rastreable). */}
-        {cities.length > 0 && (
-          <div className="w-full max-w-sm">
-            <h2 className="text-xs font-normal uppercase tracking-[0.2em] text-white/35 mb-3">
-              {t('landing.explore_cities')}
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-              {cities.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/${c.slug}/${whenSlug('today', locale)}`}
-                  prefetch={false}
-                  className="px-3 py-2 rounded-full bg-white/5 border border-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition text-xs text-white/70 text-center truncate"
-                >
-                  {whenMeta('today', c.name, locale).eyebrow} · {c.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Cifras reales de la agenda. Ademas de dar contexto de tamano al
-            visitante, mete dos enlaces internos mas hacia /discover y /clubs,
-            que hasta ahora solo colgaban del pie. */}
-        {stats && stats.events > 0 && (
-          <div className="anim-points flex items-center gap-4 text-xs text-white/45">
-            <Link href="/discover" prefetch={false} className="hover:text-[#d8af3a] transition">
-              <NumberTicker target={stats.events} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
-              {t('landing.stats_events')}
-            </Link>
-            <span aria-hidden="true" className="text-white/20">·</span>
-            <Link href="/clubs" prefetch={false} className="hover:text-[#d8af3a] transition">
-              <NumberTicker target={stats.clubs} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
-              {t('landing.stats_clubs')}
-            </Link>
-            <span aria-hidden="true" className="text-white/20">·</span>
-            <span>
-              <NumberTicker target={stats.cities} className="text-[#d8af3a] font-semibold tabular-nums" />{' '}
-              {t('landing.stats_cities')}
-            </span>
-          </div>
-        )}
-
-        {/* Los tres planes mas proximos, con enlace a su ficha. Ocupan la banda
-            inferior, que estaba vacia, y son los primeros enlaces de la portada
-            hacia eventos concretos: antes solo se llegaba desde /discover. */}
-        {events.length > 0 && (
-          <div className="w-full max-w-3xl">
-            <h2 className="text-xs font-normal uppercase tracking-[0.2em] text-white/35 mb-3">
-              {t('landing.next_events')}
-            </h2>
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
-              {events.map((e) => (
-                <Link
-                  key={e.id}
-                  href={`/event/${e.id}`}
-                  prefetch={false}
-                  className="group rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#d8af3a]/40 transition text-left"
-                >
-                  {/* Cartel en vertical, que es como llegan los flyers de los
-                      clubs. La fecha y el nombre van encima de la imagen, sobre
-                      un degradado, para que la ficha sea sobre todo el cartel. */}
-                  <div className="relative aspect-[3/4] bg-white/5">
-                    {e.image ? (
-                      <SafeImage
-                        src={e.image}
-                        alt={e.name}
-                        fill
-                        sizes="(max-width: 768px) 33vw, 220px"
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-3xl text-white/15">
-                        ♪
-                      </div>
-                    )}
-                    {/* Degradado opaco: hay carteles casi blancos y la fecha
-                        dorada encima se volvia ilegible. */}
-                    <div className="absolute inset-x-0 bottom-0 p-2 md:p-3 pt-8 bg-gradient-to-t from-black via-black/80 to-transparent">
-                      <div className="text-[10px] md:text-[11px] text-[#d8af3a] tabular-nums truncate">
-                        {formatEventDate(e.start_at, locale)}
-                      </div>
-                      <div className="text-xs md:text-sm font-medium text-white truncate group-hover:text-[#d8af3a] transition">
-                        {e.name}
-                      </div>
-                      {e.club_name && (
-                        <div className="text-[10px] md:text-[11px] text-white/50 truncate">{e.club_name}</div>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
     </div>
   )
