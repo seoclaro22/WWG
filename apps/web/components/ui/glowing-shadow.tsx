@@ -122,6 +122,9 @@ export function GlowingShadow({
           cursor: pointer;
         }
 
+        /* Capas de adorno: sin fondo pero absolutas al 100%, y ::after se pinta
+           por encima del contenido. Sin pointer-events:none se quedaban con el
+           clic y el boton que envuelve el componente no llegaba a recibirlo. */
         .glow-container:before,
         .glow-container:after {
           content: "";
@@ -130,6 +133,7 @@ export function GlowingShadow({
           width: 100%;
           height: 100%;
           border-radius: var(--card-radius);
+          pointer-events: none;
         }
 
         .glow-content {
@@ -180,6 +184,7 @@ export function GlowingShadow({
           transform: rotateZ(calc(var(--rotate) * var(--glow-rotate-unit)));
           transform-origin: center;
           border-radius: calc(var(--glow-radius) * 10vw);
+          pointer-events: none;
         }
 
         .glow:after {
