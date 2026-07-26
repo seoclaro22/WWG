@@ -182,6 +182,74 @@ export async function fetchRelatedEvents(eventId: string, genres: string[] | nul
   return (data || []) as any[]
 }
 
+export type ZoneFacts = {
+  events: number
+  venues: number
+  /** Hora de inicio mas repetida, en hora local de Madrid. */
+  usualStartHour: number | null
+  priceMin: number | null
+  priceMax: number | null
+  /** Dia de la semana con mas agenda (0 domingo ... 6 sabado). */
+  busiestWeekday: number | null
+  topGenres: string[]
+}
+
+// Resumen de la agenda de una zona a partir de los eventos reales.
+//
+// Es la unica forma honesta de dar a una pagina de ciudad el contenido que
+// pide quien busca "salir de fiesta en X" (a que hora se sale, cuanto cuesta,
+// que noche es la buena) sin escribir a mano una guia por ciudad que ademas
+// quedaria desactualizada. Se recalcula solo con cada evento nuevo.
+export async function fetchZoneFacts(zone: string): Promise<ZoneFacts> {
+  const events = await fetchEvents({ zone, limit: 500 })
+  const hours = new Map<number, number>()
+  const weekdays = new Map<number, number>()
+  const genres = new Map<string, number>()
+  const venues = new Set<string>()
+  let priceMin: number | null = null
+  let priceMax: number | null = null
+
+  for (const e of events) {
+    const d = new Date(e.start_at)
+    // Los eventos importados sin hora se guardan a las 00:00:00 UTC exactas.
+    // Convertidos a Madrid dan las 02:00, que es una hora de fiesta plausible,
+    // asi que no hay forma de distinguirlos salvo por el sello exacto.
+    const isPlaceholder = d.getUTCHours() === 0 && d.getUTCMinutes() === 0
+    // Hora local de Madrid: un evento guardado a las 21:00 UTC empieza a las
+    // 23:00 en la calle, y es esa la que responde "a que hora se sale".
+    const hour = Number(new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Madrid', hour: '2-digit', hour12: false,
+    }).format(d).slice(0, 2))
+    if (!isPlaceholder && !Number.isNaN(hour)) hours.set(hour, (hours.get(hour) || 0) + 1)
+    const wd = new Date(e.start_at).getDay()
+    weekdays.set(wd, (weekdays.get(wd) || 0) + 1)
+    for (const g of e.genres || []) genres.set(g, (genres.get(g) || 0) + 1)
+    if (e.club_name) venues.add(e.club_name)
+    // Solo precios reales: un 0 aqui suele ser "sin dato", no entrada gratis.
+    if (e.price_min && e.price_min > 0) priceMin = priceMin === null ? e.price_min : Math.min(priceMin, e.price_min)
+    if (e.price_max && e.price_max > 0) priceMax = priceMax === null ? e.price_max : Math.max(priceMax, e.price_max)
+  }
+
+  const top = <K,>(m: Map<K, number>) =>
+    Array.from(m.entries()).sort((a, b) => b[1] - a[1])
+
+  // Buena parte del catalogo llega sin hora y se guarda a medianoche, asi que
+  // la hora mas repetida suele ser ese relleno y no un horario real. Solo se
+  // da por buena si cae en horario de noche; si no, no se afirma nada.
+  const nightHours = Array.from(hours.entries()).filter(([h]) => h >= 20 || h <= 6)
+  const usualStartHour = nightHours.sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+
+  return {
+    events: events.length,
+    venues: venues.size,
+    usualStartHour,
+    priceMin,
+    priceMax,
+    busiestWeekday: top(weekdays)[0]?.[0] ?? null,
+    topGenres: top(genres).slice(0, 5).map(([g]) => g),
+  }
+}
+
 export function slugifyZone(value: string) {
   return value
     .toLowerCase()
@@ -295,6 +363,32 @@ export async function fetchDjEvents(djId: string, limit = 10) {
   }
   if (error) { console.error('fetchDjEvents error', error); return [] }
   return (data || []) as EventPublic[]
+}
+
+// Ids de los DJ con al menos una sesion anunciada.
+//
+// Va en dos consultas para todo el catalogo, no una por DJ: quien pregunta
+// esto es el sitemap, que tiene que decidir sobre ~200 fichas de una vez.
+export async function fetchDjIdsWithUpcomingEvents(): Promise<Set<string>> {
+  const sb = getSupabaseClient()
+  const nowIso = new Date().toISOString()
+  let { data: events, error } = await sb
+    .from('events_public')
+    .select('id')
+    .gte('start_at', nowIso)
+    .eq('status', 'published')
+    .limit(1000)
+  if (error && String(error.message || '').toLowerCase().includes('status')) {
+    const retry = await sb.from('events_public').select('id').gte('start_at', nowIso).limit(1000)
+    events = retry.data as any
+    error = retry.error as any
+  }
+  if (error) { console.error('fetchDjIdsWithUpcomingEvents error', error); return new Set() }
+  const ids = (events || []).map((e: any) => e.id)
+  if (!ids.length) return new Set()
+  const links = await sb.from('event_djs').select('dj_id').in('event_id', ids)
+  if (links.error) { console.error('fetchDjIdsWithUpcomingEvents links error', links.error); return new Set() }
+  return new Set((links.data || []).map((r: any) => r.dj_id).filter(Boolean))
 }
 
 export async function fetchSimilarDjs(currentId: string, genres: string[] | null | undefined, max = 1) {

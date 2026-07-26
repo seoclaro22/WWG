@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { homeCrumb } from '@/lib/seo-pages'
+import { djIsIndexable, homeCrumb } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -37,7 +37,7 @@ function getSpotifyEmbed(input?: string | null) {
 }
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
-  const dj: any = await fetchDj(params.id)
+  const [dj, upcoming] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 1)])
   if (!dj) return { title: 'DJ no encontrado' }
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
   const genres = Array.isArray(dj.genres) && dj.genres.length ? dj.genres.slice(0, 3).join(', ') : ''
@@ -45,6 +45,9 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   return {
     title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}`,
     description,
+    // Sin sesiones anunciadas ni biografia la ficha es solo el nombre: se
+    // sirve a quien llega desde el sitio, pero no se ofrece a Google.
+    ...(djIsIndexable(dj, upcoming.length) ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       title: dj.name,
       description,

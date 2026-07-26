@@ -17,6 +17,24 @@ export function homeCrumb(locale: string) {
 // sitemap y lleva noindex.
 export const MIN_EVENTS_TO_INDEX = 3
 
+// Las fichas de DJ eran la unica pagina generada sin umbral: entraban las ~200
+// al sitemap aunque fuesen un nombre suelto sobre fondo negro, y por volumen
+// eran mas de la mitad del dominio indexable. Se indexa la ficha que dice
+// algo: o tiene sesiones anunciadas, o tiene una biografia de verdad.
+//
+// El minimo de biografia es el largo de una meta description. Por debajo de
+// eso no hay contenido que justifique una URL propia.
+export const MIN_DJ_BIO_TO_INDEX = 160
+
+export function djIsIndexable(
+  dj: { bio?: string | null; short_bio?: string | null } | null | undefined,
+  upcomingEvents: number,
+) {
+  if (!dj) return false
+  if (upcomingEvents > 0) return true
+  return (dj.short_bio || dj.bio || '').trim().length >= MIN_DJ_BIO_TO_INDEX
+}
+
 export type WhenKey = 'today' | 'weekend'
 
 // Slugs traducidos: la ventaja de estas paginas es la keyword temporal
@@ -262,6 +280,87 @@ export function zoneMeta(zone: string, locale: string) {
       events: `Kommende Events in ${zone}`,
       empty: `Aktuell ist nichts in ${zone} geplant.`,
     },
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
+// Preguntas frecuentes de una pagina de ciudad, redactadas con los datos
+// reales de su agenda.
+//
+// Responde lo que se pregunta de verdad antes de salir (a que hora, cuanto
+// cuesta, que noche, que suena) y es lo unico de la pagina que no caduca con
+// los eventos. Sin schema FAQPage a proposito: desde agosto de 2023 Google
+// solo da resultado enriquecido a sitios de administracion y salud, asi que
+// el marcado no aportaria nada; el texto visible si, tanto al usuario como a
+// los buscadores de IA, que citan pasajes.
+const WEEKDAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const
+
+const WEEKDAY_NAMES: Record<string, Record<(typeof WEEKDAY_KEYS)[number], string>> = {
+  es: { sunday: 'domingo', monday: 'lunes', tuesday: 'martes', wednesday: 'miércoles', thursday: 'jueves', friday: 'viernes', saturday: 'sábado' },
+  en: { sunday: 'Sunday', monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday' },
+  de: { sunday: 'Sonntag', monday: 'Montag', tuesday: 'Dienstag', wednesday: 'Mittwoch', thursday: 'Donnerstag', friday: 'Freitag', saturday: 'Samstag' },
+}
+
+export type ZoneFaq = { q: string; a: string }
+
+export function zoneFaq(
+  zone: string,
+  locale: string,
+  facts: {
+    events: number; venues: number; usualStartHour: number | null
+    priceMin: number | null; priceMax: number | null
+    busiestWeekday: number | null; topGenres: string[]
+  },
+): ZoneFaq[] {
+  const l = WEEKDAY_NAMES[locale] ? locale : routing.defaultLocale
+  const day = facts.busiestWeekday === null ? null : WEEKDAY_NAMES[l][WEEKDAY_KEYS[facts.busiestWeekday]]
+  const hour = facts.usualStartHour === null ? null : `${String(facts.usualStartHour).padStart(2, '0')}:00`
+  const genres = facts.topGenres.slice(0, 3).join(', ')
+  const price = facts.priceMin === null ? null
+    : facts.priceMax !== null && facts.priceMax !== facts.priceMin
+      ? `${facts.priceMin} - ${facts.priceMax} €`
+      : `${facts.priceMin} €`
+
+  const out: ZoneFaq[] = []
+  const copy = {
+    es: {
+      hour: { q: `¿A qué hora empiezan las fiestas en ${zone}?`, a: `La mayoría de las sesiones en ${zone} arrancan sobre las ${hour}. Cada ficha lleva su hora exacta, porque las de terraza y las de after se salen de ese horario.` },
+      price: { q: `¿Cuánto cuesta la entrada en ${zone}?`, a: `Las entradas de la agenda actual de ${zone} van de ${price}. El precio depende del cartel y de si compras anticipada o en puerta.` },
+      day: { q: `¿Qué noche se sale más en ${zone}?`, a: `El ${day} es el día con más fiestas programadas en ${zone} ahora mismo. Es también cuando más salas abren a la vez.` },
+      genres: { q: `¿Qué música suena en ${zone}?`, a: `Lo que más se programa en ${zone} es ${genres}. Puedes filtrar la agenda por género para ver solo lo tuyo.` },
+      venues: { q: `¿Cuántas discotecas hay en ${zone}?`, a: `Ahora mismo seguimos ${facts.venues} salas de ${zone} con ${facts.events} fiestas anunciadas. La agenda se actualiza a diario.` },
+    },
+    en: {
+      hour: { q: `What time do parties start in ${zone}?`, a: `Most sets in ${zone} kick off around ${hour}. Each listing shows its exact time, since rooftop and after parties fall outside that window.` },
+      price: { q: `How much is a ticket in ${zone}?`, a: `Tickets in the current ${zone} listings run ${price}. The price depends on the line-up and on whether you buy in advance or at the door.` },
+      day: { q: `Which night is biggest in ${zone}?`, a: `${day} is the busiest night in ${zone} right now. It is also when the most venues open at once.` },
+      genres: { q: `What music is played in ${zone}?`, a: `The most programmed sounds in ${zone} are ${genres}. You can filter the listings by genre to see only what you want.` },
+      venues: { q: `How many clubs are there in ${zone}?`, a: `We currently track ${facts.venues} venues in ${zone} with ${facts.events} announced parties. Listings are updated daily.` },
+    },
+    de: {
+      hour: { q: `Wann beginnen die Partys in ${zone}?`, a: `Die meisten Sets in ${zone} starten gegen ${hour}. Jede Veranstaltung zeigt ihre genaue Uhrzeit, denn Rooftop- und After-Partys fallen aus diesem Rahmen.` },
+      price: { q: `Was kostet der Eintritt in ${zone}?`, a: `Die Tickets im aktuellen Programm von ${zone} liegen bei ${price}. Der Preis haengt vom Line-up ab und davon, ob du im Vorverkauf oder an der Tuer kaufst.` },
+      day: { q: `An welchem Abend ist in ${zone} am meisten los?`, a: `${day} ist aktuell der Abend mit den meisten Partys in ${zone}. Dann oeffnen auch die meisten Clubs gleichzeitig.` },
+      genres: { q: `Welche Musik laeuft in ${zone}?`, a: `Am haeufigsten laeuft in ${zone} ${genres}. Du kannst das Programm nach Musikrichtung filtern.` },
+      venues: { q: `Wie viele Clubs gibt es in ${zone}?`, a: `Wir verfolgen derzeit ${facts.venues} Clubs in ${zone} mit ${facts.events} angekuendigten Partys. Taeglich aktualisiert.` },
+    },
+  }[l]!
+
+  // Solo entra la pregunta que tiene dato detras. Una FAQ que responde
+  // "null euros" es peor que no tener FAQ.
+  if (hour) out.push(copy.hour)
+  if (price) out.push(copy.price)
+  if (day) out.push(copy.day)
+  if (genres) out.push(copy.genres)
+  if (facts.venues > 0) out.push(copy.venues)
+  return out
+}
+
+export function zoneFaqHeading(locale: string) {
+  const copy: Record<string, string> = {
+    es: 'Preguntas frecuentes',
+    en: 'Frequently asked questions',
+    de: 'Haeufige Fragen',
   }
   return copy[locale] || copy[routing.defaultLocale]
 }

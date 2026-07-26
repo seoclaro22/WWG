@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Link } from '@/lib/navigation'
-import { fetchEvents, fetchClubsPublic, fetchZoneGenreCounts, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
+import { countUpcomingEvents, fetchEvents, fetchClubsPublic, fetchZoneFacts, fetchZoneGenreCounts, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
@@ -8,7 +8,8 @@ import { routing } from '@/i18n/routing'
 import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import {
-  MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug, zoneMeta,
+  MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug,
+  zoneFaq, zoneFaqHeading, zoneMeta,
 } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
@@ -27,9 +28,13 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   if (!zoneName) notFound()
   const { title, description, eyebrow } = zoneMeta(zoneName, params.locale)
   const images = ogImage({ eyebrow, title: zoneName, subtitle: description })
+  // Mismo umbral que las paginas hijas. Una ciudad recien abierta, con uno o
+  // dos eventos, era lo primero que Google veia de ese mercado.
+  const count = await countUpcomingEvents({ zone: zoneName })
   return {
     title,
     description,
+    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
     alternates: buildAlternates(`/${params.zone}`, params.locale),
     openGraph: { title, description, type: 'website', url: `/${params.zone}`, images },
     twitter: { card: 'summary_large_image', images },
@@ -40,11 +45,13 @@ export default async function ZonePage({ params }: { params: { locale: string; z
   const zoneName = await resolveZoneSlug(params.zone)
   if (!zoneName) return notFound()
 
-  const [events, clubs, genreCounts] = await Promise.all([
+  const [events, clubs, genreCounts, facts] = await Promise.all([
     fetchEvents({ zone: zoneName, limit: 30, sponsoredFirst: true }),
     fetchClubsPublic({ zone: zoneName, limit: 20 }),
     fetchZoneGenreCounts(zoneName),
+    fetchZoneFacts(zoneName),
   ])
+  const faq = zoneFaq(zoneName, params.locale, facts)
 
   const copy = zoneMeta(zoneName, params.locale)
   const labels = relatedLinksLabels(params.locale)
@@ -141,6 +148,23 @@ export default async function ZonePage({ params }: { params: { locale: string; z
             )}
           </div>
         </div>
+
+        {/* Lo unico de la pagina que no caduca con la agenda. Va al final
+            porque quien ya sabe a donde va viene a por el listado; esto es
+            para el que llega desde Google sin conocer la ciudad. */}
+        {faq.length > 0 && (
+          <div className="space-y-3 pt-2">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{zoneFaqHeading(params.locale)}</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {faq.map((f) => (
+                <div key={f.q} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="text-sm font-medium text-white">{f.q}</h3>
+                  <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

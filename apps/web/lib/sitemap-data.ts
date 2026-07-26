@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next'
 import { getSupabaseClient } from '@/lib/supabase'
-import { fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
+import { countUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
 import { localizedUrl, hreflangMap } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
 import { routing } from '@/i18n/routing'
 
 // Los datos de cada bloque del sitemap, separados de la ruta que los sirve.
@@ -82,12 +82,19 @@ export async function clubEntries(): Promise<Entry[]> {
   )
 }
 
+// Solo los DJ con contenido propio. El resto sigue existiendo y enlazado
+// desde /djs y desde los line-ups, pero no se ofrece a indexar.
 export async function djEntries(): Promise<Entry[]> {
   const sb = getSupabaseClient()
-  const { data } = await sb.from('djs').select('id,created_at').limit(1000)
-  return (data || []).flatMap((d: any) =>
-    entries(`/dj/${d.id}`, { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
-  )
+  const [{ data }, withEvents] = await Promise.all([
+    sb.from('djs').select('id,created_at,bio,short_bio').limit(1000),
+    fetchDjIdsWithUpcomingEvents(),
+  ])
+  return (data || [])
+    .filter((d: any) => djIsIndexable(d, withEvents.has(d.id) ? 1 : 0))
+    .flatMap((d: any) =>
+      entries(`/dj/${d.id}`, { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
+    )
 }
 
 export async function genreEntries(): Promise<Entry[]> {
@@ -110,13 +117,22 @@ export async function zoneEntries(): Promise<Entry[]> {
   const zonesMap = await fetchZonesMap()
   const slugs = Array.from(zonesMap.keys())
 
-  const zones = slugs.flatMap((slug) => entries(`/${slug}`, { changeFrequency: 'daily', priority: 0.8 }))
+  // La zona tambien pasa por el umbral, igual que sus hijas. Sin esto una
+  // ciudad recien abierta con un par de eventos entraba al sitemap y era lo
+  // primero que Google veia de ese mercado.
+  const zoneCounts = new Map<string, number>()
+  await Promise.all(slugs.map(async (slug) => {
+    zoneCounts.set(slug, await countUpcomingEvents({ zone: zonesMap.get(slug) as string }))
+  }))
+  const indexable = slugs.filter((slug) => (zoneCounts.get(slug) || 0) >= MIN_EVENTS_TO_INDEX)
+
+  const zones = indexable.flatMap((slug) => entries(`/${slug}`, { changeFrequency: 'daily', priority: 0.8 }))
 
   // Solo entran las que superan el umbral de inventario: una pagina "fiestas
   // hoy en X" sin eventos es peor que no tenerla, tanto para el usuario como
   // para la calidad del dominio.
   const generated = (
-    await Promise.all(slugs.map(async (slug) => {
+    await Promise.all(indexable.map(async (slug) => {
       const zoneName = zonesMap.get(slug)
       if (!zoneName) return []
       const out: Entry[] = []
