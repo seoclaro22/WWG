@@ -391,6 +391,29 @@ export async function fetchDjIdsWithUpcomingEvents(): Promise<Set<string>> {
   return new Set((links.data || []).map((r: any) => r.dj_id).filter(Boolean))
 }
 
+// Line-ups de varios eventos de una vez.
+//
+// fetchEventLineup resuelve uno por consulta, que va bien en una ficha pero
+// no en un listado de 30. Aqui interesa una sola consulta para toda la pagina.
+export async function fetchLineupsForEvents(eventIds: string[]) {
+  const out = new Map<string, Array<{ id: string; name: string }>>()
+  if (!eventIds.length) return out
+  const sb = getSupabaseClient()
+  const { data, error } = await sb
+    .from('event_djs')
+    .select('event_id,position,djs(id,name)')
+    .in('event_id', eventIds)
+    .order('position', { ascending: true })
+  if (error) { console.error('fetchLineupsForEvents error', error); return out }
+  for (const row of (data || []) as any[]) {
+    if (!row.djs?.id) continue
+    const list = out.get(row.event_id) || []
+    list.push({ id: row.djs.id, name: row.djs.name })
+    out.set(row.event_id, list)
+  }
+  return out
+}
+
 export async function fetchSimilarDjs(currentId: string, genres: string[] | null | undefined, max = 1) {
   const sb = getSupabaseClient()
   const base = Array.isArray(genres) ? genres.filter(Boolean) : []
