@@ -40,8 +40,6 @@ function sb() {
 // ciudad con mas eventos.
 const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
 
-type PreviewClub = { id: string; name: string; genres: string[]; address: string | null }
-
 export function LandingPage() {
   const { t } = useI18n()
   const router = useRouter()
@@ -50,7 +48,6 @@ export function LandingPage() {
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
   const [knownZones, setKnownZones] = useState<string[]>(SEED_CITIES)
-  const [previewClubs, setPreviewClubs] = useState<PreviewClub[]>([])
   const [displayPlaceholder, setDisplayPlaceholder] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [hasSpeech, setHasSpeech] = useState(false)
@@ -113,29 +110,6 @@ export function LandingPage() {
     rec.onerror = () => setIsListening(false)
     rec.onend = () => setIsListening(false)
   }
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { data: featured } = await sb()
-          .from('clubs')
-          .select('id, name, genres, address')
-          .eq('status', 'approved')
-          .eq('featured', true)
-          .limit(3)
-        if (featured?.length) {
-          setPreviewClubs(featured as PreviewClub[])
-          return
-        }
-        const { data: fallback } = await sb()
-          .from('clubs')
-          .select('id, name, genres, address')
-          .eq('status', 'approved')
-          .limit(3)
-        if (fallback?.length) setPreviewClubs(fallback as PreviewClub[])
-      } catch {}
-    })()
-  }, [])
 
   const normalizeZone = (raw: string) => {
     const cleaned = raw.trim()
