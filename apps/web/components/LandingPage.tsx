@@ -7,7 +7,6 @@ import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { reverseGeocode } from '@/lib/geo-client'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { GlowingShadow } from '@/components/ui/glowing-shadow'
-import { SparklesCore } from '@/components/ui/sparkles'
 
 // Mismo look que landing-gold-base/aurora (fondo casi negro con brillos ambar)
 // pero como gradientes solidos que el componente cruza con transicion suave.
@@ -245,27 +244,14 @@ export function LandingPage() {
     <div id="landing-bg" className="relative -mx-4 md:-mx-6 lg:-mx-10 -mt-3 md:-mt-6 -mb-3 md:-mb-6 px-4 md:px-6 lg:px-10 overflow-hidden rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       {/* El fondo cubre las dos zonas de una pieza, para que al deslizar el
           degradado siga sin corte. No va sticky porque este contenedor recorta
-          con overflow, y eso deja clavado cualquier hijo sticky. La densidad de
-          particulas baja a la mitad porque el area es el doble. */}
+          con overflow, y eso deja clavado cualquier hijo sticky. Sin particulas:
+          el canvas de tsparticles penalizaba el Speed Index en PageSpeed. */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <GradientBackground
           gradients={WWG_HERO_GRADIENTS}
           animationDuration={10}
           animationDelay={0.3}
           className="absolute inset-0 min-h-0 pointer-events-none"
-        />
-        {/* Polvo dorado por encima del gradiente y por debajo del contenido.
-            Densidad baja a proposito: el hero ya tiene un fondo en movimiento y
-            la idea es sugerir ambiente, no competir con el buscador. */}
-        <SparklesCore
-          id="wwg-hero-sparkles"
-          className="absolute inset-0 pointer-events-none"
-          background="transparent"
-          particleColor="#d8af3a"
-          particleDensity={28}
-          minSize={0.4}
-          maxSize={1.2}
-          speed={1.5}
         />
         <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
       </div>
