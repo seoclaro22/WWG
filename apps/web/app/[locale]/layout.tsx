@@ -43,7 +43,9 @@ export default function LocaleLayout({
         {/* La portada consulta Supabase nada mas hidratar (zonas del buscador);
             abrir la conexion durante el HTML ahorra el handshake TLS (~300ms
             de LCP segun PageSpeed). */}
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+        {/* crossorigin porque las llamadas a Supabase son CORS: sin el, el
+            navegador abre una conexion que luego no puede reutilizar. */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="anonymous" />
       </head>
       <body className="text-white bg-base-bg">
         {/* Provee el locale a los componentes de next-intl (Link, useRouter). */}
