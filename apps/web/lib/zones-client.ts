@@ -1,15 +1,8 @@
 "use client"
 import { createClient } from '@supabase/supabase-js'
+import { normalizeZoneKey } from '@/lib/zone-key'
 
-function normalizeZone(value: string) {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
+const normalizeZone = normalizeZoneKey
 
 export async function fetchKnownZones() {
   const sb = createClient(
@@ -42,6 +35,5 @@ export async function fetchKnownZones() {
   return zones.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
 }
 
-export function normalizeZoneKey(value: string) {
-  return normalizeZone(value)
-}
+// Se reexporta para no tocar los modulos que ya la importaban de aqui.
+export { normalizeZoneKey }

@@ -4,7 +4,8 @@ import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
-import { reverseGeocode } from '@/lib/geo-client'
+import { geocodeCandidates, haversineKm, reverseGeocode } from '@/lib/geo-client'
+import { zoneCoords } from '@/lib/zone-coords'
 import { GradientBackground } from '@/components/ui/gradient-background'
 import { GlowingShadow } from '@/components/ui/glowing-shadow'
 
@@ -136,6 +137,37 @@ export function LandingPage() {
     })()
   }, [])
 
+  // Zona con agenda mas cercana a lo que ha escrito el usuario. Devuelve la
+  // etiqueta tal cual esta en la base de datos, o null si no se puede situar
+  // el sitio o ninguna zona resuelve coordenadas.
+  async function nearestZoneTo(
+    zoneName: string,
+    counts: Map<string, number>,
+    labelByKey: Map<string, string>,
+  ): Promise<string | null> {
+    const [targets, coords] = await Promise.all([geocodeCandidates(zoneName), zoneCoords()])
+    if (!targets.length) return null
+
+    // Se cruzan todos los candidatos del geocoder con todas las zonas y gana la
+    // pareja mas cercana. Esto resuelve de paso la ambiguedad de nombres: para
+    // "Deia" el candidato rumano queda a 1500 km de cualquier zona y el
+    // mallorquin a 25 km de Mallorca, asi que gana el correcto.
+    let bestKey = ''
+    let bestKm = Infinity
+    for (const target of targets) {
+      for (const [key] of counts) {
+        const c = coords.get(key)
+        if (!c) continue
+        const km = haversineKm(target, c)
+        if (km < bestKm) {
+          bestKm = km
+          bestKey = key
+        }
+      }
+    }
+    return bestKey ? labelByKey.get(bestKey) || bestKey : null
+  }
+
   async function resolveZoneWithFallback(zoneName: string) {
     const client = sb()
     const nowIso = new Date().toISOString()
@@ -174,6 +206,14 @@ export function LandingPage() {
       return { zone: labelByKey.get(inputKey) || zoneName, fallback: null, hasEvents: true }
     }
 
+    // Sin agenda en lo que ha pedido: se ofrece la zona mas CERCANA, no la que
+    // mas eventos tiene. Buscando "Soller" salia Valencia por volumen, cuando
+    // Soller esta en Mallorca a 25 km y Valencia a 265 km cruzando el mar.
+    const nearest = await nearestZoneTo(zoneName, counts, labelByKey)
+    if (nearest) return { zone: nearest, fallback: nearest, hasEvents: false }
+
+    // Si la geocodificacion falla (sin red, Nominatim caido, sitio inexistente)
+    // se vuelve al criterio antiguo: mejor la zona con mas agenda que nada.
     let bestKey = ''
     let bestCount = 0
     for (const [key, count] of counts.entries()) {
