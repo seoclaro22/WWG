@@ -12,6 +12,7 @@ export function LocaleSwitcher() {
 
   return (
     <select
+      aria-label={locale === 'de' ? 'Sprache' : locale === 'en' ? 'Language' : 'Idioma'}
       value={locale}
       onChange={async e => {
         const l = e.target.value

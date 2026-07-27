@@ -39,6 +39,12 @@ export default function LocaleLayout({
 
   return (
     <html lang={locale} className="dark">
+      <head>
+        {/* La portada consulta Supabase nada mas hidratar (zonas del buscador);
+            abrir la conexion durante el HTML ahorra el handshake TLS (~300ms
+            de LCP segun PageSpeed). */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+      </head>
       <body className="text-white bg-base-bg">
         {/* Provee el locale a los componentes de next-intl (Link, useRouter). */}
         <NextIntlClientProvider locale={locale} messages={{}}>
