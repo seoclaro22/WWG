@@ -7,6 +7,7 @@ import { T } from '@/components/T'
 import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
 import { buildAlternates, localePath, listMeta } from '@/lib/seo'
+import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 // Los filtros (q, date, genre, zone, tab) son navegacion facetada: cada
 // combinacion es una URL distinta con el mismo inventario reordenado. Sin
@@ -97,12 +98,28 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
   ])
   const carouselClubs = shuffle(featuredClubs).slice(0, 8)
   const carouselDjs = shuffle(featuredDjs.filter((dj: any) => Array.isArray(dj.images) && dj.images[0])).slice(0, 8)
+  // El ItemList solo en el /discover limpio: las variantes filtradas van con
+  // noindex y el schema ahi es peso muerto.
+  const isFiltered = Object.values(searchParams || {}).some((v) => v != null && v !== '')
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-50" />
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-40" />
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
       <div className="relative z-10 space-y-5">
+        {/* h1 desde listMeta: asi title y h1 quedan alineados por idioma y el
+            keyword se edita en un solo sitio (lib/seo.ts). Cambia con la
+            pestana para que las variantes noindex tampoco mientan. */}
+        <h1 className="text-xl md:text-3xl font-bold text-white">
+          {listMeta(tab === 'events' ? 'discover' : tab, params.locale).title}
+        </h1>
+        {tab === 'events' && !isFiltered && (
+          <EventListJsonLd
+            events={events}
+            locale={params.locale}
+            name={listMeta('discover', params.locale).title}
+          />
+        )}
         {/* Tabs con pill gold */}
         <div className="flex items-center gap-1 bg-white/5 rounded-2xl p-1 w-fit">
           {([
