@@ -44,3 +44,43 @@ export async function geocodePlaceServer(query: string): Promise<Coords | null> 
   const [first] = await geocodeCandidatesServer(query)
   return first ?? null
 }
+
+// Sugerencias de ciudad mientras el usuario escribe.
+//
+// Aqui NO sirve Nominatim: no busca por prefijo, asi que "madri" no le lleva a
+// Madrid sino a una aldea de India que se llama asi, y el calculo de cercania
+// acaba proponiendo Amsterdam. Photon es del mismo ecosistema OSM pero esta
+// hecho para autocompletar, y "madri" si devuelve Madrid.
+//
+// Se filtra a ciudades y pueblos para no sugerir calles ni comercios.
+const PHOTON_URL = 'https://photon.komoot.io/api'
+const SUGGEST_TTL_SECONDS = 24 * 60 * 60
+const MAX_SUGGESTIONS = 5
+
+export type CitySuggestion = Coords & { name: string; label: string }
+
+export async function suggestCitiesServer(query: string): Promise<CitySuggestion[]> {
+  const q = query.trim()
+  if (!q) return []
+  try {
+    const url =
+      `${PHOTON_URL}?q=${encodeURIComponent(q)}&limit=${MAX_SUGGESTIONS}` +
+      `&osm_tag=place:city&osm_tag=place:town`
+    const res = await fetch(url, { next: { revalidate: SUGGEST_TTL_SECONDS } })
+    if (!res.ok) return []
+    const json = await res.json()
+    const features = Array.isArray(json?.features) ? json.features : []
+    return features
+      .map((f: any) => {
+        const p = f?.properties || {}
+        const [lon, lat] = f?.geometry?.coordinates || []
+        // El pais desambigua para el usuario: hay un Madrid en Iowa y otro en
+        // Colombia, y sin el la lista se ve como el mismo nombre repetido.
+        const label = [p.name, p.country].filter(Boolean).join(', ')
+        return { name: String(p.name || ''), label, lat: Number(lat), lon: Number(lon) }
+      })
+      .filter((c: CitySuggestion) => c.name && Number.isFinite(c.lat) && Number.isFinite(c.lon))
+  } catch {
+    return []
+  }
+}

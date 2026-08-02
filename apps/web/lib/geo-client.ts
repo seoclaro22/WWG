@@ -28,6 +28,27 @@ export async function geocodeCandidates(query: string): Promise<Coords[]> {
   }
 }
 
+export type CitySuggestion = Coords & { name: string; label: string }
+
+// Ciudades que empiezan por lo que el usuario lleva escrito.
+//
+// Va contra /api/city-suggest y no contra geocodeCandidates porque son
+// preguntas distintas: alli se resuelve un nombre ya completo, aqui un prefijo.
+// Pasarle "madri" al geocodificador normal devuelve una aldea de India, no
+// Madrid, y a partir de ahi cualquier calculo de cercania sale mal.
+export async function suggestCities(query: string): Promise<CitySuggestion[]> {
+  const q = query.trim()
+  if (!q) return []
+  try {
+    const res = await fetch(`/api/city-suggest?q=${encodeURIComponent(q)}`)
+    if (!res.ok) return []
+    const json = await res.json()
+    return Array.isArray(json?.cities) ? json.cities : []
+  } catch {
+    return []
+  }
+}
+
 // Distancia en kilometros sobre la esfera. Precision de sobra para ordenar
 // zonas por cercania.
 export function haversineKm(a: Coords, b: Coords): number {

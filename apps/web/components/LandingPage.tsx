@@ -5,7 +5,7 @@ import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
-import { geocodeCandidates, haversineKm, reverseGeocode } from '@/lib/geo-client'
+import { geocodeCandidates, haversineKm, reverseGeocode, suggestCities } from '@/lib/geo-client'
 import { zoneCoords } from '@/lib/zone-coords'
 import { GradientBackground } from '@/components/ui/gradient-background'
 
@@ -58,6 +58,10 @@ export function LandingPage() {
   const [isListening, setIsListening] = useState(false)
   const [hasSpeech, setHasSpeech] = useState(false)
   const [showStrands, setShowStrands] = useState(false)
+  // Ciudad que el usuario esta escribiendo (resuelta a nombre completo) y la
+  // zona con agenda que le queda mas cerca. Se guarda junto al texto que lo
+  // genero para no enseñarlo pegado a una busqueda que ya ha cambiado.
+  const [nearestHint, setNearestHint] = useState<{ typed: string; city: string; zone: string } | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Detectar soporte de Speech API
@@ -132,6 +136,15 @@ export function LandingPage() {
     return cleaned
   }
 
+  // Zonas con agenda que empiezan por lo que lleva escrito. Estaba repetido en
+  // onChange y onFocus; ahora lo usa ademas el efecto de sugerencia cercana.
+  const matchingZones = (raw: string) => {
+    const norm = normalizeZone(raw)
+    if (norm.length < 2) return []
+    const key = normalizeZoneKey(norm)
+    return knownZones.filter((z) => normalizeZoneKey(z).startsWith(key)).slice(0, 5)
+  }
+
   useEffect(() => {
     // Precargar la ultima zona usada para que el usuario pueda lanzar rapido
     if (typeof window !== 'undefined') {
@@ -150,14 +163,70 @@ export function LandingPage() {
     })()
   }, [])
 
+  // Si lo escrito no es una de nuestras ciudades, se completa el nombre y se
+  // ofrece la zona con agenda mas cercana. Asi "madri" deja de no sugerir nada:
+  // se resuelve a Madrid y se propone Valencia, que es lo mas cerca que
+  // tenemos.
+  //
+  // Con espera de 400ms y a partir de 3 letras para no preguntar en cada
+  // pulsacion. Las respuestas van cacheadas en la CDN, pero no hace falta
+  // preguntar por "ma", "mad" y "madr" para acabar preguntando por "madri".
+  useEffect(() => {
+    const typed = normalizeZone(zone)
+    if (typed.length < 3 || matchingZones(typed).length > 0) {
+      setNearestHint(null)
+      return
+    }
+    let cancelled = false
+    const timer = setTimeout(async () => {
+      const [cities, coords] = await Promise.all([suggestCities(typed), zoneCoords()])
+      // Sin la guarda, una respuesta lenta de una busqueda vieja pisaria la
+      // sugerencia de lo que el usuario esta escribiendo ahora.
+      if (cancelled || !cities.length) return
+
+      // La ciudad la elige el buscador, que ordena por relevancia; nosotros
+      // solo desempatamos entre las que se llaman igual. Ordenando por
+      // distancia tambien la ciudad, "madri" proponia Madridejos: esta mas
+      // cerca de Valencia que Madrid, pero no es lo que se estaba escribiendo.
+      const topName = normalizeZoneKey(cities[0].name)
+      const homonyms = cities.filter((c) => normalizeZoneKey(c.name) === topName)
+
+      // Entre los homonimos gana el que quede mas cerca de alguna zona nuestra:
+      // "Madrid" existe en España, en Iowa y en Colombia, y solo el español
+      // esta a un rato de Valencia.
+      let bestCity = ''
+      let bestZone = ''
+      let bestKm = Infinity
+      for (const city of homonyms) {
+        for (const label of knownZones) {
+          const c = coords.get(normalizeZoneKey(label))
+          if (!c) continue
+          const km = haversineKm(city, c)
+          if (km < bestKm) {
+            bestKm = km
+            bestCity = city.label
+            bestZone = label
+          }
+        }
+      }
+      if (!bestZone) return
+      setNearestHint({ typed, city: bestCity, zone: bestZone })
+    }, 400)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zone, knownZones])
+
   // Zona con agenda mas cercana a lo que ha escrito el usuario. Devuelve la
   // etiqueta tal cual esta en la base de datos, o null si no se puede situar
   // el sitio o ninguna zona resuelve coordenadas.
-  async function nearestZoneTo(
-    zoneName: string,
-    counts: Map<string, number>,
-    labelByKey: Map<string, string>,
-  ): Promise<string | null> {
+  //
+  // Recibe las etiquetas de zona y no el mapa de recuentos porque lo usan dos
+  // sitios: el envio del formulario (que ya tiene los recuentos) y el
+  // desplegable de sugerencias (que solo tiene la lista de zonas conocidas).
+  async function nearestZoneTo(zoneName: string, labels: string[]): Promise<string | null> {
     const [targets, coords] = await Promise.all([geocodeCandidates(zoneName), zoneCoords()])
     if (!targets.length) return null
 
@@ -165,20 +234,20 @@ export function LandingPage() {
     // pareja mas cercana. Esto resuelve de paso la ambiguedad de nombres: para
     // "Deia" el candidato rumano queda a 1500 km de cualquier zona y el
     // mallorquin a 25 km de Mallorca, asi que gana el correcto.
-    let bestKey = ''
+    let best: string | null = null
     let bestKm = Infinity
     for (const target of targets) {
-      for (const [key] of counts) {
-        const c = coords.get(key)
+      for (const label of labels) {
+        const c = coords.get(normalizeZoneKey(label))
         if (!c) continue
         const km = haversineKm(target, c)
         if (km < bestKm) {
           bestKm = km
-          bestKey = key
+          best = label
         }
       }
     }
-    return bestKey ? labelByKey.get(bestKey) || bestKey : null
+    return best
   }
 
   async function resolveZoneWithFallback(zoneName: string) {
@@ -222,7 +291,7 @@ export function LandingPage() {
     // Sin agenda en lo que ha pedido: se ofrece la zona mas CERCANA, no la que
     // mas eventos tiene. Buscando "Soller" salia Valencia por volumen, cuando
     // Soller esta en Mallorca a 25 km y Valencia a 265 km cruzando el mar.
-    const nearest = await nearestZoneTo(zoneName, counts, labelByKey)
+    const nearest = await nearestZoneTo(zoneName, Array.from(labelByKey.values()))
     if (nearest) return { zone: nearest, fallback: nearest, hasEvents: false }
 
     // Si la geocodificacion falla (sin red, Nominatim caido, sitio inexistente)
@@ -242,25 +311,41 @@ export function LandingPage() {
     return { zone: zoneName, fallback: null, hasEvents: false }
   }
 
-  async function goToDiscover(targetZone: string) {
-    const cleaned = normalizeZone(targetZone)
-    if (!cleaned) {
-      setStatusMsg(t('landing.error_empty'))
-      return
-    }
-    const resolved = await resolveZoneWithFallback(cleaned)
+  type Resolved = { zone: string; fallback: string | null; hasEvents: boolean }
+
+  // Aviso al usuario y navegacion. Separado de goToDiscover porque la
+  // sugerencia del desplegable ya trae la zona resuelta y volver a resolverla
+  // seria pedir lo mismo otra vez.
+  function announceAndGo(typedName: string, resolved: Resolved) {
     if (typeof window !== 'undefined') {
       localStorage.setItem('nighthub-zone', resolved.zone)
       if (!resolved.hasEvents) {
         const msg = resolved.fallback
           ? t('landing.no_events_fallback')
-              .replace('{zone}', cleaned)
+              .replace('{zone}', typedName)
               .replace('{fallback}', resolved.fallback)
           : t('landing.no_events')
         window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message: msg } }))
       }
     }
     router.push(`/discover?tab=events&zone=${encodeURIComponent(resolved.zone)}`)
+  }
+
+  // Salto directo a la zona que propone el desplegable, sin volver a
+  // geocodificar. Importa ademas por correccion: lo escrito puede estar a
+  // medias ("madri"), y el geocodificador de nombres completos lo resolveria
+  // como un sitio cualquiera del mundo que se llame asi.
+  function goToNearest(hint: { city: string; zone: string }) {
+    announceAndGo(hint.city, { zone: hint.zone, fallback: hint.zone, hasEvents: false })
+  }
+
+  async function goToDiscover(targetZone: string) {
+    const cleaned = normalizeZone(targetZone)
+    if (!cleaned) {
+      setStatusMsg(t('landing.error_empty'))
+      return
+    }
+    announceAndGo(cleaned, await resolveZoneWithFallback(cleaned))
   }
 
   async function requestGeo(autoNavigate = false) {
@@ -290,6 +375,13 @@ export function LandingPage() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    // Si el desplegable ya ha resuelto lo que hay escrito, se usa. Enviando
+    // "madri" sin esto se resolveria por nombre completo, que para un texto a
+    // medias devuelve cualquier sitio del mundo que se llame asi.
+    if (nearestHint && nearestHint.typed === normalizeZone(zone)) {
+      goToNearest(nearestHint)
+      return
+    }
     await goToDiscover(zone)
   }
 
@@ -361,7 +453,11 @@ export function LandingPage() {
               etiqueta, de p a h2, para que la pagina tenga una jerarquia real
               bajo el h1 en vez de saltar directo a contenido sin encabezado. */}
           <h2 className="text-sm font-normal text-white/50 text-center anim-label">{t('landing.placeholder')}</h2>
-          <div className="relative anim-form">
+          {/* z-20 aqui y no solo en el desplegable: .anim-form y .anim-points
+              acaban con transform, y cada transform crea su propio contexto de
+              apilado, asi que un z-index de dentro no puede pasar por encima
+              del bloque hermano. */}
+          <div className="relative z-20 anim-form">
             <div className="flex items-center bg-black/30 border border-[#d8af3a]/30 rounded-full px-5 py-2 shadow-[0_0_28px_rgba(216,175,58,0.18),0_15px_60px_rgba(0,0,0,0.45)] backdrop-blur transition-shadow hover:shadow-[0_0_42px_rgba(216,175,58,0.32),0_15px_60px_rgba(0,0,0,0.45)]">
             <svg className="w-4 h-4 text-[#d8af3a] mr-3 shrink-0" viewBox="0 0 16 16" fill="none">
               <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -378,19 +474,15 @@ export function LandingPage() {
               onChange={(e) => {
                 const val = e.target.value
                 setZone(val)
-                const norm = normalizeZone(val)
-                const matches = knownZones.filter(z => normalizeZoneKey(z).startsWith(normalizeZoneKey(norm)) && norm.length >= 2)
-                setSuggestions(matches.slice(0, 5))
+                setSuggestions(matchingZones(val))
               }}
               onBlur={() => {
                 setZone(prev => normalizeZone(prev))
-                setTimeout(() => setSuggestions([]), 120)
+                setTimeout(() => { setSuggestions([]); setNearestHint(null) }, 120)
               }}
               onFocus={() => {
                 setTimeout(() => inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150)
-                const norm = normalizeZone(zone)
-                const matches = knownZones.filter(z => normalizeZoneKey(z).startsWith(normalizeZoneKey(norm)) && norm.length >= 2)
-                setSuggestions(matches.slice(0, 5))
+                setSuggestions(matchingZones(zone))
               }}
             />
             {hasSpeech && (
@@ -423,8 +515,10 @@ export function LandingPage() {
               </button>
             </div>
             </div>
-            {suggestions.length > 0 && (
-              <div className="absolute left-0 right-0 mt-2 rounded-2xl bg-black/70 border border-white/10 backdrop-blur shadow-glow text-left text-sm overflow-hidden">
+            {/* z-20 y fondo opaco: el desplegable es absoluto pero el boton de
+                ubicacion viene despues en el DOM y se pintaba encima. */}
+            {(suggestions.length > 0 || nearestHint) && (
+              <div className="absolute z-20 left-0 right-0 mt-2 rounded-2xl bg-[#0b0910] border border-white/10 shadow-glow text-left text-sm overflow-hidden">
                 {suggestions.map(s => (
                   <button
                     key={s}
@@ -436,6 +530,21 @@ export function LandingPage() {
                     {s}
                   </button>
                 ))}
+                {/* Solo cuando no hay coincidencia directa: la ciudad escrita no
+                    es nuestra, asi que se dice cual se abre y por que. */}
+                {suggestions.length === 0 && nearestHint && (
+                  <button
+                    type="button"
+                    className="w-full text-left px-4 py-2 hover:bg-white/5"
+                    onMouseDown={(e)=>e.preventDefault()}
+                    onClick={() => { setNearestHint(null); goToNearest(nearestHint) }}
+                  >
+                    <span className="text-white">{nearestHint.city}</span>
+                    <span className="block text-xs text-white/45">
+                      {t('landing.suggest_nearest').replace('{zone}', nearestHint.zone)}
+                    </span>
+                  </button>
+                )}
               </div>
             )}
           </div>
