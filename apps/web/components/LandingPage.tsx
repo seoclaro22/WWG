@@ -1,5 +1,6 @@
 "use client"
 import { FormEvent, useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { createClient } from '@supabase/supabase-js'
@@ -7,7 +8,12 @@ import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { geocodeCandidates, haversineKm, reverseGeocode } from '@/lib/geo-client'
 import { zoneCoords } from '@/lib/zone-coords'
 import { GradientBackground } from '@/components/ui/gradient-background'
-import { GlowingShadow } from '@/components/ui/glowing-shadow'
+
+// Carga diferida y sin SSR: es WebGL puro (ogl), no tiene sentido renderizarlo
+// en el servidor, y así no entra en el bundle que bloquea el primer pintado.
+const Strands = dynamic(() => import('@/components/ui/Strands'), { ssr: false })
+
+const STRANDS_COLORS = ['#d8af3a', '#f5d98b', '#8a6a1e']
 
 // Mismo look que landing-gold-base/aurora (fondo casi negro con brillos ambar)
 // pero como gradientes solidos que el componente cruza con transicion suave.
@@ -51,11 +57,18 @@ export function LandingPage() {
   const [displayPlaceholder, setDisplayPlaceholder] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [hasSpeech, setHasSpeech] = useState(false)
+  const [showStrands, setShowStrands] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Detectar soporte de Speech API
   useEffect(() => {
     setHasSpeech(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))
+  }, [])
+
+  // El fondo animado (WebGL) no se monta si el usuario pide menos movimiento.
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setShowStrands(!reduced)
   }, [])
 
   // Animación de typing en el placeholder
@@ -294,6 +307,25 @@ export function LandingPage() {
           className="absolute inset-0 min-h-0 pointer-events-none"
         />
         <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
+        {showStrands && (
+          <div className="absolute inset-0">
+            <Strands
+              colors={STRANDS_COLORS}
+              count={3}
+              speed={0.4}
+              amplitude={1}
+              waviness={1}
+              thickness={0.5}
+              glow={1.4}
+              taper={3}
+              spread={1}
+              intensity={0.35}
+              saturation={1}
+              opacity={0.22}
+              scale={1.5}
+            />
+          </div>
+        )}
       </div>
 
       {/* Unica zona: identidad y buscador, sin nada mas que distraiga. */}
@@ -376,17 +408,19 @@ export function LandingPage() {
               </button>
             )}
             <div className="ml-2 shrink-0">
-              <GlowingShadow width="72px" aspectRatio="1/1" radius="999px" contentColor="transparent">
-                <button
-                  type="submit"
-                  className="w-12 h-12 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
-                  aria-label={t('landing.cta')}
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              </GlowingShadow>
+              {/* Antes iba envuelto en GlowingShadow: animaba un filter:blur()
+                  infinito via CSS custom properties, muy pesado en moviles de
+                  gama baja. El brillo estatico de abajo mas el pulso ligero de
+                  cta-arrow (solo transform) dan presencia sin ese coste. */}
+              <button
+                type="submit"
+                className="w-12 h-12 rounded-full bg-gold text-black hover:opacity-90 transition active:scale-95 flex items-center justify-center shadow-[0_0_24px_rgba(216,175,58,0.35)] cta-arrow"
+                aria-label={t('landing.cta')}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </div>
             </div>
             {suggestions.length > 0 && (
