@@ -142,25 +142,37 @@ function EventsManager() {
         <button className="btn btn-primary" onClick={()=>setEditing({ name:'', status:'published', sponsored: false })}>Nuevo</button>
       </div>
       <input className="w-full bg-transparent border border-white/10 rounded-xl p-2" placeholder="Buscar evento..." value={q} onChange={e=>setQ(e.target.value)} />
+      {/* Nuevo se abre arriba, fuera de la lista: no tiene fila propia donde
+          desplegarse debajo. Editar si la tiene (ver dentro del map). */}
+      {editing && !editing.id && (
+        <EventForm key="new" initial={editing} clubs={clubs} onCancel={()=>setEditing(null)} onSave={save} onLineupChange={setLineup} />
+      )}
       <div className="grid gap-2">
         {items.map(e => (
-          <div key={e.id} className="card p-3 flex items-center justify-between">
-            <div>
-              <div className="font-medium flex items-center gap-2">
-                {e.name}
-                {e.sponsored ? <span className="text-xs px-2 py-0.5 rounded-full bg-[#d6b24d] text-black">Patrocinado</span> : null}
+          <div key={e.id} className="grid gap-2">
+            <div className="card p-3 flex items-center justify-between">
+              <div>
+                <div className="font-medium flex items-center gap-2">
+                  {e.name}
+                  {e.sponsored ? <span className="text-xs px-2 py-0.5 rounded-full bg-[#d6b24d] text-black">Patrocinado</span> : null}
+                </div>
+                <div className="text-sm text-white/60">{e.start_at?.toString()} · {e.status}</div>
               </div>
-              <div className="text-sm text-white/60">{e.start_at?.toString()} · {e.status}</div>
+              <div className="flex gap-2">
+                <button className="btn btn-secondary" onClick={()=>setEditing(editing?.id === e.id ? null : e)}>{editing?.id === e.id ? 'Cerrar' : 'Editar'}</button>
+                <button className="btn btn-secondary" onClick={()=>remove(e.id)}>Eliminar</button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button className="btn btn-secondary" onClick={()=>setEditing(e)}>Editar</button>
-              <button className="btn btn-secondary" onClick={()=>remove(e.id)}>Eliminar</button>
-            </div>
+            {/* Se despliega justo debajo de su fila: antes el formulario solo
+                aparecia al final de la lista entera, y con 300+ eventos habia
+                que bajar del todo cada vez para editar uno de arriba. */}
+            {editing && editing.id === e.id && (
+              <EventForm key={e.id} initial={editing} clubs={clubs} onCancel={()=>setEditing(null)} onSave={save} onLineupChange={setLineup} />
+            )}
           </div>
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
       </div>
-      {editing && <EventForm key={editing.id || 'new'} initial={editing} clubs={clubs} onCancel={()=>setEditing(null)} onSave={save} onLineupChange={setLineup} />}
     </div>
   )
 }

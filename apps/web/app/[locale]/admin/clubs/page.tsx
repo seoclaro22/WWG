@@ -92,25 +92,36 @@ function ClubsManager() {
         <button className="btn btn-primary" onClick={()=>setEditing({ name: '', status: 'approved' })}>Nuevo</button>
       </div>
       <input className="w-full bg-transparent border border-white/10 rounded-xl p-2" placeholder="Buscar club..." value={q} onChange={e=>setQ(e.target.value)} />
+      {/* Nuevo se abre arriba, fuera de la lista: no tiene fila propia donde
+          desplegarse debajo. Editar si la tiene (ver dentro del map). */}
+      {editing && !editing.id && (
+        <ClubForm key="new" initial={editing} onCancel={()=>setEditing(null)} onSave={save} />
+      )}
       <div className="grid gap-2">
         {items.map(c => (
-          <div key={c.id} className="card p-3 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{c.name}</span>
-                {c.featured && <span className="text-[10px] bg-[#d8af3a]/15 text-[#d8af3a] px-2 py-0.5 rounded-full font-semibold">⭐ Destacado</span>}
+          <div key={c.id} className="grid gap-2">
+            <div className="card p-3 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{c.name}</span>
+                  {c.featured && <span className="text-[10px] bg-[#d8af3a]/15 text-[#d8af3a] px-2 py-0.5 rounded-full font-semibold">⭐ Destacado</span>}
+                </div>
+                <div className="text-sm text-white/60">{c.address || '-'} · {c.status}</div>
               </div>
-              <div className="text-sm text-white/60">{c.address || '-'} · {c.status}</div>
+              <div className="flex gap-2">
+                <button className="btn btn-secondary" onClick={()=>setEditing(editing?.id === c.id ? null : c)}>{editing?.id === c.id ? 'Cerrar' : 'Editar'}</button>
+                <button className="btn btn-secondary" onClick={()=>remove(c.id)}>Eliminar</button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button className="btn btn-secondary" onClick={()=>setEditing(c)}>Editar</button>
-              <button className="btn btn-secondary" onClick={()=>remove(c.id)}>Eliminar</button>
-            </div>
+            {/* Se despliega justo debajo de su fila, igual que en DJs: antes el
+                formulario solo aparecia al final de la lista entera. */}
+            {editing && editing.id === c.id && (
+              <ClubForm key={c.id} initial={editing} onCancel={()=>setEditing(null)} onSave={save} />
+            )}
           </div>
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
       </div>
-      {editing && <ClubForm key={editing.id || 'new'} initial={editing} onCancel={()=>setEditing(null)} onSave={save} />}
     </div>
   )
 }
