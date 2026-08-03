@@ -30,8 +30,22 @@ export async function Footer({ locale }: { locale: string }) {
   const t = (k: string) => dict[k] || k
 
   return (
-    <footer className="mt-10 border-t border-white/10 py-8 text-sm text-white/50">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+    <footer className="mt-10 border-t border-white/10 pt-8 pb-8 text-sm text-white/50">
+      {/* Cabecera de marca: antes el pie no tenia logo propio y arrancaba
+          directo en las columnas de enlaces, sin nada que lo identificara
+          como parte de la web. */}
+      <div className="flex items-center gap-3 pb-6 mb-8 border-b border-white/5">
+        <Link href="/" className="text-lg font-semibold tracking-wide text-gold shrink-0">WWG</Link>
+        <p className="text-xs text-white/30 truncate">{t('landing.subtitle')}</p>
+      </div>
+
+      {/* Tres columnas y no cuatro: con Zonas + Where We Go + Idioma + Generos
+          en el mismo grid de 3, el cuarto grupo caia solo a una segunda fila
+          dejando un hueco enorme al lado (Generos, con 20+ enlaces en lista
+          vertical, estiraba la fila entera a mas de 600px). Generos baja
+          aparte, en horizontal, que es donde una lista larga de terminos
+          cabe sin desbordar. */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
         {zones.length > 0 && (
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-2">{t('footer.zones')}</p>
@@ -57,19 +71,6 @@ export async function Footer({ locale }: { locale: string }) {
                       </span>
                     ))}
                   </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {genres.length > 0 && (
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-2">{t('footer.genres')}</p>
-            <ul className="space-y-1">
-              {genres.map((name) => (
-                <li key={name}>
-                  <Link href={`/genre/${encodeURIComponent(name)}`} className="hover:text-gold" prefetch={false}>{name}</Link>
                 </li>
               ))}
             </ul>
@@ -102,7 +103,22 @@ export async function Footer({ locale }: { locale: string }) {
         </div>
       </div>
 
-      <p className="mt-6 text-xs text-white/30">© {new Date().getFullYear()} Where We Go</p>
+      {genres.length > 0 && (
+        <div className="mt-8 pt-6 border-t border-white/5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70 mb-3">{t('footer.genres')}</p>
+          {/* flex-wrap y no una lista vertical: son 20+ terminos, y en columna
+              cada uno se estiraba la fila entera del grid de arriba. */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            {genres.map((name) => (
+              <Link key={name} href={`/genre/${encodeURIComponent(name)}`} className="text-xs text-white/40 hover:text-gold" prefetch={false}>
+                {name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <p className="mt-8 pt-6 border-t border-white/5 text-xs text-white/30">© {new Date().getFullYear()} Where We Go</p>
     </footer>
   )
 }
