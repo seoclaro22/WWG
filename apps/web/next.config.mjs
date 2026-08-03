@@ -17,10 +17,10 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseOrigin = supabaseHost ? `https://${supabaseHost}` : ''
 const supabaseWsOrigin = supabaseHost ? `wss://${supabaseHost}` : ''
 
-// Politica de contenido. Va en Report-Only a proposito: si algo queda fuera de
-// la lista el navegador lo avisa por consola pero no lo bloquea, asi se puede
-// afinar sin tumbar la web. Cuando pase unos dias sin avisos, cambiar la
-// cabecera a 'Content-Security-Policy' para que empiece a bloquear de verdad.
+// Politica de contenido, ya en modo bloqueo (no Report-Only). Se probo antes
+// sin bloquear en home, discover, ficha de DJ y login sin ningun aviso en
+// consola, y los origenes de Spotify/Analytics se verificaron contra el
+// codigo real (components/GoogleAnalytics.tsx, app/[locale]/dj/[id]/page.tsx).
 //
 // 'unsafe-inline' en script-src es necesario mientras el JSON-LD se inyecte con
 // dangerouslySetInnerHTML; quitarlo exige pasar a nonces desde el middleware.
@@ -54,7 +54,7 @@ const SECURITY_HEADERS = [
   // 2 anios. El navegador recuerda que este dominio es solo https y no permite
   // el degradado a http ni saltarse el aviso de certificado.
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-  { key: 'Content-Security-Policy-Report-Only', value: CSP },
+  { key: 'Content-Security-Policy', value: CSP },
 ]
 
 /** @type {import('next').NextConfig} */
