@@ -166,6 +166,20 @@ void main() {
 }
 `
 
+// Fondo ambiental y desenfocado: no hace falta nitidez retina. El numero de
+// pixeles a sombrear crece con el ancho de la ventana (un escritorio de
+// ~1350px tiene ~3.7x los pixeles de un movil), y eso es justo lo que
+// disparaba el Total Blocking Time a 450ms en el PageSpeed de escritorio (97
+// en movil, 71 en escritorio, mismo componente). Se compensa bajando la
+// resolucion interna del canvas en pantallas anchas: el navegador reescala
+// solo al mostrarlo y no se nota en un glow difuso como este.
+function computeDpr(width: number): number {
+  const base = Math.min(window.devicePixelRatio || 1, 2)
+  if (width > 1100) return Math.min(base, 0.55)
+  if (width > 700) return Math.min(base, 0.8)
+  return base
+}
+
 function buildPalette(colors: string[]) {
   const filled = colors && colors.length ? colors : ['#ffffff']
   const padded: [number, number, number][] = []
@@ -318,6 +332,7 @@ export default function Strands({
       if (!ctn) return
       const width = ctn.offsetWidth
       const height = ctn.offsetHeight
+      renderer.dpr = computeDpr(width)
       renderer.setSize(width, height)
       program.uniforms.uResolution.value = [width, height]
       renderTarget.setSize(width, height)
