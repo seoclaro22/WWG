@@ -24,6 +24,12 @@ const supabaseWsOrigin = supabaseHost ? `wss://${supabaseHost}` : ''
 //
 // 'unsafe-inline' en script-src es necesario mientras el JSON-LD se inyecte con
 // dangerouslySetInnerHTML; quitarlo exige pasar a nonces desde el middleware.
+//
+// 'unsafe-eval' solo en desarrollo: el webpack de "next dev" carga cada modulo
+// con eval() para el hot-reload, y sin esto la CSP lo bloquea entero, en
+// silencio (cero fetches, cero hidratacion, sin ningun aviso claro en
+// consola). El build de produccion no usa eval, asi que alli no hace falta y
+// no se relaja.
 const CSP = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -31,7 +37,7 @@ const CSP = [
   "frame-ancestors 'none'",
   "form-action 'self'",
   // gtag se carga desde googletagmanager (components/GoogleAnalytics.tsx)
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+  `script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV !== 'production' ? "'unsafe-eval' " : ''}https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
   // blob: y data: los usa el canvas WebGL del fondo y las previsualizaciones
   // de imagen antes de subirlas
