@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { geocodeCandidatesServer } from '@/lib/geo-server'
+import { geocodeCandidatesServer, sanitizeGeoQuery } from '@/lib/geo-server'
+import { clientIp, rateLimit } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -11,7 +12,15 @@ export const runtime = 'nodejs'
 // identificable) y para que la misma consulta se resuelva una sola vez:
 // "soller" la buscan muchos visitantes, Nominatim la ve una vez por semana.
 export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get('q')?.trim()
+  // 30/min por IP: de sobra para una persona escribiendo, no para un bucle.
+  // Es defensa en memoria, no un limite global (ver lib/rate-limit.ts).
+  if (!rateLimit(`geocode:${clientIp(req)}`, 30)) {
+    return NextResponse.json({ error: 'too many requests' }, { status: 429 })
+  }
+
+  // Se sanea antes de salir a Nominatim: la ruta es publica y sin este limite
+  // sirve de proxy para machacar un servicio ajeno en nuestro nombre.
+  const q = sanitizeGeoQuery(req.nextUrl.searchParams.get('q'))
   if (!q) return NextResponse.json({ error: 'missing q' }, { status: 400 })
 
   // Se devuelven todos los candidatos: el desempate por cercania lo hace quien

@@ -1,4 +1,4 @@
-﻿-- NightHub Mallorca - Esquema mÃ­nimo (Postgres + PostGIS)
+﻿-- NightHub Mallorca - Esquema mínimo (Postgres + PostGIS)
 
 -- Extensiones recomendadas
 create extension if not exists postgis;
@@ -92,7 +92,7 @@ create table if not exists public.events (
 alter table public.events
   add column if not exists sponsored boolean default false;
 
--- Follows y favoritos (polimÃ³rfico por tipo)
+-- Follows y favoritos (polimórfico por tipo)
 create table if not exists public.follows (
   user_id uuid references public.users(id) on delete cascade,
   target_type text check (target_type in ('club','dj')),
@@ -109,7 +109,7 @@ create table if not exists public.favorites (
   primary key (user_id, target_type, target_id)
 );
 
--- ReseÃ±as (moderadas)
+-- Reseñas (moderadas)
 create table if not exists public.reviews (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete set null,
@@ -121,7 +121,7 @@ create table if not exists public.reviews (
   created_at timestamptz default now()
 );
 
--- EnvÃ­os (altas) de clubs o eventos
+-- Envíos (altas) de clubs o eventos
 create table if not exists public.submissions (
   id uuid primary key default gen_random_uuid(),
   type text check (type in ('club','event')),
@@ -209,17 +209,24 @@ create table if not exists public.app_page_views (
 );
 
 -- Vistas de apoyo
+--
+-- security_invoker=on es obligatorio aqui: sin el, la vista corre con los
+-- privilegios de quien la creo y NO aplica el RLS de events ni de clubs, asi
+-- que el unico filtro real acaba siendo el where escrito a mano. Y el join
+-- filtra por club aprobado en el ON (no en el WHERE) para que un evento cuyo
+-- club no este aprobado siga apareciendo, solo que con club_name/location a
+-- NULL, en vez de desaparecer del catalogo publico.
 drop view if exists public.events_public;
-create view public.events_public as
+create view public.events_public with (security_invoker = on) as
   select e.id, e.name, e.name_i18n, e.description, e.description_i18n, e.start_at, e.end_at, e.genres, e.sponsored,
          e.price_min, e.price_max, e.images, e.url_referral,
          e.status, e.created_at, c.id as club_id, c.name as club_name,
          c.location, e.geo, e.zone
   from public.events e
-  left join public.clubs c on c.id = e.club_id
+  left join public.clubs c on c.id = e.club_id and c.status = 'approved'
   where e.status = 'published';
 
--- Ãndices
+-- Índices
 create index if not exists idx_events_start_at on public.events(start_at);
 create index if not exists idx_events_status_start on public.events(status, start_at);
 create index if not exists idx_events_club on public.events(club_id);
@@ -262,11 +269,13 @@ alter table public.app_devices enable row level security;
 alter table public.app_sessions enable row level security;
 alter table public.app_page_views enable row level security;
 
--- PolÃ­ticas abiertas de lectura pÃºblica para contenidos aprobados
-create policy if not exists events_read_public on public.events
+-- Políticas abiertas de lectura pública para contenidos aprobados
+drop policy if exists events_read_public on public.events;
+create policy events_read_public on public.events
   for select using (status = 'published');
 
-create policy if not exists clubs_read_public on public.clubs
+drop policy if exists clubs_read_public on public.clubs;
+create policy clubs_read_public on public.clubs
   for select using (status = 'approved');
 
 -- Moderadores pueden crear/editar clubs y eventos
@@ -313,26 +322,33 @@ do $$ begin
   end if;
 end $$;
 
--- Permitir envÃ­os pÃºblicos de submissions (cualquier visitante)
-create policy if not exists submissions_insert_public on public.submissions
+-- Permitir envíos públicos de submissions (cualquier visitante)
+drop policy if exists submissions_insert_public on public.submissions;
+create policy submissions_insert_public on public.submissions
   for insert with check (true);
 
 -- Inserciones de favoritos/follows por usuario autenticado (placeholder, ajustar a JWT de Supabase)
-create policy if not exists favorites_insert_self on public.favorites
+drop policy if exists favorites_insert_self on public.favorites;
+create policy favorites_insert_self on public.favorites
   for insert with check (auth.uid() = user_id);
-create policy if not exists favorites_select_self on public.favorites
+drop policy if exists favorites_select_self on public.favorites;
+create policy favorites_select_self on public.favorites
   for select using (auth.uid() = user_id);
-create policy if not exists favorites_delete_self on public.favorites
+drop policy if exists favorites_delete_self on public.favorites;
+create policy favorites_delete_self on public.favorites
   for delete using (auth.uid() = user_id);
 
 -- Asegurar tipos permitidos incluyen DJ
 alter table public.favorites drop constraint if exists favorites_target_type_check;
 alter table public.favorites add constraint favorites_target_type_check check (target_type in ('event','club','dj'));
-create policy if not exists follows_insert_self on public.follows
+drop policy if exists follows_insert_self on public.follows;
+create policy follows_insert_self on public.follows
   for insert with check (auth.uid() = user_id);
-create policy if not exists follows_select_self on public.follows
+drop policy if exists follows_select_self on public.follows;
+create policy follows_select_self on public.follows
   for select using (auth.uid() = user_id);
-create policy if not exists follows_delete_self on public.follows
+drop policy if exists follows_delete_self on public.follows;
+create policy follows_delete_self on public.follows
   for delete using (auth.uid() = user_id);
 
 -- Favoritos: lectura completa por moderadores (para estadísticas)
@@ -355,61 +371,65 @@ do $$ begin
   end if;
 end $$;
 
--- Search logs: inserción pública (no requiere usuario) y lectura por moderadores
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='search_logs' and policyname='search_logs_insert_public') then
-    create policy search_logs_insert_public on public.search_logs for insert with check (true);
-  end if;
-end $$;
+-- Search logs: insercion publica y lectura por moderadores.
+--
+-- El check exige que, si se manda user_id, sea el propio: sin esto cualquiera
+-- podia fabricar historial de busqueda a nombre de otro usuario, que los
+-- moderadores verian en /admin/stats como si fuera real.
+drop policy if exists search_logs_insert_public on public.search_logs;
+create policy search_logs_insert_public on public.search_logs
+  for insert with check (user_id is null or auth.uid() = user_id);
 do $$ begin
   if not exists (select 1 from pg_policies where schemaname='public' and tablename='search_logs' and policyname='search_logs_select_moderator') then
     create policy search_logs_select_moderator on public.search_logs for select using (public.is_moderator(auth.uid()));
   end if;
 end $$;
 
--- App devices/sessions/views: insercion publica, lectura moderadores
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_insert_public') then
-    create policy app_devices_insert_public on public.app_devices for insert with check (true);
-  end if;
-end $$;
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_update_public') then
-    create policy app_devices_update_public on public.app_devices for update using (true);
-  end if;
-end $$;
+-- App devices/sessions/views: insercion y actualizacion publicas (la app
+-- actualiza su propia sesion cada 30s y cierra cada vista de pagina con la
+-- anon key, sin login), y lectura por moderadores.
+--
+-- Las politicas de UPDATE eran "using (true)" sin with check: cualquiera
+-- podia, ademas de tocar sus propios contadores, reescribir user_id y
+-- "adoptar" para si la sesion de otro visitante que hubiera iniciado sesion.
+-- El with check cierra justo eso (no se puede poner un user_id que no sea el
+-- propio) sin romper el tracking anonimo, que sigue identificado solo por el
+-- device_id/session_id aleatorio generado en el cliente.
+--
+-- Riesgo residual asumido: quien adivine el device_id/session_id/view_id
+-- (UUID aleatorio, no expuesto en URLs) de otro visitante puede corromper sus
+-- metricas de tiempo/ruta, pero no puede atribuirselos a un usuario real. Un
+-- cierre completo exigiria firmar esos ids, que es un cambio mayor.
+drop policy if exists app_devices_insert_public on public.app_devices;
+create policy app_devices_insert_public on public.app_devices
+  for insert with check (user_id is null or auth.uid() = user_id);
+drop policy if exists app_devices_update_public on public.app_devices;
+create policy app_devices_update_public on public.app_devices
+  for update using (true) with check (user_id is null or auth.uid() = user_id);
 do $$ begin
   if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_devices' and policyname='app_devices_select_moderator') then
     create policy app_devices_select_moderator on public.app_devices for select using (public.is_moderator(auth.uid()));
   end if;
 end $$;
 
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_insert_public') then
-    create policy app_sessions_insert_public on public.app_sessions for insert with check (true);
-  end if;
-end $$;
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_update_public') then
-    create policy app_sessions_update_public on public.app_sessions for update using (true);
-  end if;
-end $$;
+drop policy if exists app_sessions_insert_public on public.app_sessions;
+create policy app_sessions_insert_public on public.app_sessions
+  for insert with check (user_id is null or auth.uid() = user_id);
+drop policy if exists app_sessions_update_public on public.app_sessions;
+create policy app_sessions_update_public on public.app_sessions
+  for update using (true) with check (user_id is null or auth.uid() = user_id);
 do $$ begin
   if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_sessions' and policyname='app_sessions_select_moderator') then
     create policy app_sessions_select_moderator on public.app_sessions for select using (public.is_moderator(auth.uid()));
   end if;
 end $$;
 
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_insert_public') then
-    create policy app_page_views_insert_public on public.app_page_views for insert with check (true);
-  end if;
-end $$;
-do $$ begin
-  if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_update_public') then
-    create policy app_page_views_update_public on public.app_page_views for update using (true);
-  end if;
-end $$;
+drop policy if exists app_page_views_insert_public on public.app_page_views;
+create policy app_page_views_insert_public on public.app_page_views
+  for insert with check (user_id is null or auth.uid() = user_id);
+drop policy if exists app_page_views_update_public on public.app_page_views;
+create policy app_page_views_update_public on public.app_page_views
+  for update using (true) with check (user_id is null or auth.uid() = user_id);
 do $$ begin
   if not exists (select 1 from pg_policies where schemaname='public' and tablename='app_page_views' and policyname='app_page_views_select_moderator') then
     create policy app_page_views_select_moderator on public.app_page_views for select using (public.is_moderator(auth.uid()));
@@ -425,14 +445,31 @@ create index if not exists idx_search_logs_term on public.search_logs(lower(q));
 create index if not exists idx_favorites_user on public.favorites(user_id);
 
 -- Users: permitir que cada usuario gestione su propio registro
-create policy if not exists users_insert_self on public.users
-  for insert with check (auth.uid() = id);
-create policy if not exists users_select_self on public.users
+--
+-- roles esta congelada en insert y en update: sin esto, cualquier usuario
+-- autenticado puede hacer sb.from('users').update({roles:['admin']}) desde el
+-- navegador y ascenderse a admin, porque no habia with check que lo impidiera.
+-- Ademas se revoca a nivel de privilegio de columna, que es la barrera que no
+-- depende de acertar la politica.
+revoke update (roles) on public.users from anon, authenticated;
+
+drop policy if exists users_insert_self on public.users;
+create policy users_insert_self on public.users
+  for insert with check (auth.uid() = id and (roles is null or roles = array['user']::text[]));
+drop policy if exists users_select_self on public.users;
+create policy users_select_self on public.users
   for select using (auth.uid() = id);
-create policy if not exists users_select_moderator on public.users
+drop policy if exists users_select_moderator on public.users;
+create policy users_select_moderator on public.users
   for select using (public.is_moderator(auth.uid()));
-create policy if not exists users_update_self on public.users
-  for update using (auth.uid() = id);
+drop policy if exists users_update_self on public.users;
+create policy users_update_self on public.users
+  for update
+  using (auth.uid() = id)
+  with check (
+    auth.uid() = id
+    and roles is not distinct from (select u.roles from public.users u where u.id = auth.uid())
+  );
 
 -- Helpers de roles
 create or replace function public.is_admin(uid uuid)
@@ -481,51 +518,38 @@ do $$ begin
     create policy djs_select_moderator on public.djs for select using (public.is_moderator(auth.uid()));
   end if;
 end $$;
--- RPC: favoritos expandidos en una sola llamada
-create or replace function public.favorites_expanded()
-returns table(
-  id uuid,
-  name text,
-  start_at timestamptz,
-  club_name text,
-  type text
-)
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select e.id, e.name, e.start_at, e.club_name, 'event'::text as type
-  from public.favorites f
-  join public.events_public e on e.id = f.target_id
-  where f.user_id = auth.uid() and f.target_type = 'event'
-  union all
-  select c.id, c.name, null::timestamptz, null::text, 'club'::text
-  from public.favorites f
-  join public.clubs c on c.id = f.target_id
-  where f.user_id = auth.uid() and f.target_type = 'club'
-  union all
-  select d.id, d.name, null::timestamptz, null::text, 'dj'::text
-  from public.favorites f
-  join public.djs d on d.id = f.target_id
-  where f.user_id = auth.uid() and f.target_type = 'dj'
-  order by type asc, name asc
-$$;
+-- RPC: favoritos expandidos en una sola llamada.
+--
+-- Estaba definida DOS VECES en este fichero (aqui, y mas abajo cerca de
+-- event_djs). "create or replace" hace que la segunda pise a la primera, y la
+-- que quedaba activa era la buena (de invocante). Pero la duplicidad es una
+-- trampa: si alguien reordena el fichero, vuelve a quedar activa esta version
+-- de aqui, que es security definer y por tanto se salta el RLS de favorites,
+-- eliminando toda barrera junto con la vista events_public. Se deja una sola
+-- definicion, mas abajo, para que no dependa del orden de ejecucion.
 
 -- Reviews policies
-create policy if not exists reviews_insert_self on public.reviews
-  for insert with check (auth.uid() = user_id);
+--
+-- status='pending' en el check: sin esto, el autor podia mandar directamente
+-- status:'approved' en el insert y la reseña salia publicada sin pasar por
+-- moderacion (PostgREST deja escribir cualquier columna que el insert incluya).
+drop policy if exists reviews_insert_self on public.reviews;
+create policy reviews_insert_self on public.reviews
+  for insert with check (auth.uid() = user_id and status = 'pending');
 
--- PÃºblico sÃ³lo ve aprobadas; el autor puede ver las suyas
-create policy if not exists reviews_select_public on public.reviews
+-- Público sólo ve aprobadas; el autor puede ver las suyas
+drop policy if exists reviews_select_public on public.reviews;
+create policy reviews_select_public on public.reviews
   for select using (status = 'approved' or auth.uid() = user_id or public.is_moderator(auth.uid()));
 
--- ModeraciÃ³n: aprobar/rechazar/editar
-create policy if not exists reviews_update_moderator on public.reviews
+-- Moderación: aprobar/rechazar/editar
+drop policy if exists reviews_update_moderator on public.reviews;
+create policy reviews_update_moderator on public.reviews
   for update using (public.is_moderator(auth.uid()));
 
 -- Borrado: autor o admin
-create policy if not exists reviews_delete_self_admin on public.reviews
+drop policy if exists reviews_delete_self_admin on public.reviews;
+create policy reviews_delete_self_admin on public.reviews
   for delete using (auth.uid() = user_id or public.is_admin(auth.uid()));
 
 -- Permitir tambien borrado por moderadores
@@ -535,15 +559,17 @@ do $$ begin
   end if;
 end $$;
 
--- Submissions: lectura y actualizaciÃ³n por moderadores
-create policy if not exists submissions_select_moderator on public.submissions
+-- Submissions: lectura y actualización por moderadores
+drop policy if exists submissions_select_moderator on public.submissions;
+create policy submissions_select_moderator on public.submissions
   for select using (public.is_moderator(auth.uid()));
-create policy if not exists submissions_update_moderator on public.submissions
+drop policy if exists submissions_update_moderator on public.submissions;
+create policy submissions_update_moderator on public.submissions
   for update using (public.is_moderator(auth.uid()));
 
--- Semillas mÃ­nimas
+-- Semillas mínimas
 insert into public.clubs (name, description, address, status)
-values ('Pacha Mallorca','Club icÃ³nico de mÃºsica electrÃ³nica','Palma, Mallorca','approved')
+values ('Pacha Mallorca','Club icónico de música electrónica','Palma, Mallorca','approved')
 on conflict do nothing;
 
 insert into public.events (name, club_id, description, start_at, end_at, status)
@@ -565,6 +591,41 @@ alter table public.clubs add column if not exists featured boolean default false
 create index if not exists idx_clubs_zone_name on public.clubs(zone, name);
 -- Telefono privado para eventos (solo backoffice)
 alter table public.events add column if not exists contact_phone text;
+
+-- Marca de "ya se aviso por push". /api/notify-event no tenia forma de saber
+-- si un evento ya habia notificado a sus seguidores: llamarla dos veces (o dos
+-- clicks en el backoffice) reenviaba la misma notificacion a todos.
+alter table public.events add column if not exists notified_at timestamptz;
+
+-- El "solo backoffice" de arriba era una convencion de interfaz, no un
+-- control: events_read_public deja leer cualquier evento publicado, y el RLS
+-- es por FILA, no por columna, asi que contact_phone (telefono personal de
+-- organizadores) se podia leer igual que el resto con
+--     sb.from('events').select('id,name,contact_phone')
+-- Aqui se corta a nivel de privilegio de columna, que si distingue.
+revoke select on public.events from anon, authenticated;
+grant select (
+  id, club_id, name, name_i18n, description, description_i18n,
+  start_at, end_at, genres, price_min, price_max, age,
+  images, url_referral, geo, zone, sponsored, status, created_at
+) on public.events to anon, authenticated;
+
+-- Los moderadores si necesitan el telefono para gestionar el backoffice. Se
+-- les da por una vista aparte y no devolviendo el select completo de la
+-- tabla, porque el grant de columna de arriba es por rol de Postgres
+-- (anon/authenticated), no distingue "moderador" dentro de authenticated.
+--
+-- Por eso esta vista es security definer (no invoker, al contrario que
+-- events_public): necesita poder leer contact_phone con los privilegios de su
+-- propietario aunque quien pregunta (un moderador cualquiera) no tenga ese
+-- privilegio de columna sobre la tabla base. El filtro is_moderator() de
+-- dentro es la unica barrera, asi que hay que mantenerla.
+drop view if exists public.events_admin;
+create view public.events_admin as
+  select e.* from public.events e
+  where public.is_moderator(auth.uid());
+
+grant select on public.events_admin to authenticated;
 
 -- Favorites: permitir tipo 'dj' si no estuviera incluido
 do $$ begin
@@ -670,7 +731,7 @@ end $$;
 
 -- Update favorites type to allow DJs
 alter table public.favorites drop constraint if exists favorites_target_type_check;
-alter table public.favorites add constraint favorites_target_type_check check (target_type in (''event'',''club'',''dj''));
+alter table public.favorites add constraint favorites_target_type_check check (target_type in ('event','club','dj'));
 
 -- Push subscriptions (web push)
 create table if not exists public.push_subscriptions (

@@ -20,7 +20,9 @@ export function ReserveButton({ eventId, source='discover', children='Reservar',
         path: typeof window !== 'undefined' ? window.location.pathname : null
       })
     } catch {}
-    const url = `/api/out?event=${encodeURIComponent(eventId)}&source=${encodeURIComponent(source)}${uid ? `&u=${encodeURIComponent(uid)}` : ''}`
+    // Sin &u=: el clic ya queda registrado arriba con el usuario de la sesion.
+    // Mandarlo por la URL permitia a cualquiera falsear a quien se atribuye.
+    const url = `/api/out?event=${encodeURIComponent(eventId)}&source=${encodeURIComponent(source)}`
     window.location.href = url
   }
   const cls = ['btn btn-primary text-sm px-3 py-1', className].filter(Boolean).join(' ')

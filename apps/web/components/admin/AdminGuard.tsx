@@ -8,9 +8,10 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   const [ok, setOk] = useState<boolean | null>(null)
   useEffect(() => {
     if (!user) { setOk(false); return }
-    const email = (user.email || '').toLowerCase()
-    // Owner bypass to avoid hanging checks
-    if (email === 'seoclaro22@gmail.com') { setOk(true); return }
+    // Sin atajo por email: estaba escrito en el bundle publico, asi que
+    // anunciaba a cualquiera cual es la cuenta que da acceso total, y ademas
+    // saltaba la comprobacion real de rol. El permiso se decide solo en
+    // is_moderator(), que se apoya en la base de datos.
     const sb = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

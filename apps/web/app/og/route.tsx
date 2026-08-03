@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { clientIp, rateLimit } from '@/lib/rate-limit'
 
 // Imagen de compartir para las paginas de listado (zona, hoy, fin de semana,
 // zona x genero, genero, cerca de mi). Las fichas de evento, club y DJ ya
@@ -26,6 +27,14 @@ function clamp(value: string, max: number) {
 }
 
 export function GET(req: Request) {
+  // 30/min por IP: cada renderizado ejecuta Satori de verdad para cualquier
+  // texto distinto, asi que un bucle de querystrings al azar tiene coste real
+  // de computo en el edge, aparte de poder usarse para clonar la estetica de
+  // marca en un sitio ajeno.
+  if (!rateLimit(`og:${clientIp(req)}`, 30)) {
+    return new Response('too many requests', { status: 429 })
+  }
+
   const { searchParams } = new URL(req.url)
   const eyebrow = clamp(searchParams.get('eyebrow') || 'Where We Go', 40)
   const title = clamp(searchParams.get('title') || 'Where We Go', 70)

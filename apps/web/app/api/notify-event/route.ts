@@ -70,6 +70,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'not_published' }, { status: 400 })
   }
 
+  // Update atomico y no un select-then-write: marca el evento como notificado
+  // y solo sigue si esta llamada es la que ha conseguido pasar de null a un
+  // valor. Sin esto, llamar la ruta dos veces (a mano, o una carrera de doble
+  // clic en el backoffice) reenviaba la misma notificacion a todos los
+  // favoritos otra vez.
+  const { data: claimed } = await sb
+    .from('events')
+    .update({ notified_at: new Date().toISOString() })
+    .eq('id', eventId)
+    .is('notified_at', null)
+    .select('id')
+    .maybeSingle()
+  if (!claimed) {
+    return NextResponse.json({ ok: true, sent: 0, users: 0, already_notified: true })
+  }
+
   const { data: djRows } = await sb
     .from('event_djs')
     .select('dj_id')

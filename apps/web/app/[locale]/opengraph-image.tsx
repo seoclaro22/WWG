@@ -10,6 +10,18 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
+// runtime edge y no nodejs (el por defecto de esta convencion de fichero).
+//
+// Sin esto, "next build" intenta prerenderizar la imagen en Node durante la
+// compilacion, y el modulo nativo de @vercel/og hace fileURLToPath() sobre una
+// ruta que en este equipo lleva un espacio (Mi unidad); en Windows esa
+// conversion revienta con "TypeError: Invalid URL" y el build entero falla.
+// route.tsx en apps/web/app/og ya usaba edge por el mismo motivo y ahi nunca
+// dio problema. Con edge, Next.js no prerenderiza esta ruta: se genera en cada
+// peticion, cacheada por la CDN igual que antes; son tres imagenes que solo
+// piden los buscadores y las redes al compartir, sin coste real.
+export const runtime = 'edge'
+
 // Imagen que se ve al compartir el sitio en WhatsApp, Instagram o X.
 // Satori (el motor de next/og) solo admite un subconjunto de CSS: todo
 // contenedor con varios hijos necesita display flex explicito.

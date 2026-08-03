@@ -20,6 +20,32 @@ export default function AdminEventsPage() {
   )
 }
 
+// Orden del listado: primero los que estan por venir, del mas cercano al mas
+// lejano, y debajo los ya pasados del mas reciente hacia atras.
+//
+// Ordenar por fecha a secas no vale: ascendente deja arriba el evento mas
+// antiguo del historico y descendente el mas lejano en el futuro. En los dos
+// casos lo que se viene a buscar (lo de esta semana) queda enterrado.
+//
+// Los eventos sin fecha van al final: no se pueden situar y no deben empujar
+// hacia abajo a los que si tienen.
+function sortByUpcoming(rows: Event[]): Event[] {
+  const now = Date.now()
+  const time = (e: Event) => {
+    const t = e.start_at ? new Date(e.start_at).getTime() : NaN
+    return Number.isNaN(t) ? null : t
+  }
+  return [...rows].sort((a, b) => {
+    const ta = time(a)
+    const tb = time(b)
+    if (ta === null || tb === null) return ta === tb ? 0 : ta === null ? 1 : -1
+    const aUpcoming = ta >= now
+    const bUpcoming = tb >= now
+    if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1
+    return aUpcoming ? ta - tb : tb - ta
+  })
+}
+
 function EventsManager() {
   const [items, setItems] = useState<Event[]>([])
   const [clubs, setClubs] = useState<Club[]>([])
@@ -30,13 +56,20 @@ function EventsManager() {
 
   async function load() {
     const s = sb()
+    // events_admin y no events: contact_phone ya no es legible por columna
+    // para el rol authenticated a secas (grant limitado en el esquema), asi que
+    // hay que leerlo por la vista de moderador, que lo expone con sus propios
+    // privilegios y filtra por is_moderator() por dentro.
     const { data } = await s
-      .from('events')
+      .from('events_admin')
       .select('id,club_id,name,description,description_i18n,start_at,end_at,url_referral,status,genres,zone,contact_phone,images,sponsored')
+      // Descendente en la consulta y no ascendente: con el limite de 500, pedir
+      // ascendente se traeria los 500 mas antiguos y dejaria fuera los futuros,
+      // que son justo los que interesan. El orden de pantalla se hace abajo.
       .order('start_at', { ascending: false })
       .ilike('name', `%${dq}%`)
       .limit(500)
-    setItems(data || [])
+    setItems(sortByUpcoming(data || []))
   }
   async function loadClubs() {
     const { data } = await sb().from('clubs').select('id,name').order('name')
@@ -89,7 +122,7 @@ function EventsManager() {
 
   async function remove(id?: string) {
     if (!id) return
-    const ok = confirm('Â¿Eliminar este evento?')
+    const ok = confirm('¿Eliminar este evento?')
     if (!ok) return
     const client = sb()
     const { error } = await client.from('events').delete().eq('id', id)
@@ -117,7 +150,7 @@ function EventsManager() {
                 {e.name}
                 {e.sponsored ? <span className="text-xs px-2 py-0.5 rounded-full bg-[#d6b24d] text-black">Patrocinado</span> : null}
               </div>
-              <div className="text-sm text-white/60">{e.start_at?.toString()} Â· {e.status}</div>
+              <div className="text-sm text-white/60">{e.start_at?.toString()} · {e.status}</div>
             </div>
             <div className="flex gap-2">
               <button className="btn btn-secondary" onClick={()=>setEditing(e)}>Editar</button>
@@ -159,12 +192,16 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
         </div>
         <div>
           <label className="block text-sm">Zona</label>
-          <input value={form.zone || ''} onChange={e=>setForm({ ...form, zone: e.target.value })} placeholder="Mallorca / Ibiza / Barcelona / Madrid" className="w-full bg-transparent border border-white/10 rounded-xl p-2" />
+          {/* Ejemplos de zonas que existen de verdad. Antes ponia Ibiza,
+              Barcelona y Madrid, donde no hay agenda, y omitia Valencia, que es
+              la que mas eventos tiene. Sigue siendo texto libre: es asi como se
+              da de alta una ciudad nueva. */}
+          <input value={form.zone || ''} onChange={e=>setForm({ ...form, zone: e.target.value })} placeholder="Mallorca / Valencia / Castellón / Amsterdam" className="w-full bg-transparent border border-white/10 rounded-xl p-2" />
         </div>
         <div>
           <label className="block text-sm">Club</label>
           <select value={form.club_id || ''} onChange={e=>setForm({ ...form, club_id: e.target.value || null })} className="w-full bg-transparent border border-white/10 rounded-xl p-2 wwg-select">
-            <option value="">â€”</option>
+            <option value="">—</option>
             {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
@@ -204,7 +241,7 @@ function EventForm({ initial, clubs, onCancel, onSave, onLineupChange }: { initi
           <input value={(form as any).contact_phone || ''} onChange={e=>setForm({ ...form, contact_phone: e.target.value as any })} placeholder="Solo visible en backoffice" className="w-full bg-transparent border border-white/10 rounded-xl p-2" />
         </div>
         <div className="md:col-span-2">
-          <label className="block text-sm">DescripciÃ³n</label>
+          <label className="block text-sm">Descripción</label>
           <textarea value={form.description || ''} onChange={e=>setForm({ ...form, description: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={3} />
         </div>
         <div className="md:col-span-2 grid md:grid-cols-2 gap-3">

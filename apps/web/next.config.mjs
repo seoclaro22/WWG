@@ -12,9 +12,60 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : null
 
+// La CSP necesita el origen completo, y ademas el equivalente en wss: el cliente
+// de Supabase abre un websocket para realtime y auth.
+const supabaseOrigin = supabaseHost ? `https://${supabaseHost}` : ''
+const supabaseWsOrigin = supabaseHost ? `wss://${supabaseHost}` : ''
+
+// Politica de contenido. Va en Report-Only a proposito: si algo queda fuera de
+// la lista el navegador lo avisa por consola pero no lo bloquea, asi se puede
+// afinar sin tumbar la web. Cuando pase unos dias sin avisos, cambiar la
+// cabecera a 'Content-Security-Policy' para que empiece a bloquear de verdad.
+//
+// 'unsafe-inline' en script-src es necesario mientras el JSON-LD se inyecte con
+// dangerouslySetInnerHTML; quitarlo exige pasar a nonces desde el middleware.
+const CSP = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  // gtag se carga desde googletagmanager (components/GoogleAnalytics.tsx)
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+  "style-src 'self' 'unsafe-inline'",
+  // blob: y data: los usa el canvas WebGL del fondo y las previsualizaciones
+  // de imagen antes de subirlas
+  `img-src 'self' data: blob: https:`,
+  "font-src 'self' data:",
+  // Supabase (datos, auth y realtime por websocket) y la analitica
+  `connect-src 'self' ${supabaseOrigin} ${supabaseWsOrigin} https://www.google-analytics.com https://www.googletagmanager.com`,
+  // Spotify se incrusta en las fichas de DJ
+  "frame-src https://open.spotify.com",
+  "upgrade-insecure-requests",
+].join('; ')
+
+const SECURITY_HEADERS = [
+  // Sin esto la web se puede incrustar en un iframe ajeno y superponer botones
+  // encima de los nuestros (clickjacking).
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), payment=(), interest-cohort=()' },
+  // 2 anios. El navegador recuerda que este dominio es solo https y no permite
+  // el degradado a http ni saltarse el aviso de certificado.
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'Content-Security-Policy-Report-Only', value: CSP },
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // La cabecera que delata version de framework no aporta nada al usuario y si
+  // le ahorra trabajo a quien busca objetivos por version conocida.
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: '/:path*', headers: SECURITY_HEADERS }]
+  },
   images: {
     remotePatterns: [
       ...(supabaseHost ? [{ protocol: 'https', hostname: supabaseHost }] : []),

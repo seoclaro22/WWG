@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { suggestCitiesServer } from '@/lib/geo-server'
+import { sanitizeGeoQuery, suggestCitiesServer } from '@/lib/geo-server'
+import { clientIp, rateLimit } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -13,7 +14,14 @@ export const runtime = 'nodejs'
 // para todos los visitantes: escribir una ciudad son varias pulsaciones y
 // muchos usuarios escriben las mismas ciudades.
 export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get('q')?.trim()
+  // 60/min: se llama por cada pulsacion mientras se escribe, mas que geocode.
+  if (!rateLimit(`city-suggest:${clientIp(req)}`, 60)) {
+    return NextResponse.json({ error: 'too many requests' }, { status: 429 })
+  }
+
+  // Mismo saneado que /api/geocode y por el mismo motivo: sin limitar la
+  // entrada esta ruta publica sirve de proxy para abusar de Photon.
+  const q = sanitizeGeoQuery(req.nextUrl.searchParams.get('q'))
   if (!q) return NextResponse.json({ error: 'missing q' }, { status: 400 })
 
   const cities = await suggestCitiesServer(q)

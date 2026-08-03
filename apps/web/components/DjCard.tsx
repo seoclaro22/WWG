@@ -12,7 +12,7 @@ export function DjCard({ dj }: Props) {
   const { t } = useI18n()
   const image = dj.image || null
   const genres = Array.isArray(dj.genres) ? dj.genres : []
-  const desc = (dj.short_bio && dj.short_bio.trim().length) ? dj.short_bio.trim() : (dj.bio ? (dj.bio.length > 160 ? dj.bio.slice(0,157) + '…' : dj.bio) : '')
+  const desc = (dj.short_bio && dj.short_bio.trim().length) ? dj.short_bio.trim() : (dj.bio ? (dj.bio.length > 160 ? dj.bio.slice(0,157) + 'â€¦' : dj.bio) : '')
   return (
     <div className="card card-glass overflow-hidden relative">
       <div className="absolute top-2 right-2 z-30 pointer-events-auto">
