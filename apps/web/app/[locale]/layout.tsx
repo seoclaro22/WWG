@@ -13,6 +13,7 @@ import { CookieConsent } from '@/components/CookieConsent'
 import { Toaster } from '@/components/Toaster'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
+import { Analytics } from '@vercel/analytics/next'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const { title, description } = siteMeta(params.locale)
@@ -61,6 +62,7 @@ export default function LocaleLayout({
               <GoogleAnalytics />
               <CookieConsent />
             </div>
+            <Analytics />
           </I18nProvider>
         </AuthProvider>
         </NextIntlClientProvider>
