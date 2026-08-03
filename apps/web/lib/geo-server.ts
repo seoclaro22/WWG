@@ -1,5 +1,17 @@
 import type { Coords } from '@/lib/geo-client'
 
+// La provincia/estado que devuelven Nominatim y Photon basta para saber si un
+// sitio esta en una isla: "Illes Balears"/"Islas Baleares"/"Balearic Islands"
+// y "Canarias"/"Canary Islands" son las unicas regiones insulares relevantes
+// para el area donde opera la web. No hace falta una lista de ciudades: el
+// dato ya viene resuelto por el geocodificador para cualquier sitio, presente
+// o futuro, dentro de esas dos regiones.
+function isIslandState(state: string | null | undefined): boolean {
+  if (!state) return false
+  const s = state.toLowerCase()
+  return s.includes('balear') || s.includes('canar')
+}
+
 // Saneado de la consulta antes de reenviarla a Nominatim o Photon.
 //
 // Sin esto las rutas son un proxy abierto: cualquiera puede iterar cadenas
@@ -46,7 +58,7 @@ export async function geocodeCandidatesServer(query: string): Promise<Coords[]> 
   if (!q) return []
   try {
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=${MAX_CANDIDATES}&q=${encodeURIComponent(q)}`,
+      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=${MAX_CANDIDATES}&q=${encodeURIComponent(q)}`,
       {
         headers: { 'User-Agent': NOMINATIM_UA },
         next: { revalidate: GEOCODE_TTL_SECONDS },
@@ -56,7 +68,11 @@ export async function geocodeCandidatesServer(query: string): Promise<Coords[]> 
     const json = await res.json()
     if (!Array.isArray(json)) return []
     return json
-      .map((hit: any) => ({ lat: Number(hit.lat), lon: Number(hit.lon) }))
+      .map((hit: any) => ({
+        lat: Number(hit.lat),
+        lon: Number(hit.lon),
+        island: isIslandState(hit.address?.state),
+      }))
       .filter((c) => Number.isFinite(c.lat) && Number.isFinite(c.lon))
   } catch {
     return []
@@ -100,7 +116,7 @@ export async function suggestCitiesServer(query: string): Promise<CitySuggestion
         // El pais desambigua para el usuario: hay un Madrid en Iowa y otro en
         // Colombia, y sin el la lista se ve como el mismo nombre repetido.
         const label = [p.name, p.country].filter(Boolean).join(', ')
-        return { name: String(p.name || ''), label, lat: Number(lat), lon: Number(lon) }
+        return { name: String(p.name || ''), label, lat: Number(lat), lon: Number(lon), island: isIslandState(p.state) }
       })
       .filter((c: CitySuggestion) => c.name && Number.isFinite(c.lat) && Number.isFinite(c.lon))
   } catch {

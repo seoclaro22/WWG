@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { fetchZonesMap } from '@/lib/db'
 import { geocodePlaceServer } from '@/lib/geo-server'
 import { normalizeZoneKey } from '@/lib/zone-key'
+import type { Coords } from '@/lib/geo-client'
 
 export const runtime = 'nodejs'
 
@@ -22,7 +23,7 @@ export async function GET() {
   // segundo. La espera solo se aplica cuando la llamada ha salido de verdad a
   // la red; si vino de la cache de fetch responde en milisegundos y esperar
   // solo serviria para que la ruta tardase segundos sin motivo.
-  const coords: Record<string, { lat: number; lon: number }> = {}
+  const coords: Record<string, Coords> = {}
   const names = Array.from(zones.values())
   for (let i = 0; i < names.length; i++) {
     const name = names[i]

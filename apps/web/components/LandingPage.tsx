@@ -5,7 +5,7 @@ import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
-import { geocodeCandidates, haversineKm, reverseGeocode, suggestCities } from '@/lib/geo-client'
+import { geocodeCandidates, haversineKm, reverseGeocode, suggestCities, type Coords } from '@/lib/geo-client'
 import { zoneCoords } from '@/lib/zone-coords'
 import { GradientBackground } from '@/components/ui/gradient-background'
 
@@ -46,6 +46,32 @@ function sb() {
 // Ibiza, Barcelona y Madrid, donde no hay agenda, y omitia Valencia, que es la
 // ciudad con mas eventos.
 const SEED_CITIES = ['Valencia', 'Mallorca', 'Castellón', 'Amsterdam']
+
+// Elige la pareja candidato-zona mas cercana, con una condicion: prefiere
+// candidatos y zonas del mismo tipo de terreno (isla con isla, peninsula con
+// peninsula). Buscando desde Barcelona, Mallorca queda mas cerca en linea
+// recta que Castellon, pero cruzar el mar no es "lo mas cercano" razonable
+// para alguien en la peninsula. Solo se cruza si de verdad no hay ninguna
+// zona del mismo tipo (mejor ofrecer algo que nada).
+function pickNearestZone<T extends Coords>(
+  targets: T[],
+  zones: { label: string; coords: Coords }[],
+): { target: T; zoneLabel: string } | null {
+  let bestSameTerrain: { target: T; zoneLabel: string; km: number } | null = null
+  let bestAny: { target: T; zoneLabel: string; km: number } | null = null
+  for (const target of targets) {
+    for (const zone of zones) {
+      const km = haversineKm(target, zone.coords)
+      if (!bestAny || km < bestAny.km) bestAny = { target, zoneLabel: zone.label, km }
+      const sameTerrain = !!target.island === !!zone.coords.island
+      if (sameTerrain && (!bestSameTerrain || km < bestSameTerrain.km)) {
+        bestSameTerrain = { target, zoneLabel: zone.label, km }
+      }
+    }
+  }
+  const winner = bestSameTerrain || bestAny
+  return winner ? { target: winner.target, zoneLabel: winner.zoneLabel } : null
+}
 
 export function LandingPage() {
   const { t } = useI18n()
@@ -194,24 +220,14 @@ export function LandingPage() {
 
       // Entre los homonimos gana el que quede mas cerca de alguna zona nuestra:
       // "Madrid" existe en España, en Iowa y en Colombia, y solo el español
-      // esta a un rato de Valencia.
-      let bestCity = ''
-      let bestZone = ''
-      let bestKm = Infinity
-      for (const city of homonyms) {
-        for (const label of knownZones) {
-          const c = coords.get(normalizeZoneKey(label))
-          if (!c) continue
-          const km = haversineKm(city, c)
-          if (km < bestKm) {
-            bestKm = km
-            bestCity = city.label
-            bestZone = label
-          }
-        }
-      }
-      if (!bestZone) return
-      setNearestHint({ typed, city: bestCity, zone: bestZone })
+      // esta a un rato de Valencia. Y entre las zonas, se prefiere una del
+      // mismo tipo de terreno que lo buscado (ver pickNearestZone).
+      const zonesWithCoords = knownZones
+        .map((label) => ({ label, coords: coords.get(normalizeZoneKey(label)) }))
+        .filter((z): z is { label: string; coords: Coords } => !!z.coords)
+      const winner = pickNearestZone(homonyms, zonesWithCoords)
+      if (!winner) return
+      setNearestHint({ typed, city: winner.target.label, zone: winner.zoneLabel })
     }, 400)
     return () => {
       cancelled = true
@@ -232,23 +248,15 @@ export function LandingPage() {
     if (!targets.length) return null
 
     // Se cruzan todos los candidatos del geocoder con todas las zonas y gana la
-    // pareja mas cercana. Esto resuelve de paso la ambiguedad de nombres: para
-    // "Deia" el candidato rumano queda a 1500 km de cualquier zona y el
-    // mallorquin a 25 km de Mallorca, asi que gana el correcto.
-    let best: string | null = null
-    let bestKm = Infinity
-    for (const target of targets) {
-      for (const label of labels) {
-        const c = coords.get(normalizeZoneKey(label))
-        if (!c) continue
-        const km = haversineKm(target, c)
-        if (km < bestKm) {
-          bestKm = km
-          best = label
-        }
-      }
-    }
-    return best
+    // pareja mas cercana del mismo tipo de terreno (ver pickNearestZone). Esto
+    // resuelve de paso la ambiguedad de nombres: para "Deia" el candidato
+    // rumano queda a 1500 km de cualquier zona y el mallorquin a 25 km de
+    // Mallorca, asi que gana el correcto.
+    const zonesWithCoords = labels
+      .map((label) => ({ label, coords: coords.get(normalizeZoneKey(label)) }))
+      .filter((z): z is { label: string; coords: Coords } => !!z.coords)
+    const winner = pickNearestZone(targets, zonesWithCoords)
+    return winner ? winner.zoneLabel : null
   }
 
   async function resolveZoneWithFallback(zoneName: string) {

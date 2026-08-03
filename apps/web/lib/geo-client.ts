@@ -1,4 +1,9 @@
-export type Coords = { lat: number; lon: number }
+// island: si el geocodificador situa el sitio en una region insular (por
+// ahora, Baleares o Canarias). Se usa para no recomendar cruzar el mar como
+// "lo mas cercano": Mallorca puede quedar mas cerca en linea recta de
+// Barcelona que Castellon, pero no es una alternativa razonable para quien
+// busca desde la peninsula.
+export type Coords = { lat: number; lon: number; island?: boolean }
 
 // Geocodificacion directa: de texto libre a coordenadas.
 //
