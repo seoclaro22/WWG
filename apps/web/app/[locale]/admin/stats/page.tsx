@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { AdminGuard } from '@/components/admin/AdminGuard'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 
 type TopItem = { id: string; name: string; count: number; type?: string }
@@ -13,12 +13,9 @@ type ActivityRange = { label: string; days: number; activeUsers: number; avgDail
 type LastActive = { label: string; ts: string; path?: string }
 type DailyPoint = { day: string; sessions: number; views: number; clicks: number }
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb(){
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 function keyFor(userId?: string | null, deviceId?: string | null) {

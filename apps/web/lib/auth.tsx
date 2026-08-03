@@ -1,6 +1,7 @@
 "use client"
-import { createClient, Session, User } from '@supabase/supabase-js'
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { Session, User } from '@supabase/supabase-js'
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 type Ctx = {
   user: User | null
@@ -12,21 +13,8 @@ type Ctx = {
 
 const AuthCtx = createContext<Ctx | null>(null)
 
-function createBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  return createClient(url, anon, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storageKey: 'nighthub-auth'
-    }
-  })
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const supabase = useMemo(() => createBrowserClient(), [])
+  const supabase = supabaseBrowser
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
 

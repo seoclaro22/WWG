@@ -1,6 +1,6 @@
 ﻿"use client"
 import { AdminGuard } from '@/components/admin/AdminGuard'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import { UploadImage } from '@/components/UploadImage'
 import Link from 'next/link'
@@ -10,7 +10,8 @@ import { GenreSelect } from '@/components/GenreSelect'
 type Club = { id: string; name: string }
 type Event = { id?: string; club_id?: string | null; name: string; description?: string | null; description_i18n?: Record<string, string> | null; start_at?: string; end_at?: string | null; url_referral?: string | null; status?: string; images?: any; genres?: string[] | null; zone?: string | null; contact_phone?: string | null; sponsored?: boolean | null }
 
-function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
+function sb() { return supabaseBrowser }
 
 export default function AdminEventsPage() {
   return (

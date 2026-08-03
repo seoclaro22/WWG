@@ -1,10 +1,11 @@
 ﻿"use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useAuth } from '@/lib/auth'
 import { useI18n } from '@/lib/i18n'
 import { useState } from 'react'
 
-function client() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
+function client() { return supabaseBrowser }
 
 export function WriteReview({ targetType = 'event', targetId }: { targetType?: 'event'|'club'; targetId: string }) {
   const { user } = useAuth()

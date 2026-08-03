@@ -99,10 +99,10 @@ export default function AuthPage() {
                 if (!displayName.trim()) { setErr('Indica un nombre o nick para mostrar.'); return }
                 await signUp(email, password)
                 try {
-                  const { createClient } = await import('@supabase/supabase-js')
-                  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } })
-                  const u = (await sb.auth.getUser()).data.user
-                  if (u) await sb.from('users').upsert({ id: u.id, email: u.email as string, display_name: displayName.trim() })
+                  // Cliente compartido y no uno nuevo: ver lib/supabase-browser.ts.
+                  const { supabaseBrowser } = await import('@/lib/supabase-browser')
+                  const u = (await supabaseBrowser.auth.getUser()).data.user
+                  if (u) await supabaseBrowser.from('users').upsert({ id: u.id, email: u.email as string, display_name: displayName.trim() })
                 } catch {}
               }
               router.push('/')

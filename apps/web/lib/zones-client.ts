@@ -1,14 +1,13 @@
 "use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { normalizeZoneKey } from '@/lib/zone-key'
 
 const normalizeZone = normalizeZoneKey
 
 export async function fetchKnownZones() {
-  const sb = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  // Cliente compartido y no uno nuevo: ver lib/supabase-browser.ts. Se llama
+  // desde la home y desde Filters en cada montaje.
+  const sb = supabaseBrowser
 
   const [clubsRes, eventsRes] = await Promise.all([
     sb.from('clubs').select('zone').eq('status', 'approved').not('zone', 'is', null).limit(1000),

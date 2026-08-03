@@ -2,7 +2,7 @@
 import { useI18n } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth'
 import { usePathname, useRouter } from '@/lib/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 export function LocaleSwitcher() {
   const { locale } = useI18n()
@@ -18,7 +18,7 @@ export function LocaleSwitcher() {
         const l = e.target.value
         if (typeof window !== 'undefined') localStorage.setItem('nh-locale', l)
         if (user) {
-          try { await createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }).from('users').update({ locale: l }).eq('id', user.id) } catch {}
+          try { await supabaseBrowser.from('users').update({ locale: l }).eq('id', user.id) } catch {}
         }
         // Navega a la misma pagina en el otro idioma (/discover -> /en/discover).
         router.replace(pathname, { locale: l })

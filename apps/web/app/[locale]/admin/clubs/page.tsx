@@ -1,6 +1,6 @@
 "use client"
 import { AdminGuard } from '@/components/admin/AdminGuard'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import { UploadImage } from '@/components/UploadImage'
 import { GenreSelect } from '@/components/GenreSelect'
@@ -23,12 +23,9 @@ type Club = {
   featured?: boolean
 }
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 export default function AdminClubsPage() {

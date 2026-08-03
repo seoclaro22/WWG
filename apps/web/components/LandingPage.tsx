@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { geocodeCandidates, haversineKm, reverseGeocode, suggestCities } from '@/lib/geo-client'
 import { zoneCoords } from '@/lib/zone-coords'
@@ -33,11 +33,12 @@ const WWG_HERO_GRADIENTS = [
 
 type GeoStatus = 'idle' | 'locating' | 'success' | 'error'
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts. Esta es la
+// home, la pagina de mas trafico del sitio: crear uno nuevo aqui (y sin
+// storageKey, con clave por defecto distinta de 'nighthub-auth') era de los
+// puntos que mas pesaba en la fuga.
 function sb() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  return supabaseBrowser
 }
 
 

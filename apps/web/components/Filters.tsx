@@ -1,7 +1,7 @@
 "use client"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { getAnalyticsContext, hasAnalyticsConsent } from '@/lib/analytics-client'
@@ -31,7 +31,10 @@ export function Filters() {
     const val = debouncedTerm.trim()
     if (val.length < 2) { setSuggestions([]); return }
     let cancelled = false
-    const sbc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+    // Cliente compartido: esto corria en cada tecla del buscador (con
+    // debounce), asi que era el peor de los sitios donde crear uno nuevo cada
+    // vez. Ver lib/supabase-browser.ts.
+    const sbc = supabaseBrowser
     ;(async () => {
       try {
         let rows: { id: string; name: string; sub?: string }[] = []
@@ -81,7 +84,7 @@ export function Filters() {
   }, [zone, zones, zonesReady, params, pathname, router])
 
   useEffect(() => {
-    const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+    const sb = supabaseBrowser
     sb.from('genres').select('name').order('name').then(({ data }) => setGenres((data||[]).map(g=>g.name)))
     ;(async () => {
       try {
@@ -129,7 +132,7 @@ export function Filters() {
             router.push(`${pathname}?${sp.toString()}`)
             // Log búsqueda (solo si hay término)
             try {
-              const sbc = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+              const sbc = supabaseBrowser
               if (val.trim().length >= 2 && hasAnalyticsConsent()){
                 const tab = params.get('tab') || 'events'
                 const ctx = getAnalyticsContext()

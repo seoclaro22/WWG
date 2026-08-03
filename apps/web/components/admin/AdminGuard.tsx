@@ -1,7 +1,7 @@
 ﻿"use client"
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
@@ -12,11 +12,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     // anunciaba a cualquiera cual es la cuenta que da acceso total, y ademas
     // saltaba la comprobacion real de rol. El permiso se decide solo en
     // is_moderator(), que se apoya en la base de datos.
-    const sb = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-    )
+    // Cliente compartido y no uno nuevo: ver lib/supabase-browser.ts.
+    const sb = supabaseBrowser
     ;(async () => {
       let resolved = false
       const to = setTimeout(() => { if (!resolved) setOk(false) }, 5000)

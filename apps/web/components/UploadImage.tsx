@@ -1,8 +1,9 @@
 "use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useState } from 'react'
 
-function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
+function sb() { return supabaseBrowser }
 
 export function UploadImage({ value, onChange, folder }: { value?: string | null; onChange: (url: string | null) => void; folder: 'clubs' | 'events' | 'djs' }) {
   const [loading, setLoading] = useState(false)

@@ -1,15 +1,15 @@
 "use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import { useI18n } from '@/lib/i18n'
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts. Este
+// componente se monta una vez por tarjeta de evento/club/dj en un listado:
+// con el createClient() de antes, una pagina con 20 tarjetas levantaba 20
+// instancias de GoTrueClient a la vez.
 function sb() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 function HeartIcon({ filled }: { filled: boolean }) {

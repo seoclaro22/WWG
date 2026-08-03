@@ -1,7 +1,7 @@
 "use client"
 import { Link } from '@/lib/navigation'
 import { useAuth } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useI18n } from '@/lib/i18n'
 import { useEffect, useRef, useState } from 'react'
 
@@ -27,11 +27,9 @@ export function UserMenu() {
   useEffect(() => {
     let alive = true
     if (!user) return
-    const sb = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-    )
+    // Cliente compartido y no uno nuevo: se monta en la barra de navegacion
+    // de todas las paginas. Ver lib/supabase-browser.ts.
+    const sb = supabaseBrowser
     ;(async () => {
       try {
         const { data } = await sb

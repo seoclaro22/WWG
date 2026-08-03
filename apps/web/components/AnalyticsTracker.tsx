@@ -1,7 +1,7 @@
 "use client"
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useAuth } from '@/lib/auth'
 import {
   hasAnalyticsConsent,
@@ -49,10 +49,11 @@ export function AnalyticsTracker() {
   const fullPath = query ? `${pathname}?${query}` : pathname
   const [consentEnabled, setConsentEnabled] = useState(false)
 
-  const sb = useMemo(() => createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  ), [])
+  // Cliente compartido y no uno nuevo con su propia clave de storage
+  // (createClient sin opciones usaba la clave por defecto, distinta de
+  // 'nighthub-auth', asi que ademas de la fuga era una segunda sesion
+  // paralela sin relacion con la del usuario). Ver lib/supabase-browser.ts.
+  const sb = supabaseBrowser
 
   const deviceIdRef = useRef<string | null>(null)
   const sessionIdRef = useRef<string | null>(null)

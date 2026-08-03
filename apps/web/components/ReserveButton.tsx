@@ -1,9 +1,12 @@
 "use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useAuth } from '@/lib/auth'
 import { getAnalyticsContext, hasAnalyticsConsent } from '@/lib/analytics-client'
 
-function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!) }
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts. Este boton
+// aparece en cada tarjeta de evento, asi que era otro de los sitios donde mas
+// instancias se acumulaban.
+function sb() { return supabaseBrowser }
 
 export function ReserveButton({ eventId, source='discover', children='Reservar', className }: { eventId: string; source?: string; children?: React.ReactNode; className?: string }) {
   const { user } = useAuth()

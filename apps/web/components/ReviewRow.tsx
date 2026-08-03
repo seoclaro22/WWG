@@ -1,14 +1,11 @@
 "use client"
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import { LDate } from './LDate'
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb(){
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 export function ReviewRow({ r }: { r: { id: string; text: string | null; created_at: string; user_id: string | null } }){

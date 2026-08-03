@@ -1,17 +1,14 @@
 "use client"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { createClient } from "@supabase/supabase-js"
+import { supabaseBrowser } from "@/lib/supabase-browser"
 import { useAuth } from "@/lib/auth"
 import { useI18n } from "@/lib/i18n"
 import Link from "next/link"
 // Quitamos el corazón en la lista; usaremos un botón de eliminar explícito
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: "nighthub-auth", persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 type FavItem = {

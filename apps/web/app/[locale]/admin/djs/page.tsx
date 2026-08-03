@@ -1,6 +1,6 @@
 ﻿"use client"
 import { AdminGuard } from '@/components/admin/AdminGuard'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useDebounce } from '@/components/hooks/useDebounce'
@@ -9,7 +9,8 @@ import { UploadImage } from '@/components/UploadImage'
 
 type DJ = { id?: string; name: string; short_bio?: string | null; bio?: string | null; spotify_embed?: string | null; genres?: string[] | null; images?: any; short_bio_i18n?: any; bio_i18n?: any }
 
-function sb() { return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }) }
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
+function sb() { return supabaseBrowser }
 
 export default function AdminDJsPage() {
   return (

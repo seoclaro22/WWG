@@ -1,16 +1,13 @@
 "use client"
 import { useAuth } from '@/lib/auth'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import { useI18n } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 
+// Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb(){
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { storageKey: 'nighthub-auth', persistSession: true, autoRefreshToken: true } }
-  )
+  return supabaseBrowser
 }
 
 export default function AccountPage(){
