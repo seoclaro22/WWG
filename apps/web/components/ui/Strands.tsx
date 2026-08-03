@@ -173,8 +173,13 @@ void main() {
 // en movil, 71 en escritorio, mismo componente). Se compensa bajando la
 // resolucion interna del canvas en pantallas anchas: el navegador reescala
 // solo al mostrarlo y no se nota en un glow difuso como este.
+//
+// El tope es 1, nunca el devicePixelRatio real. ogl ya venia con dpr = 1 por
+// defecto, asi que un tope de 2 no bajaba nada en movil: lo subia. En el movil
+// de Lighthouse (Moto G Power, escala 2.625) pasaba de 1 a 2, o sea 4x de
+// trabajo de shader, y el rendimiento cayo de 97 a 88.
 function computeDpr(width: number): number {
-  const base = Math.min(window.devicePixelRatio || 1, 2)
+  const base = Math.min(window.devicePixelRatio || 1, 1)
   if (width > 1100) return Math.min(base, 0.55)
   if (width > 700) return Math.min(base, 0.8)
   return base
