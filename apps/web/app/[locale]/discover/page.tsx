@@ -147,7 +147,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
               {label}
               {count > 0 && (
                 <span className={`absolute -top-2 -right-2 min-w-[19px] h-[19px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full border-2 border-[#07060a] leading-none ${
-                  tab === key ? 'bg-black text-[#d8af3a]' : 'bg-[#d8af3a] text-black'
+                  tab === key ? 'bg-black text-[#d8af3a] badge-pulse' : 'bg-[#d8af3a] text-black'
                 }`}>{count}</span>
               )}
             </a>

@@ -170,6 +170,23 @@ html, body { height: 100%; background: #0B0F14; }
   animation: neon-breathe 4s ease-in-out infinite;
 }
 
+/* Insignia de contador de la pestana activa en /discover (ver
+   app/[locale]/discover/page.tsx). Escala pequeña, no box-shadow: la
+   insignia mide 19px y un pulso de sombra a esa escala se ve mas a mancha
+   borrosa que a pulso. */
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.14); }
+}
+
+.badge-pulse {
+  animation: badge-pulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-pulse { animation: none; }
+}
+
 .neon-hover {
   transition: box-shadow 220ms ease, border-color 220ms ease, background-color 220ms ease;
 }
