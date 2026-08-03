@@ -2,7 +2,7 @@ import { SafeImage } from '@/components/SafeImage'
 import { Filters } from '@/components/Filters'
 import { QuickDateChips } from '@/components/QuickDateChips'
 import { EventCard } from '@/components/EventCard'
-import { countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
+import { countClubs, countDjs, countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
 import { T } from '@/components/T'
 import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
@@ -88,13 +88,18 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
-  const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount] = await Promise.all([
+  const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount, clubsCount, djsCount] = await Promise.all([
     tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 300, sponsoredFirst: true }) : Promise.resolve([] as any[]),
     tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 300 }) : Promise.resolve([] as any[]),
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 500 }) : Promise.resolve([] as any[]),
     fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),
     fetchDjsPublic({ limit: 24 }),
     countUpcomingEvents({ zone: zone ?? undefined }),
+    // Se piden siempre, no solo en su pestana: el numero tiene que verse en
+    // el pill aunque estes mirando otra pestana, igual que ya pasaba con el
+    // de eventos.
+    countClubs({ zone: zone ?? undefined }),
+    countDjs(),
   ])
   const carouselClubs = shuffle(featuredClubs).slice(0, 8)
   const carouselDjs = shuffle(featuredDjs.filter((dj: any) => Array.isArray(dj.images) && dj.images[0])).slice(0, 8)
@@ -120,27 +125,30 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
             name={listMeta('discover', params.locale).title}
           />
         )}
-        {/* Tabs con pill gold */}
-        <div className="flex items-center gap-1 bg-white/5 rounded-2xl p-1 w-fit">
+        {/* Tabs con pill gold. El numero va en una insignia flotante sobre la
+            esquina (estilo notificacion) y no en linea con el texto: metido
+            en la propia frase, "Proximos eventos" ya no cabia en una linea y
+            la pestana se estiraba mas alta que las otras dos. */}
+        <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-1 w-fit">
           {([
-            { key: 'events', label: <T k="tabs.events" /> },
-            { key: 'clubs',  label: <T k="tabs.clubs" /> },
-            { key: 'djs',    label: <T k="tabs.djs" /> },
-          ] as const).map(({ key, label }) => (
+            { key: 'events', label: <T k="tabs.events" />, count: upcomingCount },
+            { key: 'clubs',  label: <T k="tabs.clubs" />,  count: clubsCount },
+            { key: 'djs',    label: <T k="tabs.djs" />,    count: djsCount },
+          ] as const).map(({ key, label, count }) => (
             <a
               key={key}
               href={lp(`/discover?tab=${key}${zone ? `&zone=${encodeURIComponent(zone)}` : ""}`)}
-              className={`relative px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+              className={`relative px-4 py-1.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
                 tab === key
                   ? 'bg-[#d8af3a] text-black shadow-[0_0_16px_rgba(216,175,58,0.4)]'
                   : 'text-white/60 hover:text-white/90'
               }`}
             >
               {label}
-              {key === 'events' && upcomingCount > 0 && (
-                <span className={`ml-1.5 text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                  tab === 'events' ? 'bg-black/15 text-black' : 'bg-[#d8af3a]/15 text-[#d8af3a]'
-                }`}>{upcomingCount}</span>
+              {count > 0 && (
+                <span className={`absolute -top-2 -right-2 min-w-[19px] h-[19px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full border-2 border-[#07060a] leading-none ${
+                  tab === key ? 'bg-black text-[#d8af3a]' : 'bg-[#d8af3a] text-black'
+                }`}>{count}</span>
               )}
             </a>
           ))}

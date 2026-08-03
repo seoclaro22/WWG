@@ -83,6 +83,30 @@ export async function countUpcomingEvents(params?: { zone?: string }) {
   return count || 0
 }
 
+// Mismo patron que countUpcomingEvents, para el numero que acompana a las
+// pestanas "Clubs" y "DJs" de /discover (antes solo la de eventos lo tenia).
+export async function countClubs(params?: { zone?: string }) {
+  const sb = getSupabaseClient()
+  let q = sb.from('clubs').select('id', { count: 'exact', head: true }).eq('status', 'approved')
+  if (params?.zone) {
+    // Igual que fetchClubsPublic: un club sin zona asignada no debe
+    // desaparecer del conteo solo por no tener ese dato.
+    q = (q as any).or(`zone.eq.${params.zone},zone.is.null`)
+  }
+  const { count, error } = await q
+  if (error) { console.error('countClubs error', error); return 0 }
+  return count || 0
+}
+
+// Los DJs no tienen zona (son globales), asi que aqui no hay filtro que
+// aplicar: el total es el mismo se mire desde la ciudad que se mire.
+export async function countDjs() {
+  const sb = getSupabaseClient()
+  const { count, error } = await sb.from('djs').select('id', { count: 'exact', head: true })
+  if (error) { console.error('countDjs error', error); return 0 }
+  return count || 0
+}
+
 // Generos con eventos proximos en una zona, y cuantos. Alimenta tanto los
 // enlaces internos de /[zona] como el sitemap: solo se publica el cruce
 // zona x genero que tiene agenda real detras.
