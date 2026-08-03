@@ -334,9 +334,15 @@ export default function Strands({
       const height = ctn.offsetHeight
       renderer.dpr = computeDpr(width)
       renderer.setSize(width, height)
-      program.uniforms.uResolution.value = [width, height]
-      renderTarget.setSize(width, height)
-      glassProgram.uniforms.uResolution.value = [width, height]
+      // uResolution tiene que ir en pixeles reales del framebuffer (width*dpr),
+      // no en CSS: gl_FragCoord del shader siempre esta en esa escala. Con
+      // dpr fijo en 1 (antes de este cambio) coincidian por casualidad; en
+      // cuanto dpr baja de 1 el patron se desplaza y se ve descuadrado.
+      const bw = width * renderer.dpr
+      const bh = height * renderer.dpr
+      program.uniforms.uResolution.value = [bw, bh]
+      renderTarget.setSize(bw, bh)
+      glassProgram.uniforms.uResolution.value = [bw, bh]
     }
     window.addEventListener('resize', resize)
     resize()
