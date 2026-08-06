@@ -75,6 +75,7 @@ export const dictionaries: Record<string, Dict> = {
 
     'event.description': 'Descripcion',
     'event.lineup': 'Line-up',
+    'event.related': 'Tambien te puede gustar',
     'event.no_reservations': 'Reservas no disponibles',
     'event.sponsored': 'Patrocinado',
 
@@ -262,6 +263,7 @@ export const dictionaries: Record<string, Dict> = {
 
     'event.description': 'Description',
     'event.lineup': 'Line-up',
+    'event.related': 'You may also like',
     'event.no_reservations': 'Reservations not available',
     'event.sponsored': 'Sponsored',
 
@@ -449,6 +451,7 @@ export const dictionaries: Record<string, Dict> = {
 
     'event.description': 'Beschreibung',
     'event.lineup': 'Line-up',
+    'event.related': 'Das koennte dir auch gefallen',
     'event.no_reservations': 'Reservierungen nicht verfugbar',
     'event.sponsored': 'Gesponsert',
 

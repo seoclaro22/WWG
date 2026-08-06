@@ -194,12 +194,21 @@ export async function fetchRelatedEvents(eventId: string, genres: string[] | nul
     q = (q as any).eq('status', 'published')
     return q
   }
-  if (genres && genres.length) {
-    const { data } = await (base() as any).overlaps('genres', genres)
+  // La zona manda sobre el genero. A una fiesta se va desde donde estas: el
+  // mismo estilo a 200 km, o peor, en otra isla, no le sirve a nadie. Antes
+  // iba el genero primero y una ficha de Valencia recomendaba Mallorca.
+  if (zone) {
+    if (genres && genres.length) {
+      const { data } = await (base() as any).eq('zone', zone).overlaps('genres', genres)
+      if (data?.length) return data as any[]
+    }
+    const { data } = await (base() as any).eq('zone', zone)
     if (data?.length) return data as any[]
   }
-  if (zone) {
-    const { data } = await (base() as any).eq('zone', zone)
+  // Sin nada en la zona, cualquier alternativa va a estar lejos igual, asi
+  // que al menos que coincida el estilo.
+  if (genres && genres.length) {
+    const { data } = await (base() as any).overlaps('genres', genres)
     if (data?.length) return data as any[]
   }
   const { data } = await base()

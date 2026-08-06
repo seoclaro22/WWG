@@ -1,6 +1,7 @@
 import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
-import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, slugifyZone } from '@/lib/db'
+import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, fetchRelatedEvents, slugifyZone } from '@/lib/db'
+import { EventCountdown } from '@/components/EventCountdown'
 import { notFound } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReserveButton } from '@/components/ReserveButton'
@@ -35,6 +36,32 @@ function getSpotifyEmbed(input?: string | null) {
     return { src, height }
   } catch {}
   return null
+}
+
+// Fila compacta de evento. La usan "Mas del club" y "Te puede interesar": es
+// el mismo markup en dos sitios, y duplicarlo era la alternativa.
+function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
+  const evImgs: string[] = Array.isArray(ev.images) ? ev.images : []
+  const evImg = evImgs[0] || null
+  return (
+    <Link
+      href={`/event/${ev.id}`}
+      className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
+    >
+      {evImg ? (
+        <SafeImage src={evImg} alt={ev.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+      ) : (
+        <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-white truncate group-hover:text-[#d8af3a] transition-colors">{ev.name}</p>
+        {/* El club solo en los relacionados: en "Mas del club" seria repetir
+            el mismo nombre en todas las filas. */}
+        {showVenue && ev.club_name && <p className="text-xs text-white/55 truncate">{ev.club_name}</p>}
+      </div>
+      <span className="text-xs text-white/50 shrink-0"><LDate value={ev.start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /></span>
+    </Link>
+  )
 }
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
@@ -77,9 +104,21 @@ export default async function EventDetail({ params }: { params: { locale: string
   const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
   if (!e) return notFound()
   const clubId = (e as any).club_id as string | null
-  const [moreFromClub, club] = clubId
-    ? await Promise.all([fetchClubEvents(clubId, 5), fetchClub(clubId)])
-    : [[], null]
+  // Las tres en paralelo: los relacionados dependen de datos que ya trajo
+  // fetchEvent, asi que no hace falta encadenarlos y pagar otra ida y vuelta.
+  // Se piden 6 para que sigan quedando 4 despues de descartar los que ya
+  // salen en "Mas del club".
+  const [moreFromClubRaw, club, relatedRaw] = await Promise.all([
+    clubId ? fetchClubEvents(clubId, 6) : Promise.resolve([] as any[]),
+    clubId ? fetchClub(clubId) : Promise.resolve(null),
+    fetchRelatedEvents(id, (e as any).genres, (e as any).zone, 6),
+  ])
+  // fetchClubEvents no excluye el evento abierto, asi que la ficha se listaba
+  // a si misma en "Mas del club". Se filtra aqui y no en la consulta porque
+  // esa funcion la usan otras vistas donde el filtro no aplica.
+  const moreFromClub = moreFromClubRaw.filter((ev: any) => ev.id !== id).slice(0, 5)
+  const yaVisibles = new Set<string>(moreFromClub.map((ev: any) => ev.id))
+  const related = relatedRaw.filter((ev: any) => !yaVisibles.has(ev.id)).slice(0, 4)
   // Muchos eventos apuntan a un club cuya ficha no es publica: /club/<id>
   // devuelve 404. Enlazarlo igualmente desde el schema mandaria a Google a una
   // URL rota, que es peor que no declarar la relacion.
@@ -222,6 +261,10 @@ export default async function EventDetail({ params }: { params: { locale: string
           { name: (e as any).name },
         ]} />
 
+        {/* Urgencia arriba del todo, donde se decide seguir leyendo o no. Se
+            oculta solo si el evento cae a mas de 7 dias o ya empezo. */}
+        <EventCountdown startAt={(e as any).start_at} />
+
         {/* Genres */}
         {(e as any).genres && (e as any).genres.length > 0 && (
           <div className="flex gap-2 flex-wrap pt-1">
@@ -333,25 +376,27 @@ export default async function EventDetail({ params }: { params: { locale: string
             <div>
               <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Mas en {e.club_name}</p>
               <div className="space-y-2">
-                {moreFromClub.map(ev => {
-                  const evImgs: string[] = Array.isArray((ev as any).images) ? (ev as any).images : []
-                  const evImg = evImgs[0] || null
-                  return (
-                    <Link
-                      key={ev.id}
-                      href={`/event/${ev.id}`}
-                      className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
-                    >
-                      {evImg ? (
-                        <SafeImage src={evImg} alt={ev.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
-                      ) : (
-                        <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
-                      )}
-                      <p className="flex-1 min-w-0 text-sm font-medium text-white truncate group-hover:text-[#d8af3a] transition-colors">{ev.name}</p>
-                      <span className="text-xs text-white/50 shrink-0"><LDate value={(ev as any).start_at} timeZone="UTC" options={{ day: '2-digit', month: 'short' }} /></span>
-                    </Link>
-                  )
-                })}
+                {moreFromClub.map((ev: any) => (
+                  <EventRow key={ev.id} ev={ev} />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Te puede interesar: evita el callejon sin salida cuando el evento no
+            convence. fetchRelatedEvents va en cascada (mismo genero, misma
+            zona, y si no cualquiera proximo), asi que casi siempre trae algo,
+            tambien en eventos sin club. */}
+        {related.length > 0 && (
+          <>
+            <div className="border-t border-white/8" />
+            <div>
+              <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.related" /></p>
+              <div className="space-y-2">
+                {related.map((ev: any) => (
+                  <EventRow key={ev.id} ev={ev} showVenue />
+                ))}
               </div>
             </div>
           </>
