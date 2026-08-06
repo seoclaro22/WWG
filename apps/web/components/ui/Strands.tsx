@@ -352,12 +352,36 @@ export default function Strands({
     window.addEventListener('resize', resize)
     resize()
 
+    // buildPalette crea 8 objetos Color y 9 arrays en cada llamada. Llamarlo
+    // por fotograma eran ~1000 asignaciones por segundo para unos colores que
+    // no cambian nunca en la practica; ahora solo se rehace si cambian.
+    let paletteKey = (propsRef.current.colors || []).join(',')
+    let palette = buildPalette(propsRef.current.colors)
+
+    // La onda tiene un periodo de decenas de segundos: a 30fps se ve igual que
+    // a 60 y cuesta la mitad. El bucle no paraba nunca, asi que ese ahorro se
+    // aplica durante toda la vida de la pagina.
+    //
+    // El umbral lleva media tolerancia de fotograma (8ms) a proposito: a palo
+    // seco, 1000/30 = 33.33ms cae justo encima del segundo vsync de una
+    // pantalla de 60Hz, y cualquier jitter lo tira al tercero. Medido asi
+    // daba 22.7fps inestables en vez de 30.
+    const MIN_FRAME_MS = 1000 / 30 - 8
+    let lastFrame = 0
+
     let animateId = 0
     const update = (t: number) => {
       animateId = requestAnimationFrame(update)
+      if (t - lastFrame < MIN_FRAME_MS) return
+      lastFrame = t
       const current = propsRef.current
+      const key = (current.colors || []).join(',')
+      if (key !== paletteKey) {
+        paletteKey = key
+        palette = buildPalette(current.colors)
+      }
       program.uniforms.uTime.value = t * 0.001
-      program.uniforms.uColors.value = buildPalette(current.colors)
+      program.uniforms.uColors.value = palette
       program.uniforms.uColorCount.value = Math.min(current.colors.length, MAX_COLORS)
       program.uniforms.uStrandCount.value = Math.min(Math.max(Math.round(current.count), 1), MAX_STRANDS)
       program.uniforms.uSpeed.value = current.speed
