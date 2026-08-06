@@ -36,7 +36,7 @@ export async function Footer({ locale }: { locale: string }) {
           como parte de la web. */}
       <div className="flex items-center gap-3 pb-6 mb-8 border-b border-white/5">
         <Link href="/" className="text-lg font-semibold tracking-wide text-gold shrink-0">WWG</Link>
-        <p className="text-xs text-white/30 truncate">{t('landing.subtitle')}</p>
+        <p className="text-xs text-white/55 truncate">{t('landing.subtitle')}</p>
       </div>
 
       {/* Tres columnas y no cuatro: con Zonas + Where We Go + Idioma + Generos
@@ -61,7 +61,7 @@ export async function Footer({ locale }: { locale: string }) {
               {zones.map(([slug, name]) => (
                 <li key={slug}>
                   <Link href={`/${slug}`} className="hover:text-gold" prefetch={false}>{name}</Link>
-                  <span className="ml-1.5 text-xs text-white/25">
+                  <span className="ml-1.5 text-xs text-white/55">
                     {WHEN_KEYS.map((k, i) => (
                       <span key={k}>
                         {i > 0 && ' · '}
@@ -110,7 +110,7 @@ export async function Footer({ locale }: { locale: string }) {
               cada uno se estiraba la fila entera del grid de arriba. */}
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
             {genres.map((name) => (
-              <Link key={name} href={`/genre/${encodeURIComponent(name)}`} className="text-xs text-white/40 hover:text-gold" prefetch={false}>
+              <Link key={name} href={`/genre/${encodeURIComponent(name)}`} className="text-xs text-white/55 hover:text-gold" prefetch={false}>
                 {name}
               </Link>
             ))}
@@ -118,7 +118,7 @@ export async function Footer({ locale }: { locale: string }) {
         </div>
       )}
 
-      <p className="mt-8 pt-6 border-t border-white/5 text-xs text-white/30">© {new Date().getFullYear()} Where We Go</p>
+      <p className="mt-8 pt-6 border-t border-white/5 text-xs text-white/55">© {new Date().getFullYear()} Where We Go</p>
     </footer>
   )
 }
