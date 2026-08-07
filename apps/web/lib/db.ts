@@ -50,7 +50,10 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
       if (params?.genre) retryQ = retryQ.contains('genres', [params.genre])
       if (params?.zone && !zoneMissing) retryQ = (retryQ as any).eq('zone', params.zone)
       if (!statusMissing) retryQ = (retryQ as any).eq('status', 'published')
-      retryQ = retryQ.limit(params?.limit || 100)
+      // Sin limit propio: el fallback tiene que devolver lo mismo que la
+      // consulta principal. Un tope aqui recortaba en silencio solo cuando
+      // fallaba una columna, que es justo cuando peor se detecta.
+      if (params?.limit) retryQ = retryQ.limit(params.limit)
       const retry = await retryQ
       data = retry.data as any
       error = retry.error as any
