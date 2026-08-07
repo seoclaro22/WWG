@@ -73,11 +73,15 @@ const nextConfig = {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }]
   },
   images: {
-    remotePatterns: [
-      ...(supabaseHost ? [{ protocol: 'https', hostname: supabaseHost }] : []),
-      { protocol: 'https', hostname: '*.supabase.co' },
-      { protocol: 'https', hostname: '*.supabase.in' },
-    ],
+    // Redimensionado en Supabase y no en el optimizador de Vercel: ese tiene
+    // un tope de 5000 transformaciones al mes y al agotarse devuelve 402, que
+    // en produccion se veia como imagenes rotas. Ver lib/image-loader.ts.
+    //
+    // Con loader propio no se proxya nada, asi que remotePatterns deja de
+    // hacer falta: ya no hay una ruta /_next/image que alguien pueda usar de
+    // CDN gratis a nuestra cuenta.
+    loader: 'custom',
+    loaderFile: './lib/image-loader.ts',
   },
 };
 
