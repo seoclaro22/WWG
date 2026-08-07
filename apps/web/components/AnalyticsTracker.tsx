@@ -74,37 +74,27 @@ export function AnalyticsTracker() {
   async function touchDevice(nowIso: string, userId: string | null) {
     if (!deviceIdRef.current) return
     const { ua, lang, tz, deviceType, os, isPwa } = getDeviceMeta()
-    const payload: any = {
-      device_id: deviceIdRef.current,
-      last_seen_at: nowIso,
-      user_id: userId,
-      device_type: deviceType,
-      os,
-      lang,
-      tz,
-      user_agent: ua,
-      is_pwa: isPwa
-    }
-    if (newDeviceRef.current) {
-      payload.first_seen_at = nowIso
-      payload.first_referrer = document.referrer || null
-    }
-    payload.last_referrer = document.referrer || null
-    // insert y no upsert(onConflict): un INSERT ... ON CONFLICT DO UPDATE
-    // exige permiso de SELECT sobre la tabla para poder comprobar si la fila
-    // ya existe, incluso cuando no hay colision real. Sin una politica
-    // SELECT publica (no debe haberla: expondria user_agent/referrer/user_id
-    // de todos los visitantes a cualquiera con la anon key), ese upsert
-    // fallaba siempre con RLS, tambien para dispositivos nuevos.
+    // Via RPC y no upsert directo. Un INSERT ... ON CONFLICT necesita SELECT
+    // sobre la tabla para comprobar si la fila existe, y un UPDATE con WHERE
+    // tambien lo necesita para localizarla. La unica politica de SELECT es
+    // para moderadores, asi que ambos fallaban: el upsert con RLS y el update
+    // en silencio, respondiendo 204 sin tocar ninguna fila. Abrir el SELECT
+    // no es opcion (expondria user_agent, referrer y user_id de cada
+    // visitante a cualquiera con la anon key), asi que la escritura pasa por
+    // una funcion SECURITY DEFINER. Ver supabase/fix-analytics-rpc.sql.
     try {
-      const { error } = await sb.from('app_devices').insert(payload)
-      if (error?.code === '23505') {
-        // device_id ya existe: es el heartbeat normal de una visita que
-        // vuelve. El trigger preserve_analytics_owner (ver
-        // supabase/fix-analytics-tracking.sql) protege el user_id de la fila
-        // si ya pertenecia a otro usuario.
-        await sb.from('app_devices').update(payload).eq('device_id', deviceIdRef.current)
-      }
+      await sb.rpc('analytics_touch_device', {
+        p_device_id: deviceIdRef.current,
+        p_last_seen: nowIso,
+        p_user_id: userId,
+        p_device_type: deviceType,
+        p_os: os,
+        p_lang: lang,
+        p_tz: tz,
+        p_user_agent: ua,
+        p_is_pwa: isPwa,
+        p_referrer: document.referrer || null,
+      })
     } catch {}
   }
 
@@ -173,16 +163,18 @@ export function AnalyticsTracker() {
     const duration = Math.max(0, now - start)
     const nowIso = new Date(now).toISOString()
     setSessionLastSeen(now)
+    // Por RPC: el update directo respondia 204 sin tocar ninguna fila, porque
+    // un UPDATE con WHERE necesita SELECT y la fila no es visible al anonimo.
+    // De este heartbeat salen la duracion media y los usuarios activos.
     try {
-      await sb.from('app_sessions')
-        .update({
-          last_seen_at: nowIso,
-          duration_ms: duration,
-          current_path: currentPath,
-          current_event_id: eventId,
-          user_id: user?.id || null
-        })
-        .eq('id', sessionId)
+      await sb.rpc('analytics_touch_session', {
+        p_session_id: sessionId,
+        p_last_seen: nowIso,
+        p_duration: duration,
+        p_path: currentPath,
+        p_event_id: eventId,
+        p_user_id: user?.id || null,
+      })
     } catch {}
     await touchDevice(nowIso, user?.id || null)
   }
@@ -196,7 +188,11 @@ export function AnalyticsTracker() {
     viewIdRef.current = null
     viewStartRef.current = null
     try {
-      await sb.from('app_page_views').update({ ended_at: nowIso, duration_ms: duration }).eq('id', viewId)
+      await sb.rpc('analytics_end_view', {
+        p_view_id: viewId,
+        p_ended_at: nowIso,
+        p_duration: duration,
+      })
     } catch {}
   }
 
