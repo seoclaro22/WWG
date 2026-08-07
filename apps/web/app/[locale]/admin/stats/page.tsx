@@ -518,16 +518,23 @@ function StatsInner(){
             <Kpi label="Vistas" value={totals.views} />
             <Kpi label="Duracion media" value={formatMs(avgSessionMsRange)} />
             <Kpi label="Registros (rango)" value={conversion.registrations} accent />
-            <Kpi label="Clicks a entradas" value={totalClicks} sub={`CTR ${conversion.clickRate}%`} accent />
+            {/* Sin vistas no hay CTR que calcular: mostrar "0%" hacia pensar
+                que nadie convierte, cuando el dato simplemente no existia. */}
+            <Kpi label="Clicks a entradas" value={totalClicks} sub={totals.views > 0 ? `CTR ${conversion.clickRate}%` : 'CTR sin datos'} accent />
           </div>
 
           {/* Grafica actividad diaria */}
           <SectionCard title="Actividad diaria">
             <DailyChart data={daily} />
-            <div className="flex items-center gap-4 mt-2 text-xs text-white/50">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#d8af3a]" /> Sesiones</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-white/30" /> Vistas</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Clicks entradas</span>
+            {/* Leyenda siempre presente con 3 series: la identidad no puede
+                depender solo del color. */}
+            <div className="flex items-center gap-4 mt-3 text-xs text-white/55 flex-wrap">
+              {Object.values(SERIES).map(s => (
+                <span key={s.label} className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
+                  {s.label}
+                </span>
+              ))}
             </div>
           </SectionCard>
 
@@ -694,12 +701,36 @@ function StatsInner(){
 
 /* ── UI helpers ─────────────────────────────────────────────── */
 
+/* Paleta de series, validada con scripts/validate_palette.js del skill de
+   dataviz contra las dos superficies del panel (#121116 la tarjeta, #07060a
+   la pagina), en modo oscuro y comprobando TODOS los pares y no solo los
+   adyacentes, porque las tres series se ven a la vez:
+
+     banda de luminosidad  OK (las tres dentro de L 0.48-0.67)
+     suelo de croma        OK
+     separacion daltonismo OK (peor par aqua-oro 8.4, umbral 8)
+     vision normal         OK (peor par 17.0, umbral 15)
+     contraste             OK (las tres >= 3:1)
+
+   El oro es un paso mas oscuro del #d8af3a de marca: el de marca mide
+   L 0.771 y se sale de la banda sobre fondo oscuro. El color nunca va solo:
+   hay leyenda, etiqueta en el tooltip y vista de tabla. */
+const SERIES = {
+  sessions: { color: '#b8891a', label: 'Sesiones' },
+  views: { color: '#3987e5', label: 'Vistas' },
+  clicks: { color: '#199e70', label: 'Clicks a entradas' },
+} as const
+
+/* La etiqueta va encima de la cifra: se lee "que es" antes que "cuanto", que
+   es el orden en que se escanea una fila de tarjetas. Cifra en figuras
+   proporcionales, no tabulares: a tamaño grande las tabulares dejan huecos
+   entre digitos. */
 function Kpi({ label, value, sub, accent }: { label: string; value: number | string; sub?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl p-4 border ${accent ? 'bg-[#d8af3a]/8 border-[#d8af3a]/25' : 'bg-white/4 border-white/8'}`}>
-      <div className={`text-2xl font-bold ${accent ? 'text-[#d8af3a]' : 'text-white'}`}>{value}</div>
-      <div className="text-xs text-white/50 mt-0.5">{label}</div>
-      {sub && <div className="text-xs text-white/40 mt-0.5">{sub}</div>}
+    <div className={`rounded-2xl p-4 border transition-colors ${accent ? 'bg-[#d8af3a]/8 border-[#d8af3a]/25' : 'bg-white/4 border-white/8 hover:border-white/15'}`}>
+      <div className="text-[11px] uppercase tracking-wider text-white/45 font-semibold">{label}</div>
+      <div className={`text-3xl font-bold mt-1.5 leading-none ${accent ? 'text-[#d8af3a]' : 'text-white'}`}>{value}</div>
+      {sub && <div className="text-xs text-white/40 mt-1.5">{sub}</div>}
     </div>
   )
 }
@@ -713,22 +744,32 @@ function SectionCard({ title, children }: { title: React.ReactNode; children: Re
   )
 }
 
+/* Una sola serie, un solo color: el largo de la barra ya codifica la
+   magnitud, asi que teñir cada fila de un tono distinto gastaria el unico
+   canal libre en repetir lo que la barra ya dice. Relleno plano y no
+   degradado, y el numero en tabulares para que alineen en columna. */
 function GoldBars({ items }: { items: { label: string; count: number }[] }) {
+  if (!items.length) return <div className="text-white/40 text-sm">Sin datos</div>
   const max = items[0]?.count || 1
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {items.map((i, idx) => (
-        <div key={`${i.label}-${idx}`} className="space-y-1">
+        <div key={`${i.label}-${idx}`} className="space-y-1 group">
           <div className="flex justify-between text-sm gap-3">
-            <span className="truncate">{idx+1}. {i.label}</span>
-            <span className="text-white/50 shrink-0">{i.count}</span>
+            <span className="truncate text-white/85">
+              <span className="text-white/35 tabular-nums mr-1.5">{idx+1}</span>
+              {i.label}
+            </span>
+            <span className="text-white/55 shrink-0 tabular-nums">{i.count}</span>
           </div>
-          <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#d8af3a] to-[#e8c85a] rounded-full" style={{ width: `${Math.round((i.count/max)*100)}%` }} />
+          <div className="h-1.5 bg-white/6 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-[width] duration-500"
+              style={{ width: `${Math.max(2, Math.round((i.count/max)*100))}%`, background: SERIES.sessions.color }}
+            />
           </div>
         </div>
       ))}
-      {items.length===0 && <div className="text-white/40 text-sm">Sin datos</div>}
     </div>
   )
 }
@@ -752,15 +793,15 @@ function BucketBars({ title, items }: { title: string; items: Bucket[] }) {
   return (
     <div>
       <div className="text-white/40 text-xs uppercase tracking-wider mb-2">{title}</div>
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {items.map(i => (
           <div key={i.label}>
             <div className="flex justify-between text-xs gap-2">
-              <span className="truncate">{i.label}</span>
-              <span className="text-white/50 shrink-0">{i.count}</span>
+              <span className="truncate text-white/80">{i.label}</span>
+              <span className="text-white/55 shrink-0 tabular-nums">{i.count}</span>
             </div>
-            <div className="h-1 bg-white/8 rounded-full overflow-hidden mt-0.5">
-              <div className="h-full bg-[#d8af3a]/70 rounded-full" style={{ width: `${Math.round((i.count/max)*100)}%` }} />
+            <div className="h-1 bg-white/6 rounded-full overflow-hidden mt-1">
+              <div className="h-full rounded-full" style={{ width: `${Math.max(2, Math.round((i.count/max)*100))}%`, background: SERIES.views.color }} />
             </div>
           </div>
         ))}
@@ -770,39 +811,160 @@ function BucketBars({ title, items }: { title: string; items: Bucket[] }) {
   )
 }
 
+function fmtDay(day: string) {
+  return `${day.slice(8, 10)}/${day.slice(5, 7)}`
+}
+
 function DailyChart({ data }: { data: DailyPoint[] }) {
-  if (!data.length) return <div className="text-white/40 text-sm py-8 text-center">Sin datos en el rango seleccionado</div>
-  const W = 720, H = 180, PAD = 4
-  const max = Math.max(1, ...data.map(d => Math.max(d.sessions, d.views)))
-  const maxClicks = Math.max(1, ...data.map(d => d.clicks))
+  const [hover, setHover] = useState<number | null>(null)
+  const [asTable, setAsTable] = useState(false)
+
+  if (!data.length) {
+    return <div className="text-white/40 text-sm py-10 text-center">Sin datos en el rango seleccionado</div>
+  }
+
+  // Una sola escala para las tres series. Antes sesiones/vistas usaban un
+  // maximo y los clicks otro distinto: con dos escalas en el mismo plano la
+  // altura de un punto verde no se podia comparar con la de una barra, asi
+  // que la grafica sugeria una relacion que los datos no tenian.
+  const max = Math.max(1, ...data.map(d => Math.max(d.sessions, d.views, d.clicks)))
+
+  const W = 760, H = 230
+  const L = 38, R = 14, T = 12, B = 28
+  const plotW = W - L - R
+  const plotH = H - T - B
   const n = data.length
-  const slot = (W - PAD * 2) / n
-  const barW = Math.max(2, Math.min(14, slot * 0.36))
-  const y = (v: number) => H - 18 - (v / max) * (H - 30)
-  const yClicks = (v: number) => H - 18 - (v / maxClicks) * (H - 30)
-  const labelEvery = Math.max(1, Math.ceil(n / 12))
+  const x = (i: number) => n === 1 ? L + plotW / 2 : L + (i / (n - 1)) * plotW
+  const y = (v: number) => T + plotH - (v / max) * plotH
+
+  const series = [
+    { key: 'sessions' as const, ...SERIES.sessions },
+    { key: 'views' as const, ...SERIES.views },
+    { key: 'clicks' as const, ...SERIES.clicks },
+  ]
+
+  const ticks = [0, 0.5, 1].map(f => Math.round(max * f))
+  const labelEvery = Math.max(1, Math.ceil(n / 10))
+  const hovered = hover != null ? data[hover] : null
+
+  if (asTable) {
+    return (
+      <div>
+        <TableToggle asTable={asTable} onToggle={() => setAsTable(v => !v)} />
+        <div className="overflow-x-auto max-h-80 overflow-y-auto">
+          <table className="w-full text-sm tabular-nums">
+            <thead className="sticky top-0 bg-[#101014]">
+              <tr className="text-white/40 text-xs uppercase tracking-wider text-left">
+                <th className="py-2 pr-3 font-semibold">Dia</th>
+                {series.map(s => <th key={s.key} className="py-2 pr-3 font-semibold text-right">{s.label}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map(d => (
+                <tr key={d.day} className="border-t border-white/5">
+                  <td className="py-1.5 pr-3 text-white/70">{fmtDay(d.day)}</td>
+                  <td className="py-1.5 pr-3 text-right">{d.sessions}</td>
+                  <td className="py-1.5 pr-3 text-right">{d.views}</td>
+                  <td className="py-1.5 pr-3 text-right">{d.clicks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full min-w-[520px]" role="img" aria-label="Actividad diaria">
-        {/* grid */}
-        {[0.25, 0.5, 0.75].map(f => (
-          <line key={f} x1={PAD} x2={W-PAD} y1={y(max*f)} y2={y(max*f)} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        ))}
-        {data.map((d, i) => {
-          const cx = PAD + slot * i + slot / 2
-          return (
-            <g key={d.day}>
-              <rect x={cx - barW} y={y(d.views)} width={barW} height={Math.max(0, H - 18 - y(d.views))} fill="rgba(255,255,255,0.25)" rx="1.5" />
-              <rect x={cx} y={y(d.sessions)} width={barW} height={Math.max(0, H - 18 - y(d.sessions))} fill="#d8af3a" rx="1.5" />
-              {d.clicks > 0 && <circle cx={cx} cy={yClicks(d.clicks)} r="2.5" fill="#34d399" />}
-              {i % labelEvery === 0 && (
-                <text x={cx} y={H - 4} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.35)">{d.day.slice(8, 10)}/{d.day.slice(5, 7)}</text>
-              )}
-              <title>{`${d.day}: ${d.sessions} sesiones, ${d.views} vistas, ${d.clicks} clicks`}</title>
+    <div>
+      <TableToggle asTable={asTable} onToggle={() => setAsTable(v => !v)} />
+      <div className="relative overflow-x-auto">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full min-w-[520px]"
+          role="img"
+          aria-label="Actividad diaria: sesiones, vistas y clicks a entradas"
+          onMouseLeave={() => setHover(null)}
+          onMouseMove={(e) => {
+            const r = e.currentTarget.getBoundingClientRect()
+            const px = ((e.clientX - r.left) / r.width) * W
+            const i = n === 1 ? 0 : Math.round(((px - L) / plotW) * (n - 1))
+            setHover(Math.max(0, Math.min(n - 1, i)))
+          }}
+        >
+          {/* Rejilla: linea solida de un tono sobre el fondo, nunca discontinua */}
+          {ticks.map(t => (
+            <g key={t}>
+              <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke="rgba(255,255,255,0.07)" strokeWidth="1" />
+              <text x={L - 7} y={y(t) + 3.5} textAnchor="end" fontSize="10" fill="rgba(255,255,255,0.35)" className="tabular-nums">{t}</text>
             </g>
-          )
-        })}
-      </svg>
+          ))}
+
+          {hovered && (
+            <line x1={x(hover!)} x2={x(hover!)} y1={T} y2={T + plotH} stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+          )}
+
+          {series.map(s => (
+            <polyline
+              key={s.key}
+              fill="none"
+              stroke={s.color}
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              points={data.map((d, i) => `${x(i)},${y(d[s.key])}`).join(' ')}
+            />
+          ))}
+
+          {/* Punto final con etiqueta directa: identidad sin depender del color */}
+          {series.map(s => {
+            const last = data[n - 1]
+            return (
+              <circle key={s.key} cx={x(n - 1)} cy={y(last[s.key])} r="3.5" fill={s.color} stroke="#101014" strokeWidth="2" />
+            )
+          })}
+
+          {hovered && series.map(s => (
+            <circle key={s.key} cx={x(hover!)} cy={y(hovered[s.key])} r="4" fill={s.color} stroke="#101014" strokeWidth="2" />
+          ))}
+
+          {data.map((d, i) => (
+            i % labelEvery === 0 ? (
+              <text key={d.day} x={x(i)} y={H - 8} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.35)">{fmtDay(d.day)}</text>
+            ) : null
+          ))}
+        </svg>
+
+        {hovered && (
+          <div
+            className="pointer-events-none absolute top-0 z-10 rounded-xl bg-[#16151b] border border-white/12 shadow-xl px-3 py-2 text-xs"
+            style={{ left: `calc(${(x(hover!) / W) * 100}% + ${x(hover!) / W > 0.6 ? -150 : 12}px)` }}
+          >
+            <div className="text-white/60 mb-1.5">{fmtDay(hovered.day)}</div>
+            {series.map(s => (
+              <div key={s.key} className="flex items-center gap-2 whitespace-nowrap">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
+                <span className="text-white/60">{s.label}</span>
+                <span className="ml-auto pl-3 text-white font-semibold tabular-nums">{hovered[s.key]}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function TableToggle({ asTable, onToggle }: { asTable: boolean; onToggle: () => void }) {
+  return (
+    <div className="flex justify-end -mt-1 mb-2">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-xs text-white/45 hover:text-[#d8af3a] transition-colors underline underline-offset-2"
+      >
+        {asTable ? 'Ver grafica' : 'Ver tabla'}
+      </button>
     </div>
   )
 }
