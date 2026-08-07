@@ -179,7 +179,7 @@ export function Filters() {
         }}
         className="bg-base-card border border-white/10 rounded-xl p-2 text-sm w-full min-w-0"
       >
-        <option value=""><span>{t('filters.zone')}</span></option>
+        <option value="">{t('filters.zone')}</option>
         {zones.map(z => (
           <option key={z} value={z}>{z}</option>
         ))}
