@@ -90,8 +90,21 @@ export function AnalyticsTracker() {
       payload.first_referrer = document.referrer || null
     }
     payload.last_referrer = document.referrer || null
+    // insert y no upsert(onConflict): un INSERT ... ON CONFLICT DO UPDATE
+    // exige permiso de SELECT sobre la tabla para poder comprobar si la fila
+    // ya existe, incluso cuando no hay colision real. Sin una politica
+    // SELECT publica (no debe haberla: expondria user_agent/referrer/user_id
+    // de todos los visitantes a cualquiera con la anon key), ese upsert
+    // fallaba siempre con RLS, tambien para dispositivos nuevos.
     try {
-      await sb.from('app_devices').upsert(payload, { onConflict: 'device_id' })
+      const { error } = await sb.from('app_devices').insert(payload)
+      if (error?.code === '23505') {
+        // device_id ya existe: es el heartbeat normal de una visita que
+        // vuelve. El trigger preserve_analytics_owner (ver
+        // supabase/fix-analytics-tracking.sql) protege el user_id de la fila
+        // si ya pertenecia a otro usuario.
+        await sb.from('app_devices').update(payload).eq('device_id', deviceIdRef.current)
+      }
     } catch {}
   }
 
@@ -107,6 +120,14 @@ export function AnalyticsTracker() {
       newDeviceRef.current = true
     }
     deviceIdRef.current = deviceId
+
+    // El device tiene que existir ANTES que la sesion: app_sessions.device_id
+    // es clave foranea de app_devices, y hasta ahora la sesion se insertaba
+    // primero. Para cualquier dispositivo nuevo, ese insert violaba la FK
+    // (23503, "Key is not present in table app_devices") y quedaba
+    // silenciado por el catch{} de abajo: la sesion nunca llegaba a
+    // guardarse.
+    await touchDevice(nowIso, user?.id || null)
 
     let sessionId = sessionIdRef.current || getSessionId()
     const lastSeen = getSessionLastSeen()
@@ -139,7 +160,6 @@ export function AnalyticsTracker() {
     sessionIdRef.current = sessionId
     sessionStartRef.current = getSessionStart() || now
     setSessionLastSeen(now)
-    await touchDevice(nowIso, user?.id || null)
     return { sessionId, deviceId }
   }
 
