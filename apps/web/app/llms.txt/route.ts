@@ -15,16 +15,21 @@ export async function GET() {
       .gte('start_at', nowIso)
       .eq('status', 'published')
       .order('start_at', { ascending: true })
-      .limit(40),
+      // Topes altos a proposito: este archivo lo lee una maquina, no una
+      // persona, y con 40 eventos y 60 DJs se quedaba fuera el 84% de la
+      // agenda y el 85% de los artistas (la lista de DJs, alfabetica, se
+      // cortaba en la C). El coste es un fichero de texto mas grande, que se
+      // cachea una hora.
+      .limit(300),
     sb.from('clubs')
       .select('id,name,zone')
       .eq('status', 'approved')
       .order('name', { ascending: true })
-      .limit(40),
+      .limit(200),
     sb.from('djs')
       .select('id,name,genres')
       .order('name', { ascending: true })
-      .limit(60),
+      .limit(500),
     fetchZonesMap(),
   ])
 
