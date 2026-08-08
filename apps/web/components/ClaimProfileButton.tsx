@@ -129,7 +129,14 @@ export function ClaimProfileButton({
           con el contenido de la ficha. */}
       <button
         type="button"
-        onClick={() => setAbierto(true)}
+        onClick={() => {
+          setAbierto(true)
+          // Paso intermedio del embudo. Va sin await y con el error tragado a
+          // proposito: si la medicion falla, el formulario se abre igual.
+          sb().from('claim_opens')
+            .insert({ target_type: targetType, target_id: targetId, user_id: user?.id || null })
+            .then(() => {}, () => {})
+        }}
         className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70 hover:text-white hover:border-[#d8af3a]/40 transition-colors text-left"
       >
         <span className="font-medium text-white/90">

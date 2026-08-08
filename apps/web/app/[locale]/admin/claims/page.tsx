@@ -128,6 +128,8 @@ function ClaimsManager() {
         <Link href="/admin" className="text-sm text-white/50 hover:text-white">Volver</Link>
       </div>
 
+      <Adopcion />
+
       <div className="flex gap-2 flex-wrap">
         {ESTADOS.map(({ key, label }) => (
           <button
@@ -244,6 +246,125 @@ function ClaimsManager() {
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+// Panel de adopcion. Dos cosas y no doce: en que estado estan las solicitudes,
+// y donde se cae la gente entre ver una ficha y enviar la reclamacion.
+function Adopcion() {
+  const [d, setD] = useState<any>(null)
+  const [dias, setDias] = useState(30)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    sb().rpc('claims_adoption', { p_dias: dias }).then(({ data, error: err }) => {
+      if (err) setError(err.message)
+      else { setD(data); setError(null) }
+    })
+  }, [dias])
+
+  if (error) {
+    return (
+      <p className="text-sm text-white/50 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+        Panel de adopcion no disponible: {error}
+      </p>
+    )
+  }
+  if (!d) return null
+
+  const porEstado: Record<string, number> = d.por_estado || {}
+  const visitas = d.visitas_fichas || 0
+  const aperturas = d.aperturas || 0
+  const envios = d.envios || 0
+  const pct = (a: number, b: number) => (b > 0 ? `${((a / b) * 100).toFixed(1)}%` : '—')
+
+  // Con tan pocos datos, cualquier porcentaje enseñado sin contexto engaña. Se
+  // avisa en vez de dibujar una conversion que parece un hallazgo.
+  const pocosDatos = envios < 5
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-4">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <h2 className="text-sm font-semibold text-white">Adopcion</h2>
+        <div className="flex gap-1.5">
+          {[7, 30, 90].map(n => (
+            <button
+              key={n}
+              onClick={() => setDias(n)}
+              className={`text-xs px-2.5 py-1 rounded-full ${
+                dias === n ? 'bg-[#d8af3a] text-black font-semibold' : 'bg-white/5 text-white/60 border border-white/10'
+              }`}
+            >
+              {n}d
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {pocosDatos && (
+        <p className="text-xs text-[#fab219] bg-[#fab219]/10 border border-[#fab219]/20 rounded-xl px-3 py-2">
+          Menos de 5 solicitudes: los porcentajes de abajo todavia no significan
+          nada. Sirven cuando haya volumen real.
+        </p>
+      )}
+
+      {/* Bloque 1: donde estan las solicitudes */}
+      <div>
+        <p className="text-[11px] uppercase tracking-wider text-white/35 font-semibold mb-2">
+          Solicitudes ({d.solicitudes || 0} en total)
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          {Object.keys(porEstado).length === 0 && (
+            <span className="text-sm text-white/40">Ninguna todavia.</span>
+          )}
+          {Object.entries(porEstado).map(([estado, n]) => (
+            <span key={estado} className={`text-xs px-2.5 py-1 rounded-full border ${COLOR_ESTADO[estado as Estado] || 'border-white/20 text-white/70'}`}>
+              {TEXTO_ESTADO[estado as Estado] || estado}: {n}
+            </span>
+          ))}
+        </div>
+        <p className="text-sm text-white/60 mt-2">
+          Verificados: <strong className="text-white">{d.djs_verificados}</strong> de {d.djs_totales} DJs
+          {' · '}
+          <strong className="text-white">{d.clubs_verificados}</strong> de {d.clubs_totales} clubs
+        </p>
+      </div>
+
+      {/* Bloque 2: el embudo */}
+      <div>
+        <p className="text-[11px] uppercase tracking-wider text-white/35 font-semibold mb-2">
+          Embudo, ultimos {d.dias} dias
+        </p>
+        <div className="space-y-1.5">
+          <Paso label="Visitas a fichas" valor={visitas} ancho={100} />
+          <Paso label="Abren el formulario" valor={aperturas} ancho={visitas ? (aperturas / visitas) * 100 : 0} nota={pct(aperturas, visitas)} />
+          <Paso label="Envian la solicitud" valor={envios} ancho={visitas ? (envios / visitas) * 100 : 0} nota={pct(envios, aperturas)} />
+        </div>
+        <p className="text-[11px] text-white/40 mt-2">
+          El porcentaje de cada fila es sobre la fila anterior. Si cae mucho entre
+          abrir y enviar, el problema esta en el formulario.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function Paso({ label, valor, ancho, nota }: { label: string; valor: number; ancho: number; nota?: string }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between text-sm">
+        <span className="text-white/70">{label}</span>
+        <span className="text-white font-semibold tabular-nums">
+          {valor}
+          {nota && <span className="text-white/40 font-normal ml-2 text-xs">{nota}</span>}
+        </span>
+      </div>
+      {/* Una sola serie, un solo color: el largo ya dice la magnitud, teñir
+          cada paso de distinto gastaria el color repitiendo el mismo dato. */}
+      <div className="h-1.5 rounded-full bg-white/5 mt-1 overflow-hidden">
+        <div className="h-full rounded-full bg-[#b8891a]" style={{ width: `${Math.max(ancho, valor > 0 ? 1 : 0)}%` }} />
       </div>
     </div>
   )
