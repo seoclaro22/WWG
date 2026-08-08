@@ -41,19 +41,29 @@ const DIRECTOS: Record<'dj' | 'club', { campo: string; label: string; tipo: 'tex
   ],
 }
 
-const CON_REVISION: Record<'dj' | 'club', { campo: string; label: string; tipo: 'texto' | 'area' | 'lista' }[]> = {
+// idioma: el campo se traduce, asi que se edita en es, en y de. El español
+// vive en el campo base y los otros dos en su hermano _i18n; ver el SQL
+// perfiles-profesionales-idiomas.sql, que explica por que el español no puede
+// estar en los dos sitios.
+const CON_REVISION: Record<'dj' | 'club', { campo: string; label: string; tipo: 'texto' | 'area' | 'lista'; idioma?: boolean }[]> = {
   dj: [
     { campo: 'name', label: 'Nombre artistico', tipo: 'texto' },
-    { campo: 'bio', label: 'Biografia', tipo: 'area' },
+    { campo: 'bio', label: 'Biografia', tipo: 'area', idioma: true },
     { campo: 'genres', label: 'Generos', tipo: 'lista' },
   ],
   club: [
     { campo: 'name', label: 'Nombre', tipo: 'texto' },
-    { campo: 'description', label: 'Descripcion', tipo: 'area' },
+    { campo: 'description', label: 'Descripcion', tipo: 'area', idioma: true },
     { campo: 'genres', label: 'Generos', tipo: 'lista' },
     { campo: 'zone', label: 'Zona', tipo: 'texto' },
   ],
 }
+
+const IDIOMAS = [
+  { code: 'es', label: 'Español' },
+  { code: 'en', label: 'English' },
+  { code: 'de', label: 'Deutsch' },
+] as const
 
 export default function MiPerfilProfesionalPage() {
   const { user } = useAuth()
@@ -69,8 +79,8 @@ export default function MiPerfilProfesionalPage() {
     // claimed_by es quien manda: se buscan las fichas de este usuario, no se
     // deduce del rol. Alguien puede tener rol 'dj' y gestionar dos fichas.
     const [djs, clubs] = await Promise.all([
-      sb().from('djs').select('id,name,socials,spotify_embed,short_bio,bio,genres').eq('claimed_by', user.id),
-      sb().from('clubs').select('id,name,links,referral_link,address,open_hours,description,genres,zone').eq('claimed_by', user.id),
+      sb().from('djs').select('id,name,socials,spotify_embed,short_bio,short_bio_i18n,bio,bio_i18n,genres').eq('claimed_by', user.id),
+      sb().from('clubs').select('id,name,links,referral_link,address,open_hours,description,description_i18n,genres,zone').eq('claimed_by', user.id),
     ])
     const lista: Perfil[] = [
       ...((djs.data || []) as any[]).map(d => ({ ...d, tipo: 'dj' as const })),
@@ -205,16 +215,28 @@ export default function MiPerfilProfesionalPage() {
             titulo="Necesita revision"
             explicacion="Estos campos afectan a como te encuentra la gente en Google, asi que los revisamos antes de publicarlos."
           >
-            {CON_REVISION[perfil.tipo].map(({ campo, label, tipo }) => (
-              <CampoEditable
-                key={campo}
-                label={label}
-                tipo={tipo}
-                valor={(perfil as any)[campo]}
-                onGuardar={(v) => proponerCambio(campo, v)}
-                textoBoton="Proponer cambio"
-                pendiente={cambios.some(c => c.field === campo && c.status === 'pending')}
-              />
+            {CON_REVISION[perfil.tipo].map(({ campo, label, tipo, idioma }) => (
+              idioma ? (
+                <CampoTraducible
+                  key={campo}
+                  label={label}
+                  campoBase={campo}
+                  valorBase={(perfil as any)[campo]}
+                  valorI18n={(perfil as any)[`${campo}_i18n`]}
+                  onProponer={proponerCambio}
+                  cambios={cambios}
+                />
+              ) : (
+                <CampoEditable
+                  key={campo}
+                  label={label}
+                  tipo={tipo}
+                  valor={(perfil as any)[campo]}
+                  onGuardar={(v) => proponerCambio(campo, v)}
+                  textoBoton="Proponer cambio"
+                  pendiente={cambios.some(c => c.field === campo && c.status === 'pending')}
+                />
+              )
             ))}
           </Bloque>
 
@@ -247,6 +269,113 @@ function Bloque({ titulo, explicacion, children }: { titulo: string; explicacion
       </div>
       {children}
     </section>
+  )
+}
+
+// Campo traducido: una pestaña por idioma. El español se guarda en el campo
+// base y los otros dos en el hermano _i18n, asi que segun la pestaña sale una
+// propuesta sobre un campo o sobre el otro.
+//
+// Se avisa de los idiomas vacios porque un DJ que solo rellena el suyo deja la
+// ficha inglesa y alemana con el texto viejo sin enterarse.
+function CampoTraducible({
+  label, campoBase, valorBase, valorI18n, onProponer, cambios,
+}: {
+  label: string
+  campoBase: string
+  valorBase: string | null | undefined
+  valorI18n: Record<string, string> | null | undefined
+  onProponer: (campo: string, valor: unknown) => void
+  cambios: Cambio[]
+}) {
+  const i18n = valorI18n || {}
+  const campoI18n = `${campoBase}_i18n`
+
+  // El español de partida sale del campo base, que es donde vive en las fichas
+  // importadas; si esa ficha ya tenia un 'es' dentro del _i18n, ese manda,
+  // porque es el que se esta viendo en pantalla.
+  const inicial = {
+    es: i18n.es || valorBase || '',
+    en: i18n.en || '',
+    de: i18n.de || '',
+  }
+  const [textos, setTextos] = useState<Record<string, string>>(inicial)
+  const [lang, setLang] = useState<string>('es')
+  useEffect(() => { setTextos({ es: i18n.es || valorBase || '', en: i18n.en || '', de: i18n.de || '' }) }, [valorBase, valorI18n])
+
+  const sucio = IDIOMAS.some(l => textos[l.code] !== inicial[l.code as keyof typeof inicial])
+  const faltan = IDIOMAS.filter(l => !textos[l.code].trim())
+  const pendiente = cambios.some(
+    c => (c.field === campoBase || c.field === campoI18n) && c.status === 'pending',
+  )
+
+  // Los tres idiomas viajan juntos en una sola propuesta: si fueran tres, el
+  // administrador podria aprobar una y dejar la ficha a medio traducir.
+  function proponer() {
+    onProponer(campoI18n, {
+      ...i18n,
+      es: textos.es.trim(),
+      en: textos.en.trim(),
+      de: textos.de.trim(),
+    })
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs font-medium text-white/70">{label}</span>
+        {pendiente && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#fab219]/40 text-[#fab219]">
+            Propuesta pendiente
+          </span>
+        )}
+      </div>
+
+      <div className="flex gap-1.5">
+        {IDIOMAS.map(l => (
+          <button
+            key={l.code}
+            type="button"
+            onClick={() => setLang(l.code)}
+            className={`text-xs px-2.5 py-1 rounded-full border ${
+              lang === l.code
+                ? 'bg-[#d8af3a] text-black font-semibold border-transparent'
+                : 'bg-white/5 text-white/60 border-white/10'
+            }`}
+          >
+            {l.label}
+            {/* Marca de vacio con simbolo, no con color: si fuera solo el tono,
+                quien no lo distinga no sabria cual le falta por rellenar. */}
+            {!textos[l.code].trim() && <span className="ml-1 opacity-70">•</span>}
+          </button>
+        ))}
+      </div>
+
+      <textarea
+        value={textos[lang]}
+        onChange={e => setTextos({ ...textos, [lang]: e.target.value })}
+        rows={4}
+        placeholder={`Escribe aqui la version en ${IDIOMAS.find(l => l.code === lang)?.label}`}
+        className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/25 focus:border-[#d8af3a]/50 focus:outline-none resize-y"
+      />
+
+      {sucio && faltan.length > 0 && (
+        <p className="text-[11px] text-white/50">
+          Falta {faltan.map(l => l.label).join(' y ')}. Los tres idiomas se
+          envian juntos, asi que la ficha nunca queda a medias.
+        </p>
+      )}
+
+      {sucio && (
+        <button
+          onClick={proponer}
+          disabled={faltan.length > 0}
+          className="text-xs px-3 py-1.5 rounded-full bg-[#d8af3a] text-black font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Proponer cambio
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -312,7 +441,11 @@ function CampoEditable({
           value={texto}
           onChange={e => setTexto(e.target.value)}
           rows={tipo === 'json' ? 4 : 3}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#d8af3a]/50 focus:outline-none resize-y font-mono"
+          // Monoespaciada solo en el campo JSON, donde la alineacion ayuda a
+          // ver la estructura. Una biografia en monoespaciada parece codigo.
+          className={`w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#d8af3a]/50 focus:outline-none resize-y ${
+            tipo === 'json' ? 'font-mono' : ''
+          }`}
         />
       )}
       {tipo === 'lista' && <p className="text-[11px] text-white/40">Separa con comas.</p>}
