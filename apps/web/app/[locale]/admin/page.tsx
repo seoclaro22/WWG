@@ -167,6 +167,13 @@ function AdminHome(){
           </div>
           <span className="text-white/60">→</span>
         </Link>
+        <Link href="/admin/changes" className="card card-glass p-4 flex items-center justify-between">
+          <div>
+            <div className="font-medium">Cambios de perfiles</div>
+            <div className="text-xs text-white/60">Propuestas y historial</div>
+          </div>
+          <span className="text-white/60">→</span>
+        </Link>
       </div>
 
       <div className="space-y-4">

@@ -181,6 +181,20 @@ export default function AccountPage(){
       <div className="absolute inset-0 pointer-events-none rounded-[28px] mix-blend-screen opacity-60" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(44,191,255,0.12), rgba(7,10,20,0.1) 35%, transparent 50%)' }} />
       <div className="relative z-10 space-y-6">
       <h1 className="text-2xl font-semibold">Cuenta</h1>
+
+      {/* Solo para quien gestiona una ficha. Se mira el rol y no las fichas
+          para no lanzar dos consultas mas en cada visita a la cuenta; la
+          pagina de destino ya comprueba de verdad cuales gestionas. */}
+      {(roles.includes('dj') || roles.includes('club')) && (
+        <Link href="/account/profile" className="card p-4 flex items-center justify-between max-w-md">
+          <div>
+            <div className="font-medium">Mi perfil profesional</div>
+            <div className="text-xs text-white/60">Edita tu ficha y propon cambios</div>
+          </div>
+          <span className="text-white/60">→</span>
+        </Link>
+      )}
+
       <div className="card p-4 space-y-3 max-w-md">
         <div className="text-sm text-white/60">Email</div>
         <div>{user.email}</div>

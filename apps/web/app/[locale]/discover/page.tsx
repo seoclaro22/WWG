@@ -228,7 +228,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
               const imgs: string[] = Array.isArray(c.images) ? c.images : []
               const image = imgs[0] || (c.logo_url || null)
               return (
-                <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image }} />
+                <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
               )
             })}
             {clubs.length === 0 && <div className="muted">No hay clubs para esta zona.</div>}
@@ -252,6 +252,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                     bio_i18n: dj.bio_i18n,
                     genres: dj.genres,
                     image,
+                    verified: dj.verified,
                   }}
                 />
               )

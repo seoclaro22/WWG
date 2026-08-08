@@ -117,7 +117,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
               {clubs.map((c: any) => {
                 const images: string[] = Array.isArray(c.images) ? c.images : []
                 const image = images[0] || (c.logo_url || null)
-                return <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image }} />
+                return <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
               })}
             </div>
           </div>

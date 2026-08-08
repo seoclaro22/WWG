@@ -146,7 +146,7 @@ export async function fetchDjsPublic(params?: { q?: string; limit?: number; genr
   const sb = getSupabaseClient()
   let q = sb
     .from('djs')
-    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,genres,images')
+    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,genres,images,verified')
     .order('name', { ascending: true })
   if (params?.q) q = q.ilike('name', `%${params.q}%`)
   if (params?.genre) q = (q as any).contains('genres', [params.genre])

@@ -3,6 +3,7 @@ import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { FavoriteButton } from './FavoriteButton'
 import { LocalText } from './LocalText'
+import { VerifiedBadge } from './VerifiedBadge'
 import { useI18n } from '@/lib/i18n'
 // Removed Seguir/Quitar button from list cards per request
 
@@ -17,6 +18,7 @@ type Props = {
     bio_i18n?: Record<string, string> | null
     genres?: string[] | null
     image?: string | null
+    verified?: boolean | null
   }
   showHeart?: boolean
 }
@@ -45,6 +47,7 @@ export function DjCard2({ dj, showHeart = false }: Props) {
         <div className="flex-1">
           <Link href={`/dj/${dj.id}`} className="font-medium leading-tight hover:text-gold block">
             <LocalText value={dj.name} i18n={dj.name_i18n || undefined} />
+            {dj.verified && <> <VerifiedBadge size="sm" /></>}
           </Link>
           {genres.length > 0 && (
             <div className="text-xs text-white/60 mt-1">{genres.join(', ')}</div>

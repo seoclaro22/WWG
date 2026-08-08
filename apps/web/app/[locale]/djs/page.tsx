@@ -47,6 +47,7 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
                 bio_i18n: dj.bio_i18n,
                 genres: dj.genres,
                 image: images[0],
+                verified: dj.verified,
               }}
             />
           )

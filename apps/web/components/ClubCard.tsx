@@ -2,11 +2,12 @@
 import { Link } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { FavoriteButton } from './FavoriteButton'
+import { VerifiedBadge } from './VerifiedBadge'
 import { useI18n } from '@/lib/i18n'
 // Removed Seguir/Quitar button from list cards per request
 
 type Props = {
-  club: { id: string; name: string; address?: string | null; zone?: string | null; image?: string | null }
+  club: { id: string; name: string; address?: string | null; zone?: string | null; image?: string | null; verified?: boolean | null }
   showHeart?: boolean
 }
 
@@ -27,7 +28,10 @@ export function ClubCard({ club, showHeart = false }: Props) {
           ) : null}
         </Link>
         <div className="flex-1">
-          <Link href={`/club/${club.id}`} className="font-medium leading-tight hover:text-gold block">{club.name}</Link>
+          <Link href={`/club/${club.id}`} className="font-medium leading-tight hover:text-gold block">
+            {club.name}
+            {club.verified && <> <VerifiedBadge size="sm" /></>}
+          </Link>
           <div className="text-sm text-white/70">{club.address || '-'}</div>
           {club.zone && <div className="text-xs text-white/60">{club.zone}</div>}
           <div className="mt-2 flex gap-2 flex-wrap">
