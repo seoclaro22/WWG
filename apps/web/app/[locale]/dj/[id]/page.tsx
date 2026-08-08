@@ -11,6 +11,8 @@ import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
 import { djIsIndexable, homeCrumb } from '@/lib/seo-pages'
+import { VerifiedBadge } from '@/components/VerifiedBadge'
+import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -123,6 +125,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 z-10">
           <h1 className="text-3xl font-bold text-white drop-shadow-lg">
             <LocalText value={(dj as any).name} i18n={(dj as any).name_i18n || undefined} />
+            {(dj as any).verified && <> <VerifiedBadge /></>}
           </h1>
         </div>
       </div>
@@ -247,6 +250,12 @@ export default async function DjProfile({ params }: { params: { locale: string; 
           i18n={(dj as any).name_i18n || undefined}
           buttonClassName="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
         />
+
+        {/* Reclamacion: solo mientras la ficha no tenga dueño. Al final de la
+            pagina porque quien viene buscando fiesta no es el destinatario. */}
+        {!(dj as any).verified && (
+          <ClaimProfileButton targetType="dj" targetId={params.id} targetName={(dj as any).name} />
+        )}
       </div>
     </div>
   )

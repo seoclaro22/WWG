@@ -10,6 +10,8 @@ import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
 import { homeCrumb } from '@/lib/seo-pages'
+import { VerifiedBadge } from '@/components/VerifiedBadge'
+import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const club: any = await fetchClub(params.id)
@@ -117,6 +119,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
             <div className="min-w-0">
               <h1 className="text-3xl font-bold leading-tight text-white drop-shadow-lg">
                 {club.name}
+                {club.verified && <> <VerifiedBadge /></>}
               </h1>
               {club.zone && (
                 <p className="text-sm text-white/60 mt-0.5">{club.zone}</p>
@@ -292,6 +295,11 @@ export default async function ClubProfile({ params }: { params: { locale: string
           i18n={club.name_i18n || undefined}
           buttonClassName="w-full py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-medium text-sm hover:bg-white/10 hover:border-[#d8af3a]/40 hover:text-[#d8af3a] transition-all"
         />
+
+        {/* Reclamacion: solo mientras la ficha no tenga dueño. */}
+        {!club.verified && (
+          <ClaimProfileButton targetType="club" targetId={params.id} targetName={club.name} />
+        )}
       </div>
     </div>
   )
