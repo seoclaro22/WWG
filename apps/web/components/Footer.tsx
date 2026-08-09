@@ -84,6 +84,7 @@ export async function Footer({ locale }: { locale: string }) {
                 ellos via /discover?tab=..., que es noindex por ser facetado. */}
             <li><Link href="/clubs" className="hover:text-gold" prefetch={false}>{listMeta('clubs', locale).title}</Link></li>
             <li><Link href="/djs" className="hover:text-gold" prefetch={false}>{listMeta('djs', locale).title}</Link></li>
+            <li><Link href="/que-es-where-we-go" className="hover:text-gold" prefetch={false}>{t('about.eyebrow')}</Link></li>
             <li><Link href="/promote" className="hover:text-gold" prefetch={false}>{t('nav.promote')}</Link></li>
             <li><Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link></li>
             <li><Link href="/cookies" className="hover:text-gold" prefetch={false}>Cookies</Link></li>
