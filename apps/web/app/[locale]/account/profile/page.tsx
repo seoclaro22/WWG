@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useAuth } from '@/lib/auth'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
+import { useI18n } from '@/lib/i18n'
 
 // Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb() { return supabaseBrowser }
@@ -29,15 +30,15 @@ type Cambio = {
 // base de datos: esto solo decide como se dibuja cada bloque.
 const DIRECTOS: Record<'dj' | 'club', { campo: string; label: string; tipo: 'texto' | 'area' | 'json' }[]> = {
   dj: [
-    { campo: 'short_bio', label: 'Descripcion corta', tipo: 'area' },
-    { campo: 'spotify_embed', label: 'Spotify (enlace o embed)', tipo: 'texto' },
-    { campo: 'socials', label: 'Redes sociales', tipo: 'json' },
+    { campo: 'short_bio', label: 'pro.f_short_bio', tipo: 'area' },
+    { campo: 'spotify_embed', label: 'pro.f_spotify', tipo: 'texto' },
+    { campo: 'socials', label: 'pro.f_socials', tipo: 'json' },
   ],
   club: [
-    { campo: 'address', label: 'Direccion', tipo: 'texto' },
-    { campo: 'referral_link', label: 'Enlace de entradas', tipo: 'texto' },
-    { campo: 'links', label: 'Redes y web', tipo: 'json' },
-    { campo: 'open_hours', label: 'Horarios', tipo: 'json' },
+    { campo: 'address', label: 'pro.f_address', tipo: 'texto' },
+    { campo: 'referral_link', label: 'pro.f_referral', tipo: 'texto' },
+    { campo: 'links', label: 'pro.f_links', tipo: 'json' },
+    { campo: 'open_hours', label: 'pro.f_hours', tipo: 'json' },
   ],
 }
 
@@ -47,15 +48,15 @@ const DIRECTOS: Record<'dj' | 'club', { campo: string; label: string; tipo: 'tex
 // estar en los dos sitios.
 const CON_REVISION: Record<'dj' | 'club', { campo: string; label: string; tipo: 'texto' | 'area' | 'lista'; idioma?: boolean }[]> = {
   dj: [
-    { campo: 'name', label: 'Nombre artistico', tipo: 'texto' },
-    { campo: 'bio', label: 'Biografia', tipo: 'area', idioma: true },
-    { campo: 'genres', label: 'Generos', tipo: 'lista' },
+    { campo: 'name', label: 'pro.f_name_dj', tipo: 'texto' },
+    { campo: 'bio', label: 'pro.f_bio', tipo: 'area', idioma: true },
+    { campo: 'genres', label: 'pro.f_genres', tipo: 'lista' },
   ],
   club: [
-    { campo: 'name', label: 'Nombre', tipo: 'texto' },
-    { campo: 'description', label: 'Descripcion', tipo: 'area', idioma: true },
-    { campo: 'genres', label: 'Generos', tipo: 'lista' },
-    { campo: 'zone', label: 'Zona', tipo: 'texto' },
+    { campo: 'name', label: 'pro.f_name', tipo: 'texto' },
+    { campo: 'description', label: 'pro.f_description', tipo: 'area', idioma: true },
+    { campo: 'genres', label: 'pro.f_genres', tipo: 'lista' },
+    { campo: 'zone', label: 'pro.f_zone', tipo: 'texto' },
   ],
 }
 
@@ -67,6 +68,7 @@ const IDIOMAS = [
 
 export default function MiPerfilProfesionalPage() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [perfiles, setPerfiles] = useState<Perfil[]>([])
   const [activo, setActivo] = useState<string | null>(null)
   const [cambios, setCambios] = useState<Cambio[]>([])
@@ -111,7 +113,7 @@ export default function MiPerfilProfesionalPage() {
       p_target_type: perfil.tipo, p_target_id: perfil.id, p_patch: { [campo]: valor },
     })
     if (err) { setError(err.message); return }
-    setAviso('Guardado.')
+    setAviso(t('pro.saved'))
     await cargar()
   }
 
@@ -122,16 +124,16 @@ export default function MiPerfilProfesionalPage() {
       p_target_type: perfil.tipo, p_target_id: perfil.id, p_field: campo, p_new_value: valor,
     })
     if (err) { setError(err.message); return }
-    setAviso('Propuesta enviada. La revisamos y te avisamos.')
+    setAviso(t('pro.proposed'))
   }
 
-  if (cargando) return <p className="p-6 text-white/50">Cargando...</p>
+  if (cargando) return <p className="p-6 text-white/50">{t('pro.loading')}</p>
 
   if (!user) {
     return (
       <div className="p-6 space-y-3">
-        <h1 className="text-xl font-bold text-white">Mi perfil profesional</h1>
-        <p className="text-sm text-white/60">Inicia sesion para gestionar tu perfil.</p>
+        <h1 className="text-xl font-bold text-white">{t('pro.title')}</h1>
+        <p className="text-sm text-white/60">{t('pro.need_login')}</p>
       </div>
     )
   }
@@ -139,13 +141,10 @@ export default function MiPerfilProfesionalPage() {
   if (perfiles.length === 0) {
     return (
       <div className="p-6 space-y-3 max-w-lg">
-        <h1 className="text-xl font-bold text-white">Mi perfil profesional</h1>
-        <p className="text-sm text-white/60">
-          Todavia no gestionas ningun perfil. Busca tu ficha de DJ o de club y
-          pulsa "Reclamar perfil" para solicitarlo.
-        </p>
+        <h1 className="text-xl font-bold text-white">{t('pro.title')}</h1>
+        <p className="text-sm text-white/60">{t('pro.none')}</p>
         <Link href="/discover?tab=djs" className="inline-block text-sm text-[#d8af3a] hover:underline">
-          Buscar mi ficha
+          {t('pro.find')}
         </Link>
       </div>
     )
@@ -154,7 +153,7 @@ export default function MiPerfilProfesionalPage() {
   return (
     <div className="p-4 md:p-6 space-y-5 max-w-2xl mx-auto">
       <div className="flex items-center gap-2 flex-wrap">
-        <h1 className="text-xl font-bold text-white">Mi perfil profesional</h1>
+        <h1 className="text-xl font-bold text-white">{t('pro.title')}</h1>
         <VerifiedBadge size="sm" />
       </div>
 
@@ -183,7 +182,7 @@ export default function MiPerfilProfesionalPage() {
               target="_blank" rel="noreferrer"
               className="text-sm text-[#d8af3a] hover:underline"
             >
-              Ver ficha publica
+              {t('pro.view_public')}
             </a>
           </div>
 
@@ -196,30 +195,30 @@ export default function MiPerfilProfesionalPage() {
           )}
 
           <Bloque
-            titulo="Se guarda al momento"
-            explicacion="Estos datos son tuyos y se publican en cuanto los guardas."
+            titulo={t('pro.direct_title')}
+            explicacion={t('pro.direct_help')}
           >
             {DIRECTOS[perfil.tipo].map(({ campo, label, tipo }) => (
               <CampoEditable
                 key={campo}
-                label={label}
+                label={t(label)}
                 tipo={tipo}
                 valor={(perfil as any)[campo]}
                 onGuardar={(v) => guardarDirecto(campo, v)}
-                textoBoton="Guardar"
+                textoBoton={t('pro.save')}
               />
             ))}
           </Bloque>
 
           <Bloque
-            titulo="Necesita revision"
-            explicacion="Estos campos afectan a como te encuentra la gente en Google, asi que los revisamos antes de publicarlos."
+            titulo={t('pro.review_title')}
+            explicacion={t('pro.review_help')}
           >
             {CON_REVISION[perfil.tipo].map(({ campo, label, tipo, idioma }) => (
               idioma ? (
                 <CampoTraducible
                   key={campo}
-                  label={label}
+                  label={t(label)}
                   campoBase={campo}
                   valorBase={(perfil as any)[campo]}
                   valorI18n={(perfil as any)[`${campo}_i18n`]}
@@ -229,19 +228,19 @@ export default function MiPerfilProfesionalPage() {
               ) : (
                 <CampoEditable
                   key={campo}
-                  label={label}
+                  label={t(label)}
                   tipo={tipo}
                   valor={(perfil as any)[campo]}
                   onGuardar={(v) => proponerCambio(campo, v)}
-                  textoBoton="Proponer cambio"
+                  textoBoton={t('pro.propose')}
                   pendiente={cambios.some(c => c.field === campo && c.status === 'pending')}
                 />
               )
             ))}
           </Bloque>
 
-          <Bloque titulo="Historial" explicacion="Todo lo que ha cambiado en tu ficha.">
-            {cambios.length === 0 && <p className="text-sm text-white/45">Sin cambios todavia.</p>}
+          <Bloque titulo={t('pro.history_title')} explicacion={t('pro.history_help')}>
+            {cambios.length === 0 && <p className="text-sm text-white/45">{t('pro.history_empty')}</p>}
             {cambios.map(c => (
               <div key={c.id} className="text-sm border-b border-white/5 pb-2">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -288,6 +287,7 @@ function CampoTraducible({
   onProponer: (campo: string, valor: unknown) => void
   cambios: Cambio[]
 }) {
+  const { t } = useI18n()
   const i18n = valorI18n || {}
   const campoI18n = `${campoBase}_i18n`
 
@@ -326,7 +326,7 @@ function CampoTraducible({
         <span className="text-xs font-medium text-white/70">{label}</span>
         {pendiente && (
           <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#fab219]/40 text-[#fab219]">
-            Propuesta pendiente
+            {t('pro.pending')}
           </span>
         )}
       </div>
@@ -355,14 +355,13 @@ function CampoTraducible({
         value={textos[lang]}
         onChange={e => setTextos({ ...textos, [lang]: e.target.value })}
         rows={4}
-        placeholder={`Escribe aqui la version en ${IDIOMAS.find(l => l.code === lang)?.label}`}
+        placeholder={`${t('pro.lang_placeholder')} ${IDIOMAS.find(l => l.code === lang)?.label}`}
         className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/25 focus:border-[#d8af3a]/50 focus:outline-none resize-y"
       />
 
       {sucio && faltan.length > 0 && (
         <p className="text-[11px] text-white/50">
-          Falta {faltan.map(l => l.label).join(' y ')}. Los tres idiomas se
-          envian juntos, asi que la ficha nunca queda a medias.
+          {t('pro.lang_missing')} {faltan.map(l => l.label).join(', ')}
         </p>
       )}
 
@@ -372,7 +371,7 @@ function CampoTraducible({
           disabled={faltan.length > 0}
           className="text-xs px-3 py-1.5 rounded-full bg-[#d8af3a] text-black font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Proponer cambio
+          {t('pro.propose')}
         </button>
       )}
     </div>
@@ -380,15 +379,16 @@ function CampoTraducible({
 }
 
 function EstadoCambio({ status }: { status: string }) {
+  const { t } = useI18n()
   const mapa: Record<string, [string, string]> = {
-    pending: ['Pendiente', 'border-[#fab219]/40 text-[#fab219]'],
-    applied: ['Aplicado', 'border-[#199e70]/40 text-[#199e70]'],
-    approved: ['Aprobado', 'border-[#199e70]/40 text-[#199e70]'],
-    rejected: ['Rechazado', 'border-[#d03b3b]/40 text-[#d03b3b]'],
-    reverted: ['Revertido', 'border-white/20 text-white/60'],
+    pending: ['pro.st_pending', 'border-[#fab219]/40 text-[#fab219]'],
+    applied: ['pro.st_applied', 'border-[#199e70]/40 text-[#199e70]'],
+    approved: ['pro.st_approved', 'border-[#199e70]/40 text-[#199e70]'],
+    rejected: ['pro.st_rejected', 'border-[#d03b3b]/40 text-[#d03b3b]'],
+    reverted: ['pro.st_reverted', 'border-white/20 text-white/60'],
   }
-  const [texto, clase] = mapa[status] || [status, 'border-white/20 text-white/60']
-  return <span className={`text-[11px] px-2 py-0.5 rounded-full border ${clase}`}>{texto}</span>
+  const [clave, clase] = mapa[status] || [null, 'border-white/20 text-white/60']
+  return <span className={`text-[11px] px-2 py-0.5 rounded-full border ${clase}`}>{clave ? t(clave) : status}</span>
 }
 
 // Un campo con su propio boton de guardar. Un unico formulario grande obligaria
@@ -404,6 +404,7 @@ function CampoEditable({
   textoBoton: string
   pendiente?: boolean
 }) {
+  const { t } = useI18n()
   const inicial = serializar(valor, tipo)
   const [texto, setTexto] = useState(inicial)
   const [problema, setProblema] = useState<string | null>(null)
@@ -416,7 +417,7 @@ function CampoEditable({
       setProblema(null)
       onGuardar(deserializar(texto, tipo))
     } catch (e: any) {
-      setProblema(e?.message || 'Formato no valido')
+      setProblema(e?.message || t('pro.bad_format'))
     }
   }
 
@@ -426,7 +427,7 @@ function CampoEditable({
         <span className="text-xs font-medium text-white/70">{label}</span>
         {pendiente && (
           <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#fab219]/40 text-[#fab219]">
-            Propuesta pendiente
+            {t('pro.pending')}
           </span>
         )}
       </div>
@@ -448,8 +449,8 @@ function CampoEditable({
           }`}
         />
       )}
-      {tipo === 'lista' && <p className="text-[11px] text-white/40">Separa con comas.</p>}
-      {tipo === 'json' && <p className="text-[11px] text-white/40">Formato JSON.</p>}
+      {tipo === 'lista' && <p className="text-[11px] text-white/40">{t('pro.comma_hint')}</p>}
+      {tipo === 'json' && <p className="text-[11px] text-white/40">{t('pro.json_hint')}</p>}
       {problema && <p className="text-xs text-red-300">{problema}</p>}
       {sucio && (
         <button

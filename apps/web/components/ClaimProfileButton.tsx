@@ -2,6 +2,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n'
 
 // Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb() {
@@ -10,12 +11,12 @@ function sb() {
 
 type Estado = 'pending' | 'reviewing' | 'approved' | 'rejected' | 'more_information_required'
 
-const TEXTO_ESTADO: Record<Estado, string> = {
-  pending: 'Tu solicitud esta pendiente de revision.',
-  reviewing: 'Estamos revisando tu solicitud.',
-  approved: 'Tu solicitud fue aprobada.',
-  rejected: 'Tu solicitud fue rechazada.',
-  more_information_required: 'Necesitamos mas informacion para continuar.',
+const CLAVE_ESTADO: Record<Estado, string> = {
+  pending: 'claim.status_pending',
+  reviewing: 'claim.status_reviewing',
+  approved: 'claim.status_approved',
+  rejected: 'claim.status_rejected',
+  more_information_required: 'claim.status_more_info',
 }
 
 // Boton de reclamacion para fichas sin verificar.
@@ -33,6 +34,7 @@ export function ClaimProfileButton({
   targetName: string
 }) {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [abierto, setAbierto] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -109,7 +111,7 @@ export function ClaimProfileButton({
       setMiSolicitud('pending')
       setAbierto(false)
     } catch (err: any) {
-      setError(err?.message || 'No se pudo enviar la solicitud. Intentalo de nuevo.')
+      setError(err?.message || t('claim.error'))
     } finally {
       setEnviando(false)
     }
@@ -118,7 +120,7 @@ export function ClaimProfileButton({
   if (miSolicitud) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
-        {TEXTO_ESTADO[miSolicitud]}
+        {t(CLAVE_ESTADO[miSolicitud])}
       </div>
     )
   }
@@ -140,10 +142,10 @@ export function ClaimProfileButton({
         className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70 hover:text-white hover:border-[#d8af3a]/40 transition-colors text-left"
       >
         <span className="font-medium text-white/90">
-          {esDj ? '¿Eres este DJ?' : '¿Gestionas este club?'}
+          {t(esDj ? 'claim.dj_title' : 'claim.club_title')}
         </span>
         <span className="block text-xs text-white/55 mt-0.5">
-          Reclama el perfil para gestionarlo y corregir la informacion.
+          {t('claim.subtitle')}
         </span>
       </button>
 
@@ -161,7 +163,7 @@ export function ClaimProfileButton({
           >
             <div>
               <h2 id="claim-titulo" className="text-lg font-bold text-white">
-                Reclamar perfil
+                {t('claim.modal_title')}
               </h2>
               <p className="text-sm text-white/60 mt-1">
                 {targetName}
@@ -171,49 +173,47 @@ export function ClaimProfileButton({
             {/* Que pasa despues, antes de pedir nada: el encargo insiste en que
                 el usuario entienda el proceso antes de rellenar. */}
             <p className="text-xs text-white/55 leading-relaxed rounded-xl bg-white/5 px-3 py-2.5">
-              Revisamos la solicitud a mano y comprobamos tu Instagram oficial.
-              Si todo encaja, el perfil aparecera como verificado y podras
-              gestionarlo. Te avisamos por email.
+              {t('claim.how_it_works')}
             </p>
 
             {!user ? (
               <p className="text-sm text-white/70">
-                Necesitas iniciar sesion para reclamar un perfil.
+                {t('claim.need_login')}
               </p>
             ) : (
               <form onSubmit={enviar} className="space-y-3">
                 <Campo
                   ref={primerCampoRef}
                   name="full_name"
-                  label="Nombre y apellidos"
+                  label={t('claim.full_name')}
                   required
                   autoComplete="name"
                 />
                 <Campo
                   name="email"
                   type="email"
-                  label="Email de contacto"
+                  label={t('claim.email')}
                   required
                   defaultValue={user.email || ''}
                   autoComplete="email"
                 />
-                <Campo name="phone" label="Telefono (opcional)" autoComplete="tel" />
+                <Campo name="phone" label={t('claim.phone')} autoComplete="tel" />
                 <Campo
                   name="instagram"
-                  label="Instagram oficial"
+                  label={t('claim.instagram')}
                   required
                   placeholder="@tucuenta"
-                  ayuda="Es como comprobamos que el perfil es tuyo."
+                  ayuda={t('claim.instagram_help')}
                 />
-                <Campo name="website" label="Web oficial (opcional)" placeholder="https://" />
+                <Campo name="website" label={t('claim.website')} placeholder="https://" />
                 <Campo
                   name="relationship"
-                  label={esDj ? 'Tu relacion con el perfil' : 'Tu relacion con el club'}
+                  label={t(esDj ? 'claim.relationship_dj' : 'claim.relationship_club')}
                   required
-                  placeholder={esDj ? 'Soy el DJ, soy su manager...' : 'Propietario, responsable de marketing...'}
+                  placeholder={t(esDj ? 'claim.relationship_ph_dj' : 'claim.relationship_ph_club')}
                 />
-                <AreaTexto name="reason" label="Motivo de la solicitud (opcional)" />
-                <AreaTexto name="extra_info" label="Informacion adicional (opcional)" />
+                <AreaTexto name="reason" label={t('claim.reason')} />
+                <AreaTexto name="extra_info" label={t('claim.extra')} />
 
                 {error && (
                   <p className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
@@ -227,14 +227,14 @@ export function ClaimProfileButton({
                     onClick={() => setAbierto(false)}
                     className="flex-1 rounded-full border border-white/10 px-4 py-2.5 text-sm text-white/70 hover:text-white"
                   >
-                    Cancelar
+                    {t('claim.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={enviando}
                     className="flex-1 rounded-full bg-[#d8af3a] px-4 py-2.5 text-sm font-semibold text-black disabled:opacity-60"
                   >
-                    {enviando ? 'Enviando...' : 'Enviar solicitud'}
+                    {t(enviando ? 'claim.sending' : 'claim.send')}
                   </button>
                 </div>
               </form>
