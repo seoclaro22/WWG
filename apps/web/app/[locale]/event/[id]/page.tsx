@@ -171,20 +171,21 @@ export default async function EventDetail({ params }: { params: { locale: string
         url: `https://wherewego.site/dj/${d.id}`,
       })),
     } : {}),
-    // offers va siempre, no solo cuando hay enlace de entradas: sin el, el
-    // MusicEvent no es elegible para el resultado enriquecido de eventos de
-    // Google. Si no hay venta externa, la oferta apunta a la propia ficha,
-    // que es donde el usuario continua.
-    offers: {
-      '@type': 'Offer',
-      url: `https://wherewego.site/event/${id}`,
-      availability: 'https://schema.org/InStock',
-      // El precio solo se declara si lo sabemos: poner 0 por defecto seria
-      // afirmar que la entrada es gratis, y eso es dato falso en el schema.
-      ...((e as any).price_min != null
-        ? { price: (e as any).price_min, priceCurrency: 'EUR' }
-        : {}),
-    },
+    // offers solo se declara cuando se conoce el precio: Google exige price y
+    // priceCurrency dentro de todo Offer, y casi ninguna ficha tiene
+    // price_min todavia. Un Offer sin precio incumplia ese requisito en casi
+    // el 100% de los eventos y probablemente ya generaba errores en Search
+    // Console. Sin precio, el evento sigue siendo elegible para el resultado
+    // enriquecido, solo que sin el bloque de oferta.
+    ...((e as any).price_min != null ? {
+      offers: {
+        '@type': 'Offer',
+        url: `https://wherewego.site/event/${id}`,
+        availability: 'https://schema.org/InStock',
+        price: (e as any).price_min,
+        priceCurrency: 'EUR',
+      },
+    } : {}),
     organizer: { '@type': 'Organization', name: 'Where We Go', url: 'https://wherewego.site' },
   }
 

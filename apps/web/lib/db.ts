@@ -375,7 +375,7 @@ export async function fetchDj(id: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
     .from('djs')
-    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified')
+    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified,socials')
     .eq('id', id)
     .maybeSingle()
   if (error) { console.error('fetchDj error', error); return null }

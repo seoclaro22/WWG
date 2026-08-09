@@ -71,6 +71,11 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   const spotifyEmbed = getSpotifyEmbed((dj as any).spotify_embed)
   const bio: string = (dj as any).bio || ''
   const bioI18n = (dj as any).bio_i18n || null
+  // Solo enlaces reales: filtra huecos vacios que a veces quedan en el json
+  // tras editar el perfil (una red borrada deja la clave con valor '').
+  const socialLinks: string[] = Object.values((dj as any).socials || {}).filter(
+    (v): v is string => typeof v === 'string' && v.length > 0
+  )
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -82,6 +87,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
     ...(heroImg ? { image: [heroImg] } : {}),
     jobTitle: 'DJ',
     url: `https://wherewego.site/dj/${(dj as any).id}`,
+    ...(socialLinks.length ? { sameAs: socialLinks } : {}),
   }
 
   return (
