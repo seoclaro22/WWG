@@ -17,9 +17,10 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   const club: any = await fetchClub(params.id)
   if (!club) return { title: 'Club no encontrado' }
   const images: string[] = Array.isArray(club.images) ? club.images : []
-  // Sin inventar ciudad: si el club no tiene zona, se omite en vez de
-  // atribuirlo por defecto a Mallorca.
-  const place = club.zone ? ` en ${club.zone}` : ''
+  // town es el pueblo/localidad exacta (ej. "Benicàssim"), mas especifico que
+  // zone, que es el hub de ciudad (ej. "Castellón") y agrupa /castellon.
+  // Sin town se cae a zone, y sin zone se omite en vez de inventar Mallorca.
+  const place = club.town || club.zone ? ` en ${club.town || club.zone}` : ''
   const description = (club.description || '').slice(0, 155) || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`
   return {
     title: `${club.name} — discoteca${place}`,
@@ -74,7 +75,8 @@ export default async function ClubProfile({ params }: { params: { locale: string
     address: {
       '@type': 'PostalAddress',
       ...(club.address ? { streetAddress: club.address } : {}),
-      ...(club.zone ? { addressLocality: club.zone } : {}),
+      // town es mas preciso que zone (hub de ciudad) cuando existe.
+      ...(club.town || club.zone ? { addressLocality: club.town || club.zone } : {}),
     },
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
@@ -121,8 +123,8 @@ export default async function ClubProfile({ params }: { params: { locale: string
                 {club.name}
                 {club.verified && <> <VerifiedBadge /></>}
               </h1>
-              {club.zone && (
-                <p className="text-sm text-white/60 mt-0.5">{club.zone}</p>
+              {(club.town || club.zone) && (
+                <p className="text-sm text-white/60 mt-0.5">{club.town || club.zone}</p>
               )}
             </div>
           </div>
