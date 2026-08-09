@@ -9,6 +9,16 @@ function normalizeEventFromDate(from?: string) {
   return from
 }
 
+// Un evento sigue siendo relevante mientras no haya terminado, no solo
+// mientras no haya empezado. Filtrar por start_at >= ahora hacia que una
+// fiesta que ya arranco pero sigue abierta desapareciera del listado, aunque
+// alguien pudiera llegar y comprar entrada en ese mismo momento.
+// end_at esta poblado en el 100% de los eventos actuales, pero el or() cubre
+// tambien el caso de que algun evento futuro se cree sin end_at.
+function applyStillOnFilter<T extends { or: (s: string) => T }>(q: T, effectiveFrom: string): T {
+  return q.or(`end_at.gte.${effectiveFrom},and(end_at.is.null,start_at.gte.${effectiveFrom})`)
+}
+
 export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string; sponsoredFirst?: boolean }) {
   const sb = getSupabaseClient()
   const effectiveFrom = normalizeEventFromDate(params?.from)
@@ -22,7 +32,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
     // Búsqueda simple por nombre/desc/club
     q = q.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
   }
-  q = q.gte('start_at', effectiveFrom)
+  q = applyStillOnFilter(q, effectiveFrom)
   if (params?.to) q = q.lte('start_at', params.to)
   if (params?.genre) q = q.contains('genres', [params.genre])
   if (params?.zone) q = (q as any).eq('zone', params.zone)
@@ -45,7 +55,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
       if (params?.q) {
         retryQ = retryQ.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
       }
-      retryQ = retryQ.gte('start_at', effectiveFrom)
+      retryQ = applyStillOnFilter(retryQ, effectiveFrom)
       if (params?.to) retryQ = retryQ.lte('start_at', params.to)
       if (params?.genre) retryQ = retryQ.contains('genres', [params.genre])
       if (params?.zone && !zoneMissing) retryQ = (retryQ as any).eq('zone', params.zone)
@@ -69,13 +79,13 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
 export async function countUpcomingEvents(params?: { zone?: string }) {
   const sb = getSupabaseClient()
   const nowIso = new Date().toISOString()
-  let q = sb.from('events_public').select('id', { count: 'exact', head: true }).gte('start_at', nowIso)
+  let q = applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso)
   if (params?.zone) q = (q as any).eq('zone', params.zone)
   q = (q as any).eq('status', 'published')
   let { count, error } = await q
   if (error) {
     // Fallback si status/zone no existen en la vista
-    const retry = await sb.from('events_public').select('id', { count: 'exact', head: true }).gte('start_at', nowIso)
+    const retry = await applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso)
     count = retry.count
     error = retry.error
   }
@@ -193,7 +203,7 @@ export async function fetchRelatedEvents(eventId: string, genres: string[] | nul
   const sb = getSupabaseClient()
   const nowIso = new Date().toISOString()
   const base = () => {
-    let q = sb.from('events_public').select('*').neq('id', eventId).gte('start_at', nowIso).order('start_at', { ascending: true }).limit(limit)
+    let q = sb.from('events_public').select('*').neq('id', eventId).or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`).order('start_at', { ascending: true }).limit(limit)
     q = (q as any).eq('status', 'published')
     return q
   }
@@ -339,7 +349,7 @@ export async function fetchClubEvents(clubId: string, limit = 10) {
     .from('events_public')
     .select('*')
     .eq('club_id', clubId)
-    .gte('start_at', nowIso)
+    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
     .eq('status', 'published')
     .order('start_at', { ascending: true })
     .limit(limit)
@@ -348,7 +358,7 @@ export async function fetchClubEvents(clubId: string, limit = 10) {
       .from('events_public')
       .select('*')
       .eq('club_id', clubId)
-      .gte('start_at', nowIso)
+      .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
       .order('start_at', { ascending: true })
       .limit(limit)
     data = retry.data as any
@@ -382,7 +392,7 @@ export async function fetchDjEvents(djId: string, limit = 10) {
     .from('events_public')
     .select('*')
     .in('id', ids)
-    .gte('start_at', nowIso)
+    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
     .eq('status', 'published')
     .order('start_at', { ascending: true })
     .limit(limit)
@@ -391,7 +401,7 @@ export async function fetchDjEvents(djId: string, limit = 10) {
       .from('events_public')
       .select('*')
       .in('id', ids)
-      .gte('start_at', nowIso)
+      .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
       .order('start_at', { ascending: true })
       .limit(limit)
     data = retry.data as any
@@ -411,11 +421,11 @@ export async function fetchDjIdsWithUpcomingEvents(): Promise<Set<string>> {
   let { data: events, error } = await sb
     .from('events_public')
     .select('id')
-    .gte('start_at', nowIso)
+    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
     .eq('status', 'published')
     .limit(1000)
   if (error && String(error.message || '').toLowerCase().includes('status')) {
-    const retry = await sb.from('events_public').select('id').gte('start_at', nowIso).limit(1000)
+    const retry = await sb.from('events_public').select('id').or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`).limit(1000)
     events = retry.data as any
     error = retry.error as any
   }
