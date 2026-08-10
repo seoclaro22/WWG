@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { locale: string } }) {
 
 export default async function DjsIndex({ params }: { params: { locale: string } }) {
   const djs = await fetchDjsPublic({ limit: 200 })
-  const { title } = listMeta('djs', params.locale)
+  const { title, description } = listMeta('djs', params.locale)
 
   return (
     <div className="space-y-4">
@@ -31,6 +31,7 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
         { name: title },
       ]} />
       <h1 className="text-2xl font-semibold">{title}</h1>
+      <p className="text-sm text-white/60 max-w-xl">{description}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {djs.map((dj: any) => {
           const images: string[] = Array.isArray(dj.images) ? dj.images : []

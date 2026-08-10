@@ -84,8 +84,11 @@ export default async function ZonePage({ params }: { params: { locale: string; z
           <p className="text-sm text-white/60 mt-2 max-w-xl">{copy.intro}</p>
         </div>
 
+        {/* Los rotulos de seccion eran <p> con pinta de titulo: se leian como
+            encabezados pero no lo eran, asi que la unica jerarquia que veia
+            Google en toda la pagina era el FAQ del final. */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{labels.heading}</p>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{labels.heading}</h2>
           <div className="flex flex-wrap gap-2">
             {WHEN_KEYS.map((k) => (
               <Link
@@ -112,7 +115,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
 
         {clubs.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.clubs}</p>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.clubs}</h2>
             <div className="grid gap-3">
               {clubs.map((c: any) => {
                 const images: string[] = Array.isArray(c.images) ? c.images : []
@@ -124,7 +127,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
         )}
 
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.events}</p>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{copy.events}</h2>
           <div className="grid gap-3">
             {events.map((e: any) => {
               const imgs: string[] = Array.isArray(e.images) ? e.images : []

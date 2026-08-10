@@ -3,7 +3,9 @@ import { SafeImage } from '@/components/SafeImage'
 import { fetchClubsPublic } from '@/lib/db'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
+import { homeCrumb } from '@/lib/seo-pages'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const { title, description } = listMeta('clubs', params.locale)
@@ -15,11 +17,20 @@ export function generateMetadata({ params }: { params: { locale: string } }) {
   }
 }
 
-export default async function ClubsIndex() {
+export default async function ClubsIndex({ params }: { params: { locale: string } }) {
   const clubs = await fetchClubsPublic({ limit: 200 })
+  // El h1 decia "Clubs" en duro: ni coincidia con el <title> de la pagina ni
+  // con el idioma de la URL. Se toma de listMeta, que es de donde ya salen el
+  // titulo y la descripcion, asi que los tres dicen lo mismo.
+  const { title, description } = listMeta('clubs', params.locale)
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Clubs</h1>
+      <Breadcrumbs locale={params.locale} items={[
+        { name: homeCrumb(params.locale), href: '/' },
+        { name: title },
+      ]} />
+      <h1 className="text-2xl font-semibold">{title}</h1>
+      <p className="text-sm text-white/60 max-w-xl">{description}</p>
       <div className="grid gap-2">
         {clubs.map((c: any) => {
           const images: string[] = Array.isArray(c.images) ? c.images : []
