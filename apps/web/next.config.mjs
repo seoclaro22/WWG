@@ -43,8 +43,14 @@ const CSP = [
   // de imagen antes de subirlas
   `img-src 'self' data: blob: https:`,
   "font-src 'self' data:",
-  // Supabase (datos, auth y realtime por websocket) y la analitica
-  `connect-src 'self' ${supabaseOrigin} ${supabaseWsOrigin} https://www.google-analytics.com https://www.googletagmanager.com`,
+  // Supabase (datos, auth y realtime por websocket) y la analitica.
+  //
+  // Los dominios de analitica van con comodin porque GA4 no envia siempre a
+  // www.google-analytics.com: reparte por endpoints regionales
+  // (region1.google-analytics.com y siguientes) segun donde este el visitante.
+  // Con el dominio fijo, el navegador bloqueaba por CSP practicamente todas
+  // las visitas europeas, que son casi todo el trafico del sitio.
+  `connect-src 'self' ${supabaseOrigin} ${supabaseWsOrigin} https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com`,
   // Spotify se incrusta en las fichas de DJ
   "frame-src https://open.spotify.com",
   "upgrade-insecure-requests",
