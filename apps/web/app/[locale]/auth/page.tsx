@@ -72,7 +72,10 @@ export default function AuthPage() {
       <div className="bg-white/4 border border-white/10 rounded-3xl p-5 space-y-4">
         <div className="space-y-1">
           <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">{t('auth.email')}</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} className={inputCls} placeholder="email@ejemplo.com" autoComplete="email" />
+          {/* example.com, no "ejemplo": es el dominio reservado para ejemplos
+              (RFC 2606) y se entiende igual en los tres idiomas, asi que no
+              necesita traduccion. */}
+          <input value={email} onChange={e => setEmail(e.target.value)} className={inputCls} placeholder="email@example.com" autoComplete="email" />
         </div>
         {mode !== 'reset' && (
           <div className="space-y-1">
@@ -91,8 +94,8 @@ export default function AuthPage() {
         )}
         {mode === 'up' && (
           <div className="space-y-1">
-            <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Nombre o nick</label>
-            <input value={displayName} onChange={e => setDisplayName(e.target.value)} className={inputCls} placeholder="Tu nombre o nick" required />
+            <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">{t('auth.display_name')}</label>
+            <input value={displayName} onChange={e => setDisplayName(e.target.value)} className={inputCls} placeholder={t('auth.display_name_ph')} required />
           </div>
         )}
         {err && (
@@ -135,8 +138,8 @@ export default function AuthPage() {
               if (mode === 'in') {
                 await signIn(email, password)
               } else {
-                if (!accept) { setErr('Debes aceptar la Politica de Privacidad y Cookies.'); return }
-                if (!displayName.trim()) { setErr('Indica un nombre o nick para mostrar.'); return }
+                if (!accept) { setErr(t('auth.need_accept')); return }
+                if (!displayName.trim()) { setErr(t('auth.need_name')); return }
                 await signUp(email, password)
                 try {
                   // Cliente compartido y no uno nuevo: ver lib/supabase-browser.ts.
