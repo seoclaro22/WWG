@@ -9,6 +9,8 @@ type Ctx = {
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
+  resetPassword: (email: string, redirectTo: string) => Promise<void>
+  updatePassword: (password: string) => Promise<void>
 }
 
 const AuthCtx = createContext<Ctx | null>(null)
@@ -58,7 +60,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
-  const value: Ctx = { user, session, signIn, signUp, signOut }
+  // Envia el correo con el enlace de recuperacion. Supabase no distingue si el
+  // email existe o no (devuelve exito en ambos casos) y esta bien que sea asi:
+  // lo contrario dejaria comprobar a cualquiera quien tiene cuenta aqui. Los
+  // errores que si llegan son de formato o de limite de envios, y esos si hay
+  // que enseñarlos o el usuario se queda esperando un correo que no sale.
+  async function resetPassword(email: string, redirectTo: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+    if (error) throw error
+  }
+
+  // Solo funciona con una sesion viva. En el flujo de recuperacion la crea el
+  // propio enlace del correo al abrirlo (detectSessionInUrl del cliente).
+  async function updatePassword(password: string) {
+    const { error } = await supabase.auth.updateUser({ password })
+    if (error) throw error
+  }
+
+  const value: Ctx = { user, session, signIn, signUp, signOut, resetPassword, updatePassword }
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>
 }
 
