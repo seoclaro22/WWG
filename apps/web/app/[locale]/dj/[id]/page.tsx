@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { djIsIndexable, homeCrumb } from '@/lib/seo-pages'
+import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate } from '@/lib/seo-pages'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -39,7 +39,7 @@ function getSpotifyEmbed(input?: string | null) {
 }
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
-  const [dj, upcoming] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 1)])
+  const [dj, upcoming] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 30)])
   if (!dj) return { title: 'DJ no encontrado' }
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
   const genres = Array.isArray(dj.genres) && dj.genres.length ? dj.genres.slice(0, 3).join(', ') : ''
@@ -47,7 +47,17 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // no ve confirmado en el snippet que Pirlo toca en Mallorca si el titulo
   // solo dice el genero, aunque la ficha sí tenga esa fecha.
   const nextZone = (upcoming[0] as any)?.zone as string | undefined
-  const description = (dj.short_bio || dj.bio || '').slice(0, 155) || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`
+  // Igual que en los locales: las fechas primero, la biografia de respaldo.
+  const description = djMetaDescription(
+    {
+      nombre: dj.name,
+      lugar: nextZone || null,
+      eventos: upcoming.length,
+      proxima: upcoming[0] ? formatShortDate((upcoming[0] as any).start_at, params.locale) : null,
+    },
+    params.locale,
+    dj.short_bio || dj.bio || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`,
+  )
   return {
     title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}${nextZone ? ` en ${nextZone}` : ''}`,
     description,

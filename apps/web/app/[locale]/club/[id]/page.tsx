@@ -9,19 +9,34 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb } from '@/lib/seo-pages'
+import { homeCrumb, clubMetaDescription, formatShortDate } from '@/lib/seo-pages'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
-  const club: any = await fetchClub(params.id)
+  const [club, proximos] = await Promise.all([
+    fetchClub(params.id) as Promise<any>,
+    fetchClubEvents(params.id, 30),
+  ])
   if (!club) return { title: 'Club no encontrado' }
   const images: string[] = Array.isArray(club.images) ? club.images : []
   // town es el pueblo/localidad exacta (ej. "Benicàssim"), mas especifico que
   // zone, que es el hub de ciudad (ej. "Castellón") y agrupa /castellon.
   // Sin town se cae a zone, y sin zone se omite en vez de inventar Mallorca.
-  const place = club.town || club.zone ? ` en ${club.town || club.zone}` : ''
-  const description = (club.description || '').slice(0, 155) || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`
+  const lugar = club.town || club.zone || null
+  const place = lugar ? ` en ${lugar}` : ''
+  // La agenda por delante de la descripcion: es lo unico que este resultado
+  // tiene y no tienen la web oficial, Maps ni el Instagram del local.
+  const description = clubMetaDescription(
+    {
+      nombre: club.name,
+      lugar,
+      eventos: proximos.length,
+      proxima: proximos[0] ? formatShortDate((proximos[0] as any).start_at, params.locale) : null,
+    },
+    params.locale,
+    club.description || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`,
+  )
   return {
     title: `${club.name} — discoteca${place}`,
     description,

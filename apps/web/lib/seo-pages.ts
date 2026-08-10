@@ -386,3 +386,71 @@ export function formatEventDate(iso: string, locale: string) {
     weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
   })
 }
+
+// Fecha corta para la descripcion del resultado de Google: "sab 15 ago".
+// formatEventDate lleva ademas la hora, que ahi solo gasta caracteres.
+export function formatShortDate(iso: string, locale: string) {
+  const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
+  return new Date(iso).toLocaleString(tag, {
+    weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC',
+  })
+    .replace(/,/g, '')
+    // El aleman abrevia el mes con punto ("Di. 11. Aug."), y al pegarle la
+    // frase siguiente quedaba "Aug..". Se quita el punto final: el de la
+    // plantilla hace de los dos, que es lo correcto tambien en aleman.
+    .replace(/\.\s*$/, '')
+}
+
+// Recorta respetando la palabra. Antes las descripciones salian cortadas en
+// seco a los 155 caracteres ("...de la zona turistica de Mallorc"), que en el
+// resultado de busqueda queda a medias y invita a Google a reescribirlas.
+export function recortar(texto: string, max = 155) {
+  const limpio = texto.replace(/\s+/g, ' ').trim()
+  if (limpio.length <= max) return limpio
+  const corte = limpio.slice(0, max - 1)
+  const espacio = corte.lastIndexOf(' ')
+  const base = espacio > max * 0.5 ? corte.slice(0, espacio) : corte
+  return `${base.replace(/[.,;:¡!¿?\-–—]+$/, '')}…`
+}
+
+// Descripcion de una ficha de local o de DJ para el resultado de busqueda.
+//
+// Quien busca "la santa benicasim" ya sabe lo que es La Santa: repetirselo no
+// le da ningun motivo para entrar aqui en vez de en la web oficial, en Maps o
+// en su Instagram. Lo que no encuentra en esos sitios es la agenda, asi que la
+// agenda va delante siempre que exista. Sin eventos anunciados se cae a la
+// descripcion de la ficha, que es lo unico honesto que queda por decir.
+type DescPartes = { nombre: string; lugar?: string | null; eventos: number; proxima?: string | null }
+
+const CLUB_DESC: Record<string, (p: DescPartes) => string> = {
+  es: (p) => `Agenda de ${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'fiesta próxima' : 'fiestas próximas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Line-ups, entradas y cómo llegar.`,
+  en: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''} listings: ${p.eventos} upcoming ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Line-ups, tickets and how to get there.`,
+  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'kommende Party' : 'kommende Partys'}${p.proxima ? `, die naechste am ${p.proxima}` : ''}. Line-ups, Tickets und Anfahrt.`,
+}
+
+const DJ_DESC: Record<string, (p: DescPartes) => string> = {
+  es: (p) => `${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'sesión anunciada' : 'sesiones anunciadas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Fechas, salas y entradas.`,
+  en: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} announced ${p.eventos === 1 ? 'set' : 'sets'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Dates, venues and tickets.`,
+  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'angekuendigtes Set' : 'angekuendigte Sets'}${p.proxima ? `, das naechste am ${p.proxima}` : ''}. Termine, Clubs und Tickets.`,
+}
+
+function construir(
+  plantillas: Record<string, (p: DescPartes) => string>,
+  partes: DescPartes,
+  locale: string,
+  respaldo?: string | null,
+) {
+  if (partes.eventos > 0) {
+    const f = plantillas[locale] || plantillas[routing.defaultLocale]
+    return recortar(f(partes))
+  }
+  return respaldo ? recortar(respaldo) : ''
+}
+
+export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
+  return construir(CLUB_DESC, partes, locale, respaldo)
+}
+
+export function djMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
+  return construir(DJ_DESC, partes, locale, respaldo)
+}
