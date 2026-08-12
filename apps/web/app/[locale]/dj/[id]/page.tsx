@@ -43,9 +43,11 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   if (!dj) return { title: 'DJ no encontrado' }
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
   const genres = Array.isArray(dj.genres) && dj.genres.length ? dj.genres.slice(0, 3).join(', ') : ''
-  // La zona de la proxima sesion en el titulo: quien busca "pirlo mallorca"
-  // no ve confirmado en el snippet que Pirlo toca en Mallorca si el titulo
-  // solo dice el genero, aunque la ficha sí tenga esa fecha.
+  // Ciudad de la proxima sesion. Solo va en la descripcion, nunca en el
+  // titulo ni suelta bajo el nombre: ahi queda como si el DJ fuera de esa
+  // ciudad, que es falso, y encima cambiaria cada vez que se publica o
+  // caduca una fecha. En la descripcion va pegada a "N sesiones anunciadas",
+  // que es lo que le da el sentido correcto.
   const nextZone = (upcoming[0] as any)?.zone as string | undefined
   // Igual que en los locales: las fechas primero, la biografia de respaldo.
   const description = djMetaDescription(
@@ -59,7 +61,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
     dj.short_bio || dj.bio || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`,
   )
   return {
-    title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}${nextZone ? ` en ${nextZone}` : ''}`,
+    title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}`,
     description,
     // Sin sesiones anunciadas ni biografia la ficha es solo el nombre: se
     // sirve a quien llega desde el sitio, pero no se ofrece a Google.
@@ -147,12 +149,6 @@ export default async function DjProfile({ params }: { params: { locale: string; 
             <LocalText value={(dj as any).name} i18n={(dj as any).name_i18n || undefined} />
             {(dj as any).verified && <> <VerifiedBadge /></>}
           </h1>
-          {/* Zona de la proxima sesion, cuando la hay: mismo motivo que el
-              titulo, confirmar en la ficha lo que trajo a quien busca "[dj]
-              [ciudad]" porque ya sabe que toca ahi. */}
-          {(events[0] as any)?.zone && (
-            <p className="text-sm text-white/60 mt-0.5">{(events[0] as any).zone}</p>
-          )}
         </div>
       </div>
 
