@@ -16,7 +16,11 @@ export function ClubDescriptionExpand({ text, i18n }: Props) {
 
   return (
     <div>
-      <p className={`text-sm text-white/70 leading-relaxed ${!expanded && isLong ? 'line-clamp-3' : ''}`}>
+      {/* whitespace-pre-line respeta los saltos de parrafo del texto. Sin el,
+          HTML los colapsa y descripciones de mil caracteres salian como un
+          unico bloque corrido. Afecta a fichas de club, bios de DJ y
+          descripciones de evento, que comparten este componente. */}
+      <p className={`text-sm text-white/70 leading-relaxed whitespace-pre-line ${!expanded && isLong ? 'line-clamp-3' : ''}`}>
         {localizedText}
       </p>
       {isLong && (
