@@ -380,6 +380,11 @@ export function relatedLinksLabels(locale: string) {
 // es-ES, aunque la URL sea /en o /de.
 const DATE_LOCALES: Record<string, string> = { es: 'es-ES', en: 'en-GB', de: 'de-DE' }
 
+// La ficha de evento formatea su propia fecha larga y necesita la etiqueta.
+export function dateTag(locale: string) {
+  return DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
   return new Date(iso).toLocaleString(tag, {

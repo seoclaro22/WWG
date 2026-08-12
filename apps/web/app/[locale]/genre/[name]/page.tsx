@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: { locale: string; n
 
 export default async function GenrePage({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
-  const { title, eyebrow, intro } = genreMeta(name, params.locale)
+  const { title, eyebrow, intro, heading } = genreMeta(name, params.locale)
   const events = await fetchEvents({ genre: name, limit: 30 })
 
   return (
@@ -46,6 +46,10 @@ export default async function GenrePage({ params }: { params: { locale: string; 
           <h1 className="text-3xl font-bold text-white">{title}</h1>
           <p className="text-sm text-white/60 mt-2 max-w-xl">{intro}</p>
         </div>
+
+        {/* Sin este h2 la pagina era un h1 y una lista suelta: ningun encabezado
+            que le dijera a Google de que va el bloque principal. */}
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{heading}</h2>
 
         <div className="grid gap-3">
           {events.map(e => {

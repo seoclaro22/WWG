@@ -267,7 +267,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
             </svg>
           </div>
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5"><T k="club.address" /></p>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5"><T k="club.address" /></h2>
             <p className="text-sm text-white/80 leading-snug">{club.address || club.zone || '—'}</p>
           </div>
         </div>
@@ -275,7 +275,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
         {/* Gallery */}
         {galleryImgs.length > 0 && (
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2"><T k="club.photos" /></p>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2"><T k="club.photos" /></h2>
             <div className="grid grid-cols-2 gap-2">
               {galleryImgs.slice(0, 6).map((src, i) => (
                 <div
@@ -294,7 +294,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
         {/* Upcoming events */}
         <div>
-          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></p>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></h2>
           {events.length === 0 ? (
             <p className="text-sm text-white/40"><T k="dj.no_upcoming" /></p>
           ) : (

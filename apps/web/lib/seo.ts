@@ -215,24 +215,27 @@ export function legalMeta(page: 'privacy' | 'cookies', locale: string) {
 // cuanto el genero tenia eventos en otra ciudad, y ademas solo existian en
 // espanol aunque la URL fuese /en o /de.
 export function genreMeta(name: string, locale: string) {
-  const copy: Record<string, { title: string; description: string; eyebrow: string; intro: string }> = {
+  const copy: Record<string, { title: string; description: string; eyebrow: string; intro: string; heading: string }> = {
     es: {
       title: `Eventos de ${name}`,
       description: `Descubre los próximos eventos de ${name}: discotecas, DJs y fiestas de música ${name}. Agenda actualizada a diario con Where We Go.`,
       eyebrow: 'Género musical',
       intro: `Las próximas fiestas y sesiones de ${name}: discotecas, DJs y line-ups actualizados a diario.`,
+      heading: `Próximos eventos de ${name}`,
     },
     en: {
       title: `${name} Events`,
       description: `Discover upcoming ${name} events: clubs, DJs and ${name} parties. Listings updated daily with Where We Go.`,
       eyebrow: 'Music genre',
       intro: `Upcoming ${name} parties and sets: clubs, DJs and line-ups updated daily.`,
+      heading: `Upcoming ${name} events`,
     },
     de: {
       title: `${name} Events`,
       description: `Entdecke kommende ${name} Events: Clubs, DJs und ${name} Partys. Täglich aktualisiert mit Where We Go.`,
       eyebrow: 'Musikrichtung',
       intro: `Kommende ${name} Partys und Sets: Clubs, DJs und Line-ups, täglich aktualisiert.`,
+      heading: `Kommende ${name} Events`,
     },
   }
   return copy[locale] || copy[routing.defaultLocale]

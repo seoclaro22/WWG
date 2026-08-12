@@ -199,7 +199,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
         {/* Spotify */}
         {spotifyEmbed && (
           <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">Spotify</p>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">Spotify</h2>
             <div className="rounded-2xl border border-white/10 overflow-hidden">
               <iframe
                 src={spotifyEmbed.src}
@@ -219,7 +219,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
 
         {/* Upcoming events */}
         <div>
-          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></p>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></h2>
           {events.length === 0 ? (
             <p className="text-sm text-white/40"><T k="dj.no_upcoming" /></p>
           ) : (
@@ -260,7 +260,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
           <>
             <div className="border-t border-white/8" />
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.similar" /></p>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.similar" /></h2>
               <Link
                 href={djPath(similar[0] as any)}
                 className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"

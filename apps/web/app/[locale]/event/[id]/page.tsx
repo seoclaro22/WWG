@@ -13,7 +13,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb } from '@/lib/seo-pages'
+import { homeCrumb, dateTag, formatShortDate } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -68,7 +68,9 @@ function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const e: any = await fetchEvent(params.id)
   if (!e) return { title: 'Evento no encontrado' }
-  const date = new Date(e.start_at).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
+  // El idioma sale de la URL. Estaba fijado a es-ES, asi que /en y /de servian
+  // la fecha en espanol dentro de su propia descripcion.
+  const date = new Date(e.start_at).toLocaleDateString(dateTag(params.locale), { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
   const imgs: string[] = Array.isArray(e.images) ? e.images : []
   // El sitio ya no es solo Mallorca: si falta el club se usa la zona real y,
   // si tampoco la hay, se omite en vez de inventarla.
@@ -85,7 +87,12 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   const hasEnded = endedAt.getTime() < Date.now()
 
   return {
-    title: venue ? `${e.name} — ${venue}` : e.name,
+    // La fecha va en el titulo porque sin ella las fiestas semanales lo
+    // repiten: 15 "CALABLAVA MORNINGS — Calablava Beach Club" identicos, y 162
+    // de las 261 fichas futuras compartian titulo con otra. La URL ya las
+    // distinguia, el titulo no, asi que competian entre ellas. Ademas es como
+    // se busca: "calablava mornings 23 agosto".
+    title: `${e.name}${venue ? ` — ${venue}` : ''}, ${formatShortDate(e.start_at, params.locale)}`,
     description,
     ...(hasEnded ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
@@ -307,7 +314,7 @@ export default async function EventDetail({ params }: { params: { locale: string
 
         {/* Line-up */}
         <div>
-          <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.lineup" /></p>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.lineup" /></h2>
           {lineup.length === 0 ? (
             <p className="text-sm text-white/40">-</p>
           ) : (
@@ -391,7 +398,7 @@ export default async function EventDetail({ params }: { params: { locale: string
           <>
             <div className="border-t border-white/8" />
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Mas en {e.club_name}</p>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Mas en {e.club_name}</h2>
               <div className="space-y-2">
                 {moreFromClub.map((ev: any) => (
                   <EventRow key={ev.id} ev={ev} />
@@ -409,7 +416,7 @@ export default async function EventDetail({ params }: { params: { locale: string
           <>
             <div className="border-t border-white/8" />
             <div>
-              <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.related" /></p>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.related" /></h2>
               <div className="space-y-2">
                 {related.map((ev: any) => (
                   <EventRow key={ev.id} ev={ev} showVenue />
