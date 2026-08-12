@@ -1,16 +1,17 @@
+import { unstable_cache } from 'next/cache'
 import { Link } from '@/lib/navigation'
-import { fetchEvents, fetchZonesMap } from '@/lib/db'
+import { countUpcomingEvents, fetchEvents, fetchZonesMap } from '@/lib/db'
 import { getSupabaseClient } from '@/lib/supabase'
 import { dictionaries } from '@/lib/dictionaries'
 import { routing } from '@/i18n/routing'
-import { MIN_EVENTS_TO_INDEX, nearMeta, nearSlug, whenMeta, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, nearMeta, nearSlug, whenMeta, whenRange, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
 import { listMeta } from '@/lib/seo'
 
 // Solo los generos con agenda real. Un genero "activo" en la tabla puede no
 // tener ni un evento: sus paginas ya salian noindex y fuera del sitemap, pero
 // el pie las seguia enlazando desde TODAS las paginas del sitio, mandando el
 // enlazado interno justo a donde no hay nada.
-async function fetchActiveGenres() {
+async function loadActiveGenres() {
   const sb = getSupabaseClient()
   const { data } = await sb.from('genres').select('name').eq('status', 'active').order('name').limit(200)
   const names = (data || []).map((g: any) => g.name as string)
@@ -20,9 +21,39 @@ async function fetchActiveGenres() {
   return names.filter((_, i) => counts[i].length >= MIN_EVENTS_TO_INDEX)
 }
 
+// Mismo umbral que los generos, y el mismo que aplica zoneEntries() en el
+// sitemap. Sin esto el pie iba por libre: listaba todas las ciudades y sus dos
+// paginas temporales aunque no tuvieran agenda, y esas paginas se sirven
+// noindex. El sitio entero enlazaba a nueve URLs que Google no puede indexar.
+async function loadActiveZones() {
+  const zonesMap = await fetchZonesMap()
+  const zones = await Promise.all(
+    Array.from(zonesMap.entries()).map(async ([slug, name]) => {
+      if ((await countUpcomingEvents({ zone: name })) < MIN_EVENTS_TO_INDEX) return null
+      // Cada temporal se comprueba por separado: una ciudad puede tener finde
+      // y no tener nada hoy.
+      const when = await Promise.all(WHEN_KEYS.map(async (k) => {
+        const { from, to } = whenRange(k)
+        const found = await fetchEvents({ zone: name, from, to, limit: MIN_EVENTS_TO_INDEX })
+        return found.length >= MIN_EVENTS_TO_INDEX ? k : null
+      }))
+      return { slug, name, when: when.filter((k): k is typeof WHEN_KEYS[number] => k !== null) }
+    }),
+  )
+  return zones.filter((z): z is NonNullable<typeof z> => z !== null)
+}
+
+// El pie va en el layout, o sea en todas las paginas, y /discover es
+// revalidate 0: sin cache, cada visita ahi lanzaba ~40 consultas a Supabase
+// solo para pintar el pie. Se cachea el resultado 10 minutos, que es de sobra
+// para una lista que solo cambia cuando una ciudad o un genero cruza el umbral
+// de eventos.
+const FOOTER_CACHE = { revalidate: 600 }
+const fetchActiveGenres = unstable_cache(loadActiveGenres, ['footer-generos'], FOOTER_CACHE)
+const fetchActiveZones = unstable_cache(loadActiveZones, ['footer-zonas'], FOOTER_CACHE)
+
 export async function Footer({ locale }: { locale: string }) {
-  const [zonesMap, genres] = await Promise.all([fetchZonesMap(), fetchActiveGenres()])
-  const zones = Array.from(zonesMap.entries())
+  const [zones, genres] = await Promise.all([fetchActiveZones(), fetchActiveGenres()])
 
   // Traducido en servidor: son textos estaticos y no hace falta mandar
   // el diccionario al cliente solo para el pie.
@@ -58,11 +89,11 @@ export async function Footer({ locale }: { locale: string }) {
               {/* Cada ciudad con sus dos paginas temporales al lado: son las que
                   persiguen "salir de fiesta hoy / este finde en X" y hasta ahora
                   no las enlazaba nada del sitio. */}
-              {zones.map(([slug, name]) => (
+              {zones.map(({ slug, name, when }) => (
                 <li key={slug}>
                   <Link href={`/${slug}`} className="hover:text-gold" prefetch={false}>{name}</Link>
                   <span className="ml-1.5 text-xs text-white/55">
-                    {WHEN_KEYS.map((k, i) => (
+                    {when.map((k, i) => (
                       <span key={k}>
                         {i > 0 && ' · '}
                         <Link href={`/${slug}/${whenSlug(k, locale)}`} className="hover:text-gold" prefetch={false}>

@@ -170,6 +170,47 @@ export function listMeta(page: 'discover' | 'clubs' | 'djs', locale: string) {
   return (LIST_META[locale] || LIST_META[routing.defaultLocale])[page]
 }
 
+// Paginas legales. Son "use client" porque el texto de los tres idiomas vive
+// en el propio componente, y un componente cliente no puede exportar metadata:
+// salian sin titulo propio, sin canonical y sin hreflang. Estos textos los
+// consume el layout servidor de cada una.
+const LEGAL_META: Record<string, Record<'privacy' | 'cookies', { title: string; description: string }>> = {
+  es: {
+    privacy: {
+      title: 'Política de Privacidad',
+      description: 'Cómo trata Where We Go tus datos personales: qué datos recogemos, con qué finalidad, cuánto los conservamos y cómo ejercer tus derechos bajo el RGPD.',
+    },
+    cookies: {
+      title: 'Política de Cookies',
+      description: 'Qué cookies usa Where We Go, para qué sirven las técnicas y las analíticas, cuánto duran y cómo cambiar tu consentimiento en cualquier momento.',
+    },
+  },
+  en: {
+    privacy: {
+      title: 'Privacy Policy',
+      description: 'How Where We Go handles your personal data: what we collect, why, how long we keep it and how to exercise your rights under the GDPR.',
+    },
+    cookies: {
+      title: 'Cookie Policy',
+      description: 'Which cookies Where We Go uses, what the technical and analytics ones are for, how long they last and how to change your consent at any time.',
+    },
+  },
+  de: {
+    privacy: {
+      title: 'Datenschutzerklärung',
+      description: 'Wie Where We Go deine personenbezogenen Daten verarbeitet: welche Daten wir erheben, wozu, wie lange wir sie speichern und wie du deine Rechte nach der DSGVO ausübst.',
+    },
+    cookies: {
+      title: 'Cookie-Richtlinie',
+      description: 'Welche Cookies Where We Go verwendet, wofür die technischen und die analytischen dienen, wie lange sie gelten und wie du deine Einwilligung jederzeit änderst.',
+    },
+  },
+}
+
+export function legalMeta(page: 'privacy' | 'cookies', locale: string) {
+  return (LEGAL_META[locale] || LEGAL_META[routing.defaultLocale])[page]
+}
+
 // Paginas de genero. Antes decian "en Mallorca" en duro, lo que era falso en
 // cuanto el genero tenia eventos en otra ciudad, y ademas solo existian en
 // espanol aunque la URL fuese /en o /de.
