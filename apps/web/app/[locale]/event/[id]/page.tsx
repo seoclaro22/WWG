@@ -1,8 +1,9 @@
-import { Link } from '@/lib/navigation'
+import { Link, localizedPath } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, fetchRelatedEvents, slugifyZone } from '@/lib/db'
+import { clubPath, djPath, eventPath } from '@/lib/hrefs'
 import { EventCountdown } from '@/components/EventCountdown'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { ReserveButton } from '@/components/ReserveButton'
 import { T } from '@/components/T'
@@ -45,7 +46,7 @@ function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
   const evImg = evImgs[0] || null
   return (
     <Link
-      href={`/event/${ev.id}`}
+      href={eventPath(ev)}
       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
     >
       {evImg ? (
@@ -91,18 +92,27 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       title: `${e.name} · ${date}`,
       description,
       type: 'website',
-      url: `/event/${e.id}`,
+      url: eventPath(e),
       images: imgs.length ? [{ url: imgs[0] }] : undefined,
     },
     twitter: { card: 'summary_large_image' },
-    alternates: buildAlternates(`/event/${e.id}`, params.locale),
+    alternates: buildAlternates(eventPath(e), params.locale),
   }
 }
 
 export default async function EventDetail({ params }: { params: { locale: string; id: string } }) {
-  const { id } = params
-  const [e, lineup] = await Promise.all([fetchEvent(id), fetchEventLineup(id)])
+  const e: any = await fetchEvent(params.id)
   if (!e) return notFound()
+
+  // Igual que en clubs y DJs: la URL vieja con UUID responde 308 al slug.
+  if (e.slug && params.id !== e.slug) {
+    permanentRedirect(localizedPath(eventPath(e), params.locale))
+  }
+
+  // A partir de aqui siempre el uuid real: el lineup, los relacionados y el
+  // filtro de "mas del club" consultan por event_id, no por slug.
+  const id = e.id as string
+  const lineup = await fetchEventLineup(id)
   const clubId = (e as any).club_id as string | null
   // Las tres en paralelo: los relacionados dependen de datos que ya trajo
   // fetchEvent, asi que no hace falta encadenarlos y pagar otra ida y vuelta.
@@ -122,7 +132,8 @@ export default async function EventDetail({ params }: { params: { locale: string
   // Muchos eventos apuntan a un club cuya ficha no es publica: /club/<id>
   // devuelve 404. Enlazarlo igualmente desde el schema mandaria a Google a una
   // URL rota, que es peor que no declarar la relacion.
-  const clubUrl = club ? `https://wherewego.site/club/${clubId}` : null
+  const clubHref = club ? clubPath(club as any) : null
+  const clubUrl = clubHref ? `https://wherewego.site${clubHref}` : null
   const zoneSlug = (e as any).zone ? slugifyZone((e as any).zone) : null
   const imgs: string[] = Array.isArray((e as any).images) ? (e as any).images : []
   const cover = imgs.length ? imgs[0] : null
@@ -132,6 +143,11 @@ export default async function EventDetail({ params }: { params: { locale: string
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'MusicEvent',
+    // El evento no declaraba su propia URL: el club y los DJs si la tenian,
+    // pero el MusicEvent no, asi que la unica pista de a que pagina pertenece
+    // la ficha era el canonical.
+    '@id': `https://wherewego.site${eventPath(e)}#event`,
+    url: `https://wherewego.site${eventPath(e)}`,
     name: (e as any).name,
     startDate: (e as any).start_at,
     ...((e as any).end_at ? { endDate: (e as any).end_at } : {}),
@@ -145,7 +161,7 @@ export default async function EventDetail({ params }: { params: { locale: string
     location: clubUrl
       ? {
           '@type': 'NightClub',
-          '@id': `https://wherewego.site/club/${clubId}#club`,
+          '@id': `https://wherewego.site${clubHref}#club`,
           name: (e as any).club_name || (e as any).zone || (e as any).name,
           url: clubUrl,
           ...((e as any).zone
@@ -166,9 +182,9 @@ export default async function EventDetail({ params }: { params: { locale: string
       // dos tipos distintos sobre el mismo identificador se contradicen.
       performer: lineup.map((d: any) => ({
         '@type': 'Person',
-        '@id': `https://wherewego.site/dj/${d.id}#dj`,
+        '@id': `https://wherewego.site${djPath(d)}#dj`,
         name: d.name,
-        url: `https://wherewego.site/dj/${d.id}`,
+        url: `https://wherewego.site${djPath(d)}`,
       })),
     } : {}),
     // offers solo se declara cuando se conoce el precio: Google exige price y
@@ -180,7 +196,7 @@ export default async function EventDetail({ params }: { params: { locale: string
     ...((e as any).price_min != null ? {
       offers: {
         '@type': 'Offer',
-        url: `https://wherewego.site/event/${id}`,
+        url: `https://wherewego.site${eventPath(e)}`,
         availability: 'https://schema.org/InStock',
         price: (e as any).price_min,
         priceCurrency: 'EUR',
@@ -237,7 +253,7 @@ export default async function EventDetail({ params }: { params: { locale: string
             {/* Solo se enlaza si la ficha del club es publica: mas de la mitad
                 de los eventos apuntan a un club cuyo /club/<id> da 404. */}
             {clubUrl ? (
-              <Link className="text-[#d8af3a] hover:text-[#e8c85a] font-medium transition-colors" href={`/club/${clubId}`}>{e.club_name || '-'}</Link>
+              <Link className="text-[#d8af3a] hover:text-[#e8c85a] font-medium transition-colors" href={clubHref || '/clubs'}>{e.club_name || '-'}</Link>
             ) : (e.club_name || '-')}
             {zoneSlug && (
               <>
@@ -258,7 +274,7 @@ export default async function EventDetail({ params }: { params: { locale: string
         <Breadcrumbs locale={params.locale} items={[
           { name: homeCrumb(params.locale), href: '/' },
           ...(zoneSlug ? [{ name: (e as any).zone as string, href: `/${zoneSlug}` }] : []),
-          ...(clubUrl ? [{ name: e.club_name || 'Club', href: `/club/${clubId}` }] : []),
+          ...(clubHref ? [{ name: e.club_name || 'Club', href: clubHref }] : []),
           { name: (e as any).name },
         ]} />
 
@@ -303,7 +319,7 @@ export default async function EventDetail({ params }: { params: { locale: string
                 return (
                   <div key={d.id} className="space-y-2">
                     <Link
-                      href={`/dj/${d.id}`}
+                      href={djPath(d)}
                       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                     >
                       {djImg ? (

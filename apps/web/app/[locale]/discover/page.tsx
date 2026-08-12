@@ -8,6 +8,7 @@ import { ClubCard } from '@/components/ClubCard'
 import { DjCard2 } from '@/components/DjCard2'
 import { buildAlternates, localePath, listMeta } from '@/lib/seo'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
+import { clubPath, djPath } from '@/lib/hrefs'
 
 // Los filtros (q, date, genre, zone, tab) son navegacion facetada: cada
 // combinacion es una URL distinta con el mismo inventario reordenado. Sin
@@ -161,7 +162,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
               {carouselClubs.map((c: any) => {
                 const img: string | undefined = Array.isArray(c.images) ? c.images[0] : (c.logo_url || undefined)
                 return (
-                  <a key={c.id} href={lp(`/club/${c.id}`)} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={c.id} href={lp(clubPath(c))} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-2xl overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <SafeImage src={img} alt={c.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />
@@ -183,7 +184,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
               {carouselDjs.map((dj: any) => {
                 const img: string | undefined = Array.isArray(dj.images) ? dj.images[0] : undefined
                 return (
-                  <a key={dj.id} href={lp(`/dj/${dj.id}`)} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
+                  <a key={dj.id} href={lp(djPath(dj))} className="snap-start shrink-0 flex flex-col items-center gap-1.5 w-[100px]">
                     <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-white/5 border border-white/10">
                       {img
                         ? <SafeImage src={img} alt={dj.name} width={100} height={100} sizes="100px" className="w-full h-full object-cover" />
@@ -209,6 +210,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                   key={e.id}
                   event={{
                     id: e.id,
+                    slug: (e as any).slug,
                     title: e.name,
                     title_i18n: (e as any).name_i18n || undefined,
                     date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
@@ -228,7 +230,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
               const imgs: string[] = Array.isArray(c.images) ? c.images : []
               const image = imgs[0] || (c.logo_url || null)
               return (
-                <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
+                <ClubCard key={c.id} club={{ id: c.id, slug: c.slug, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
               )
             })}
             {clubs.length === 0 && <div className="muted">No hay clubs para esta zona.</div>}
@@ -244,6 +246,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                   key={dj.id}
                   dj={{
                     id: dj.id,
+                    slug: dj.slug,
                     name: dj.name,
                     name_i18n: dj.name_i18n,
                     short_bio: dj.short_bio,

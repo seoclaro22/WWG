@@ -86,6 +86,7 @@ export default async function WhenPage({ params }: { params: { locale: string; z
                 key={e.id}
                 event={{
                   id: e.id,
+                  slug: e.slug,
                   title: e.name,
                   title_i18n: e.name_i18n || undefined,
                   date: formatEventDate(e.start_at, params.locale),

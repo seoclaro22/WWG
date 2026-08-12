@@ -4,6 +4,7 @@ import { countUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZo
 import { localizedUrl, hreflangMap } from '@/lib/seo'
 import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
 import { routing } from '@/i18n/routing'
+import { clubPath, djPath, eventPath } from '@/lib/hrefs'
 
 // Los datos de cada bloque del sitemap, separados de la ruta que los sirve.
 // Antes vivian todos en app/sitemap.ts; se extrajeron al partir el sitemap en
@@ -66,20 +67,20 @@ export async function eventEntries(): Promise<Entry[]> {
   const sb = getSupabaseClient()
   const { data } = await sb
     .from('events_public')
-    .select('id,start_at,created_at')
+    .select('id,slug,start_at,created_at')
     .gte('start_at', new Date().toISOString())
     .eq('status', 'published')
     .limit(1000)
   return (data || []).flatMap((e: any) =>
-    entries(`/event/${e.id}`, { changeFrequency: 'daily', priority: 0.8, lastModified: lastMod(e.created_at) }),
+    entries(eventPath(e), { changeFrequency: 'daily', priority: 0.8, lastModified: lastMod(e.created_at) }),
   )
 }
 
 export async function clubEntries(): Promise<Entry[]> {
   const sb = getSupabaseClient()
-  const { data } = await sb.from('clubs').select('id,created_at').eq('status', 'approved').limit(1000)
+  const { data } = await sb.from('clubs').select('id,slug,created_at').eq('status', 'approved').limit(1000)
   return (data || []).flatMap((c: any) =>
-    entries(`/club/${c.id}`, { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
+    entries(clubPath(c), { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
   )
 }
 
@@ -88,13 +89,13 @@ export async function clubEntries(): Promise<Entry[]> {
 export async function djEntries(): Promise<Entry[]> {
   const sb = getSupabaseClient()
   const [{ data }, withEvents] = await Promise.all([
-    sb.from('djs').select('id,created_at,bio,short_bio').limit(1000),
+    sb.from('djs').select('id,slug,created_at,bio,short_bio').limit(1000),
     fetchDjIdsWithUpcomingEvents(),
   ])
   return (data || [])
     .filter((d: any) => djIsIndexable(d, withEvents.has(d.id) ? 1 : 0))
     .flatMap((d: any) =>
-      entries(`/dj/${d.id}`, { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
+      entries(djPath(d), { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
     )
 }
 

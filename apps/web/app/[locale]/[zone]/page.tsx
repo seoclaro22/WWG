@@ -120,7 +120,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
               {clubs.map((c: any) => {
                 const images: string[] = Array.isArray(c.images) ? c.images : []
                 const image = images[0] || (c.logo_url || null)
-                return <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
+                return <ClubCard key={c.id} club={{ id: c.id, slug: c.slug, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
               })}
             </div>
           </div>
@@ -136,6 +136,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
                   key={e.id}
                   event={{
                     id: e.id,
+                    slug: e.slug,
                     title: e.name,
                     title_i18n: e.name_i18n || undefined,
                     date: formatEventDate(e.start_at, params.locale),

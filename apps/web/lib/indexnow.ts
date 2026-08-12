@@ -39,11 +39,14 @@ export async function pingIndexNow(urls: string[]): Promise<{ ok: boolean; statu
 
 // Las URLs que hay que refrescar cuando cambia un evento: su ficha en los tres
 // idiomas mas los listados de los que cuelga, que acaban de cambiar tambien.
-export function eventUrls(eventId: string, zoneSlug?: string | null) {
+// Se recibe el trozo de URL ya resuelto (slug si lo hay, id si no) en vez del
+// id a secas: anunciar /event/<uuid> mandaria a Bing a rastrear una URL que
+// responde 308, cuando lo que interesa es que rastree la definitiva.
+export function eventUrls(eventPathSegment: string, zoneSlug?: string | null) {
   const out = [
-    `https://${HOST}/event/${eventId}`,
-    `https://${HOST}/en/event/${eventId}`,
-    `https://${HOST}/de/event/${eventId}`,
+    `https://${HOST}/event/${eventPathSegment}`,
+    `https://${HOST}/en/event/${eventPathSegment}`,
+    `https://${HOST}/de/event/${eventPathSegment}`,
   ]
   if (zoneSlug) {
     out.push(`https://${HOST}/${zoneSlug}`, `https://${HOST}/en/${zoneSlug}`, `https://${HOST}/de/${zoneSlug}`)

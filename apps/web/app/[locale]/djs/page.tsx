@@ -40,6 +40,7 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
               key={dj.id}
               dj={{
                 id: dj.id,
+                slug: dj.slug,
                 name: dj.name,
                 name_i18n: dj.name_i18n,
                 short_bio: dj.short_bio,

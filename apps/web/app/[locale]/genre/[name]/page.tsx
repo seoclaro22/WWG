@@ -55,6 +55,7 @@ export default async function GenrePage({ params }: { params: { locale: string; 
                 key={e.id}
                 event={{
                   id: e.id,
+                  slug: (e as any).slug,
                   title: e.name,
                   title_i18n: (e as any).name_i18n || undefined,
                   date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),

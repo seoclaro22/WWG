@@ -156,7 +156,7 @@ export async function fetchDjsPublic(params?: { q?: string; limit?: number; genr
   const sb = getSupabaseClient()
   let q = sb
     .from('djs')
-    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,genres,images,verified')
+    .select('id,slug,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,genres,images,verified')
     .order('name', { ascending: true })
   if (params?.q) q = q.ilike('name', `%${params.q}%`)
   if (params?.genre) q = (q as any).contains('genres', [params.genre])
@@ -166,11 +166,12 @@ export async function fetchDjsPublic(params?: { q?: string; limit?: number; genr
   return (data || []) as any[]
 }
 
-export async function fetchEvent(id: string) {
+export async function fetchEvent(idOrSlug: string) {
   const sb = getSupabaseClient()
-  let { data, error } = await sb.from('events_public').select('*').eq('id', id).eq('status', 'published').maybeSingle()
+  const campo = isUuid(idOrSlug) ? 'id' : 'slug'
+  let { data, error } = await sb.from('events_public').select('*').eq(campo, idOrSlug).eq('status', 'published').maybeSingle()
   if (error && String(error.message || '').toLowerCase().includes('status')) {
-    const retry = await sb.from('events_public').select('*').eq('id', id).maybeSingle()
+    const retry = await sb.from('events_public').select('*').eq(campo, idOrSlug).maybeSingle()
     data = retry.data as any
     error = retry.error as any
   }
@@ -185,12 +186,13 @@ export async function fetchEventLineup(eventId: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
     .from('event_djs')
-    .select('position,djs(id,name,name_i18n,spotify_embed,images)')
+    .select('position,djs(id,slug,name,name_i18n,spotify_embed,images)')
     .eq('event_id', eventId)
     .order('position', { ascending: true })
   if (error) { console.error('fetchEventLineup error', error); return [] }
   return (data || []).map((r: any) => ({
     id: r.djs?.id,
+    slug: r.djs?.slug || null,
     name: r.djs?.name,
     name_i18n: r.djs?.name_i18n || null,
     spotify_embed: r.djs?.spotify_embed || null,
@@ -328,12 +330,20 @@ export async function resolveZoneSlug(slug: string) {
   return map.get(slug) || null
 }
 
-export async function fetchClub(id: string) {
+// Las fichas viven en /club/la-santa, pero /club/<uuid> lleva indexado desde
+// julio y no se retira nunca: la ruta acepta las dos formas y redirige la
+// vieja a la nueva. De ahi que estos fetch resuelvan por id o por slug.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export function isUuid(value: string) {
+  return UUID_RE.test(value)
+}
+
+export async function fetchClub(idOrSlug: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
     .from('clubs')
     .select('*')
-    .eq('id', id)
+    .eq(isUuid(idOrSlug) ? 'id' : 'slug', idOrSlug)
     .maybeSingle()
   if (error) {
     console.error('fetchClub error', error)
@@ -371,12 +381,12 @@ export async function fetchClubEvents(clubId: string, limit = 10) {
   return (data || []) as EventPublic[]
 }
 
-export async function fetchDj(id: string) {
+export async function fetchDj(idOrSlug: string) {
   const sb = getSupabaseClient()
   const { data, error } = await sb
     .from('djs')
-    .select('id,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified,socials')
-    .eq('id', id)
+    .select('id,slug,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified,socials')
+    .eq(isUuid(idOrSlug) ? 'id' : 'slug', idOrSlug)
     .maybeSingle()
   if (error) { console.error('fetchDj error', error); return null }
   return data as any
@@ -464,7 +474,7 @@ export async function fetchSimilarDjs(currentId: string, genres: string[] | null
   const sb = getSupabaseClient()
   const base = Array.isArray(genres) ? genres.filter(Boolean) : []
   // try overlap by genre
-  let q = sb.from('djs').select('id,name,genres,images').neq('id', currentId)
+  let q = sb.from('djs').select('id,slug,name,genres,images').neq('id', currentId)
   if (base.length) {
     // overlap returns rows that share any of the provided genres
     q = (q as any).overlaps('genres', base)
@@ -474,7 +484,7 @@ export async function fetchSimilarDjs(currentId: string, genres: string[] | null
   let pool = (data || []) as any[]
   if (!pool.length) {
     // fallback: any other DJs
-    const { data: anyDjs } = await sb.from('djs').select('id,name,genres,images').neq('id', currentId).limit(10)
+    const { data: anyDjs } = await sb.from('djs').select('id,slug,name,genres,images').neq('id', currentId).limit(10)
     pool = anyDjs || []
   }
   // pick up to max randomly

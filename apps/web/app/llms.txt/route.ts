@@ -1,5 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase'
 import { fetchZonesMap } from '@/lib/db'
+import { clubPath, djPath, eventPath } from '@/lib/hrefs'
 
 export const revalidate = 3600
 
@@ -62,7 +63,7 @@ export async function GET() {
     lines.push('## Proximos eventos')
     for (const e of events) {
       const where = [e.club_name, e.zone].filter(Boolean).join(', ')
-      lines.push(`- [${e.name}](${BASE}/event/${e.id}): ${where}, ${fmtDate(e.start_at)}.`)
+      lines.push(`- [${e.name}](${BASE}${eventPath(e)}): ${where}, ${fmtDate(e.start_at)}.`)
     }
     lines.push('')
   }
@@ -70,7 +71,7 @@ export async function GET() {
   if (clubs.length) {
     lines.push('## Discotecas')
     for (const c of clubs) {
-      lines.push(`- [${c.name}](${BASE}/club/${c.id})${c.zone ? `: ${c.zone}` : ''}`)
+      lines.push(`- [${c.name}](${BASE}${clubPath(c)})${c.zone ? `: ${c.zone}` : ''}`)
     }
     lines.push('')
   }
@@ -79,7 +80,7 @@ export async function GET() {
     lines.push('## DJs')
     for (const d of djs) {
       const genres = Array.isArray(d.genres) && d.genres.length ? ` (${d.genres.slice(0, 3).join(', ')})` : ''
-      lines.push(`- [${d.name}](${BASE}/dj/${d.id})${genres}`)
+      lines.push(`- [${d.name}](${BASE}${djPath(d)})${genres}`)
     }
     lines.push('')
   }

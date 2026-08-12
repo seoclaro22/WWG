@@ -1,7 +1,8 @@
-import { Link } from '@/lib/navigation'
+import { Link, localizedPath } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchDj, fetchDjEvents, fetchSimilarDjs } from '@/lib/db'
-import { notFound } from 'next/navigation'
+import { djPath, eventPath } from '@/lib/hrefs'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
@@ -39,8 +40,11 @@ function getSpotifyEmbed(input?: string | null) {
 }
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
-  const [dj, upcoming] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 30)])
+  // En serie: params.id puede ser el slug y fetchDjEvents filtra por dj_id.
+  const dj = await fetchDj(params.id)
   if (!dj) return { title: 'DJ no encontrado' }
+  const upcoming = await fetchDjEvents(dj.id, 30)
+  const ruta = djPath(dj)
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
   const genres = Array.isArray(dj.genres) && dj.genres.length ? dj.genres.slice(0, 3).join(', ') : ''
   // Ciudad de la proxima sesion. Solo va en la descripcion, nunca en el
@@ -70,18 +74,27 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       title: dj.name,
       description,
       type: 'profile',
-      url: `/dj/${dj.id}`,
+      url: ruta,
       images: images.length ? [{ url: images[0] }] : undefined,
     },
     twitter: { card: 'summary_large_image' },
-    alternates: buildAlternates(`/dj/${dj.id}`, params.locale),
+    alternates: buildAlternates(ruta, params.locale),
   }
 }
 
 export default async function DjProfile({ params }: { params: { locale: string; id: string } }) {
-  const [dj, events] = await Promise.all([fetchDj(params.id), fetchDjEvents(params.id, 10)])
+  const dj = await fetchDj(params.id)
   if (!dj) return notFound()
-  const similar = await fetchSimilarDjs(params.id, (dj as any).genres || [], 1)
+
+  // Mismo criterio que en las fichas de club: /dj/<uuid> sigue funcionando
+  // para siempre, pero responde 308 al slug.
+  if ((dj as any).slug && params.id !== (dj as any).slug) {
+    permanentRedirect(localizedPath(djPath(dj as any), params.locale))
+  }
+
+  // Por dj.id: fetchDjEvents y fetchSimilarDjs consultan por id, no por slug.
+  const events = await fetchDjEvents((dj as any).id, 10)
+  const similar = await fetchSimilarDjs((dj as any).id, (dj as any).genres || [], 1)
   const images: string[] = Array.isArray((dj as any).images) ? (dj as any).images : []
   const heroImg = images[0] || null
   const spotifyEmbed = getSpotifyEmbed((dj as any).spotify_embed)
@@ -97,12 +110,12 @@ export default async function DjProfile({ params }: { params: { locale: string; 
     '@context': 'https://schema.org',
     '@type': 'Person',
     // Mismo @id con el que las fichas de evento lo listan en performer.
-    '@id': `https://wherewego.site/dj/${(dj as any).id}#dj`,
+    '@id': `https://wherewego.site${djPath(dj as any)}#dj`,
     name: (dj as any).name,
     ...(bio ? { description: bio.slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
     jobTitle: 'DJ',
-    url: `https://wherewego.site/dj/${(dj as any).id}`,
+    url: `https://wherewego.site${djPath(dj as any)}`,
     ...(socialLinks.length ? { sameAs: socialLinks } : {}),
   }
 
@@ -140,7 +153,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
 
         {/* Favorite */}
         <div className="absolute top-4 right-4 z-20">
-          <FavoriteButton eventId={params.id} targetType="dj" useLocalCache />
+          <FavoriteButton eventId={(dj as any).id} targetType="dj" useLocalCache />
         </div>
 
         {/* Nombre sobre el hero */}
@@ -217,7 +230,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
                 return (
                   <Link
                     key={e.id}
-                    href={`/event/${e.id}`}
+                    href={eventPath(e as any)}
                     className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                   >
                     {evImg ? (
@@ -249,7 +262,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
             <div>
               <p className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.similar" /></p>
               <Link
-                href={`/dj/${(similar[0] as any).id}`}
+                href={djPath(similar[0] as any)}
                 className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
               >
                 {(Array.isArray((similar[0] as any).images) && (similar[0] as any).images[0]) ? (
@@ -276,7 +289,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
         {/* Reclamacion: solo mientras la ficha no tenga dueño. Al final de la
             pagina porque quien viene buscando fiesta no es el destinatario. */}
         {!(dj as any).verified && (
-          <ClaimProfileButton targetType="dj" targetId={params.id} targetName={(dj as any).name} />
+          <ClaimProfileButton targetType="dj" targetId={(dj as any).id} targetName={(dj as any).name} />
         )}
       </div>
     </div>

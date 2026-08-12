@@ -6,6 +6,7 @@ import { T } from '@/components/T'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
 import { homeCrumb } from '@/lib/seo-pages'
+import { clubPath } from '@/lib/hrefs'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const { title, description } = listMeta('clubs', params.locale)
@@ -49,7 +50,7 @@ export default async function ClubsIndex({ params }: { params: { locale: string 
                 </div>
                 <div className="text-xs text-white/50 mt-1">{c.address || '—'}{c.zone ? ` · ${c.zone}` : ''}</div>
               </div>
-              <Link href={`/club/${c.id}`} className="btn btn-secondary"><T k="action.view" /></Link>
+              <Link href={clubPath(c)} className="btn btn-secondary"><T k="action.view" /></Link>
             </div>
           )
         })}

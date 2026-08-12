@@ -86,7 +86,7 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
           <div className="grid gap-3">
             {clubs.map((c: any) => {
               const images: string[] = Array.isArray(c.images) ? c.images : []
-              return <ClubCard key={c.id} club={{ id: c.id, name: c.name, address: c.address, zone: c.zone, image: images[0] || c.logo_url || null, verified: c.verified }} />
+              return <ClubCard key={c.id} club={{ id: c.id, slug: c.slug, name: c.name, address: c.address, zone: c.zone, image: images[0] || c.logo_url || null, verified: c.verified }} />
             })}
           </div>
         )}
@@ -99,6 +99,7 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
                 key={e.id}
                 event={{
                   id: e.id,
+                  slug: e.slug,
                   title: e.name,
                   title_i18n: e.name_i18n || undefined,
                   date: formatEventDate(e.start_at, params.locale),

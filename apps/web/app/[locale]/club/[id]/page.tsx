@@ -1,7 +1,8 @@
-import { Link } from '@/lib/navigation'
+import { Link, localizedPath } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
 import { fetchClub, fetchClubEvents } from '@/lib/db'
-import { notFound } from 'next/navigation'
+import { clubPath, eventPath } from '@/lib/hrefs'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
@@ -14,11 +15,13 @@ import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
-  const [club, proximos] = await Promise.all([
-    fetchClub(params.id) as Promise<any>,
-    fetchClubEvents(params.id, 30),
-  ])
+  // En serie y no en paralelo: params.id puede ser el slug, y fetchClubEvents
+  // filtra por club_id. Antes iban con Promise.all y desde /club/la-santa la
+  // agenda salia vacia, que es justo lo que da valor a esta descripcion.
+  const club = (await fetchClub(params.id)) as any
   if (!club) return { title: 'Club no encontrado' }
+  const proximos = await fetchClubEvents(club.id, 30)
+  const ruta = clubPath(club)
   const images: string[] = Array.isArray(club.images) ? club.images : []
   // town es el pueblo/localidad exacta (ej. "Benicàssim"), mas especifico que
   // zone, que es el hub de ciudad (ej. "Castellón") y agrupa /castellon.
@@ -44,17 +47,27 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       title: club.name,
       description,
       type: 'website',
-      url: `/club/${club.id}`,
+      url: ruta,
       images: images.length ? [{ url: images[0] }] : (club.logo_url ? [{ url: club.logo_url }] : undefined),
     },
     twitter: { card: 'summary_large_image' },
-    alternates: buildAlternates(`/club/${club.id}`, params.locale),
+    alternates: buildAlternates(ruta, params.locale),
   }
 }
 
 export default async function ClubProfile({ params }: { params: { locale: string; id: string } }) {
-  const [club, events] = await Promise.all([fetchClub(params.id) as Promise<any>, fetchClubEvents(params.id, 10)])
+  const club = (await fetchClub(params.id)) as any
   if (!club) return notFound()
+
+  // /club/<uuid> es la forma que Google lleva indexada desde julio. Se sigue
+  // aceptando para siempre, pero se responde con un 308 al slug para que la
+  // autoridad se traslade y no queden dos URLs con el mismo contenido.
+  if (club.slug && params.id !== club.slug) {
+    permanentRedirect(localizedPath(clubPath(club), params.locale))
+  }
+
+  // Por club.id y no por params.id: fetchClubEvents filtra por club_id.
+  const events = await fetchClubEvents(club.id, 10)
 
   let images: string[] = []
   if (Array.isArray(club.images)) {
@@ -83,7 +96,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
     '@type': 'NightClub',
     // Mismo @id que usan las fichas de evento al declarar su location: es lo
     // que le dice a Google que hablan del mismo local y no de dos entidades.
-    '@id': `https://wherewego.site/club/${club.id}#club`,
+    '@id': `https://wherewego.site${clubPath(club)}#club`,
     name: club.name,
     ...(club.description ? { description: String(club.description).slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
@@ -106,7 +119,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
     } : {}),
-    url: `https://wherewego.site/club/${club.id}`,
+    url: `https://wherewego.site${clubPath(club)}`,
   }
 
   return (
@@ -292,7 +305,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
                 return (
                   <Link
                     key={e.id}
-                    href={`/event/${e.id}`}
+                    href={eventPath(e as any)}
                     className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                   >
                     {evImg ? (
@@ -325,7 +338,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
         {/* Reclamacion: solo mientras la ficha no tenga dueño. */}
         {!club.verified && (
-          <ClaimProfileButton targetType="club" targetId={params.id} targetName={club.name} />
+          <ClaimProfileButton targetType="club" targetId={club.id} targetName={club.name} />
         )}
       </div>
     </div>

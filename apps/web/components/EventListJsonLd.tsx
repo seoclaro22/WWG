@@ -1,5 +1,6 @@
 import { fetchLineupsForEvents } from '@/lib/db'
 import { localizedUrl } from '@/lib/seo'
+import { djPath, eventPath } from '@/lib/hrefs'
 
 // ItemList de MusicEvent para las paginas de listado (zona, temporal, genero).
 //
@@ -37,7 +38,7 @@ export async function EventListJsonLd({
     numberOfItems: events.length,
     itemListElement: events.map((e, i) => {
       const images: string[] = Array.isArray(e.images) ? e.images : []
-      const url = localizedUrl(`/event/${e.id}`, locale)
+      const url = localizedUrl(eventPath(e), locale)
       const event: Record<string, unknown> = {
         '@type': 'MusicEvent',
         name: e.name,
@@ -65,9 +66,9 @@ export async function EventListJsonLd({
       if (lineup?.length) {
         event.performer = lineup.map((d) => ({
           '@type': 'Person',
-          '@id': `https://wherewego.site/dj/${d.id}#dj`,
+          '@id': `https://wherewego.site${djPath(d)}#dj`,
           name: d.name,
-          url: `https://wherewego.site/dj/${d.id}`,
+          url: `https://wherewego.site${djPath(d)}`,
         }))
       }
       // location es obligatorio en Event. Si no se conoce la sala se declara

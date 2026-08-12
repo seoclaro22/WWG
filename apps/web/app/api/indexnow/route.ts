@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   // y avisar de el seria mandar a rastrear un 404.
   const { data: event } = await sb
     .from('events_public')
-    .select('id,status,zone')
+    .select('id,slug,status,zone')
     .eq('id', eventId)
     .maybeSingle()
   if (!event) return NextResponse.json({ ok: false, error: 'not_found' }, { status: 404 })
@@ -52,6 +52,6 @@ export async function POST(req: NextRequest) {
   }
 
   const zoneSlug = event.zone ? normalizeZoneKey(String(event.zone)) : null
-  const result = await pingIndexNow(eventUrls(eventId, zoneSlug))
+  const result = await pingIndexNow(eventUrls(event.slug || eventId, zoneSlug))
   return NextResponse.json(result)
 }

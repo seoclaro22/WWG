@@ -5,15 +5,17 @@ import { ReserveButton } from './ReserveButton'
 import { FavoriteButton } from './FavoriteButton'
 import { useI18n } from '@/lib/i18n'
 import { LocalText } from './LocalText'
+import { eventPath } from '@/lib/hrefs'
 
 type Props = {
-  event: { id: string; title: string; title_i18n?: Record<string,string>; date: string; club: string; image?: string; sponsored?: boolean }
+  event: { id: string; slug?: string | null; title: string; title_i18n?: Record<string,string>; date: string; club: string; image?: string; sponsored?: boolean }
   showHeart?: boolean
 }
 
 export function EventCard({ event, showHeart = false }: Props) {
   const { t } = useI18n()
   const isSponsored = !!event.sponsored
+  const ruta = eventPath(event)
   return (
     <div className={`card overflow-hidden relative border transition-all duration-200 ${isSponsored ? 'border-[#d6b24d]/70 bg-gradient-to-br from-[#3d2a00] via-[#171006] to-[#0b0f14] shadow-[0_0_35px_rgba(216,175,58,0.25)] hover:shadow-[0_0_45px_rgba(216,175,58,0.35)]' : 'border-white/10 bg-white/5 hover:border-[#d8af3a]/40 hover:shadow-[0_0_20px_rgba(216,175,58,0.12)]'}`}>
       {isSponsored && (
@@ -27,7 +29,7 @@ export function EventCard({ event, showHeart = false }: Props) {
         </div>
       )}
       <div className="flex gap-3 p-3">
-        <Link href={`/event/${event.id}`} className="shrink-0 block">
+        <Link href={ruta} className="shrink-0 block">
           {event.image ? (
             <SafeImage src={event.image} alt={event.title} width={96} height={96} sizes="96px" className="w-24 h-24 rounded-lg object-cover border border-white/10" />
           ) : (
@@ -35,7 +37,7 @@ export function EventCard({ event, showHeart = false }: Props) {
           )}
         </Link>
         <div className="flex-1">
-          <Link href={`/event/${event.id}`} className="font-medium leading-tight hover:text-gold block"><LocalText value={event.title} i18n={event.title_i18n} /></Link>
+          <Link href={ruta} className="font-medium leading-tight hover:text-gold block"><LocalText value={event.title} i18n={event.title_i18n} /></Link>
           <div className="text-sm text-white/70">{event.club}</div>
           <div className="text-xs text-white/60">{event.date}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
