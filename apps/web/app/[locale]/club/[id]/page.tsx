@@ -93,6 +93,16 @@ export default async function ClubProfile({ params }: { params: { locale: string
       // town es mas preciso que zone (hub de ciudad) cuando existe.
       ...(club.town || club.zone ? { addressLocality: club.town || club.zone } : {}),
     },
+    // Solo cuando las dos existen. Unas coordenadas a medias o inventadas le
+    // dicen a Google que el local esta donde no esta, que es peor que no
+    // declarar nada. Los clubs sin geocodificar salen sin este bloque.
+    ...(club.lat != null && club.lon != null ? {
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: Number(club.lat),
+        longitude: Number(club.lon),
+      },
+    } : {}),
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
     } : {}),
