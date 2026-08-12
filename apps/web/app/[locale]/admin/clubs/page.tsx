@@ -57,14 +57,7 @@ function ClubsManager() {
     const once = async () => club.id
       ? s.from('clubs').update(club).eq('id', club.id!)
       : s.from('clubs').insert({ ...club, status: club.status || 'approved' })
-    let { error } = await once()
-    // Reintenta sin logo_url si la columna no existe
-    if (error && /logo_url/i.test(error.message || '')) {
-      const payload: any = { ...club }
-      delete payload.logo_url
-      if (club.id) ({ error } = await s.from('clubs').update(payload).eq('id', club.id))
-      else ({ error } = await s.from('clubs').insert({ ...payload, status: club.status || 'approved' }))
-    }
+    const { error } = await once()
     if (error) { alert('No se pudo guardar el club: ' + error.message); return }
     setEditing(null)
     load()

@@ -771,6 +771,21 @@ do $$ begin
   end if;
 end $$;
 
+-- Compat: reclamacion y verificacion de fichas. Estas columnas se crearon
+-- directamente en produccion y no estaban aqui, asi que un despliegue nuevo
+-- desde este fichero se dejaba el admin y /account/profile sin ellas.
+alter table public.clubs add column if not exists verified boolean default false;
+alter table public.clubs add column if not exists verified_at timestamptz;
+alter table public.clubs add column if not exists claimed_by uuid references auth.users(id) on delete set null;
+alter table public.djs add column if not exists verified boolean default false;
+alter table public.djs add column if not exists verified_at timestamptz;
+alter table public.djs add column if not exists claimed_by uuid references auth.users(id) on delete set null;
+
+-- Poblacion del club. No genera rutas: solo se usa en el texto del title, el
+-- H1 y el addressLocality del schema, porque la zona (Castellon) no es lo que
+-- la gente busca cuando escribe "la santa benicasim".
+alter table public.clubs add column if not exists town text;
+
 -- Compat: columnas nuevas para analitica
 alter table public.clicks add column if not exists device_id uuid;
 alter table public.clicks add column if not exists session_id uuid;
