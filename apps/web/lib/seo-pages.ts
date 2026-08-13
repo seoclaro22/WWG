@@ -385,6 +385,58 @@ export function dateTag(locale: string) {
   return DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
 }
 
+// Encabezados de seccion de las fichas.
+//
+// Estaban en el diccionario como textos sueltos ("Proximos eventos", "Line-up")
+// porque se usaban en varias fichas a la vez. Un h2 generico repetido en 1.662
+// paginas no le dice nada a Google; con el nombre delante, cada seccion habla
+// de su entidad y ademas cubre la consulta larga ("proximos eventos en La
+// Santa", "sesiones de AJ Christou").
+type Seccion = (nombre: string) => string
+const SECCIONES: Record<string, {
+  clubAgenda: Seccion; clubDireccion: Seccion; clubFotos: Seccion
+  djAgenda: Seccion; djSimilares: Seccion; djEscuchar: Seccion
+  eventoLineup: Seccion; eventoMasDelClub: Seccion; eventoRelacionados: Seccion
+}> = {
+  es: {
+    clubAgenda: (n) => `Próximos eventos en ${n}`,
+    clubDireccion: (n) => `Dónde está ${n}`,
+    clubFotos: (n) => `Fotos de ${n}`,
+    djAgenda: (n) => `Próximas sesiones de ${n}`,
+    djSimilares: (n) => `DJs parecidos a ${n}`,
+    djEscuchar: (n) => `Escucha a ${n}`,
+    eventoLineup: (n) => `Line-up de ${n}`,
+    eventoMasDelClub: (n) => `Más en ${n}`,
+    eventoRelacionados: () => 'Otras fiestas que te pueden encajar',
+  },
+  en: {
+    clubAgenda: (n) => `Upcoming events at ${n}`,
+    clubDireccion: (n) => `Where ${n} is`,
+    clubFotos: (n) => `Photos of ${n}`,
+    djAgenda: (n) => `Upcoming ${n} sets`,
+    djSimilares: (n) => `DJs similar to ${n}`,
+    djEscuchar: (n) => `Listen to ${n}`,
+    eventoLineup: (n) => `${n} line-up`,
+    eventoMasDelClub: (n) => `More at ${n}`,
+    eventoRelacionados: () => 'Other parties you might like',
+  },
+  de: {
+    clubAgenda: (n) => `Kommende Events im ${n}`,
+    clubDireccion: (n) => `Wo ${n} liegt`,
+    clubFotos: (n) => `Fotos von ${n}`,
+    djAgenda: (n) => `Kommende Sets von ${n}`,
+    djSimilares: (n) => `DJs ähnlich wie ${n}`,
+    djEscuchar: (n) => `${n} anhören`,
+    eventoLineup: (n) => `Line-up von ${n}`,
+    eventoMasDelClub: (n) => `Mehr im ${n}`,
+    eventoRelacionados: () => 'Andere Partys, die dir gefallen könnten',
+  },
+}
+
+export function secciones(locale: string) {
+  return SECCIONES[locale] || SECCIONES[routing.defaultLocale]
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
   return new Date(iso).toLocaleString(tag, {

@@ -13,7 +13,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, dateTag, formatShortDate } from '@/lib/seo-pages'
+import { homeCrumb, dateTag, formatShortDate, secciones } from '@/lib/seo-pages'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -146,6 +146,7 @@ export default async function EventDetail({ params }: { params: { locale: string
   const cover = imgs.length ? imgs[0] : null
   const description: string = (e as any).description || ''
   const descriptionI18n = (e as any).description_i18n || null
+  const sec = secciones(params.locale)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -314,7 +315,7 @@ export default async function EventDetail({ params }: { params: { locale: string
 
         {/* Line-up */}
         <div>
-          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.lineup" /></h2>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.eventoLineup((e as any).name)}</h2>
           {lineup.length === 0 ? (
             <p className="text-sm text-white/40">-</p>
           ) : (
@@ -398,7 +399,7 @@ export default async function EventDetail({ params }: { params: { locale: string
           <>
             <div className="border-t border-white/8" />
             <div>
-              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">Mas en {e.club_name}</h2>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.eventoMasDelClub(e.club_name)}</h2>
               <div className="space-y-2">
                 {moreFromClub.map((ev: any) => (
                   <EventRow key={ev.id} ev={ev} />
@@ -416,7 +417,7 @@ export default async function EventDetail({ params }: { params: { locale: string
           <>
             <div className="border-t border-white/8" />
             <div>
-              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="event.related" /></h2>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.eventoRelacionados('')}</h2>
               <div className="space-y-2">
                 {related.map((ev: any) => (
                   <EventRow key={ev.id} ev={ev} showVenue />

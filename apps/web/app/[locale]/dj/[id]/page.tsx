@@ -11,7 +11,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate } from '@/lib/seo-pages'
+import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones } from '@/lib/seo-pages'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -95,6 +95,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   // Por dj.id: fetchDjEvents y fetchSimilarDjs consultan por id, no por slug.
   const events = await fetchDjEvents((dj as any).id, 10)
   const similar = await fetchSimilarDjs((dj as any).id, (dj as any).genres || [], 1)
+  const sec = secciones(params.locale)
   const images: string[] = Array.isArray((dj as any).images) ? (dj as any).images : []
   const heroImg = images[0] || null
   const spotifyEmbed = getSpotifyEmbed((dj as any).spotify_embed)
@@ -199,7 +200,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
         {/* Spotify */}
         {spotifyEmbed && (
           <div>
-            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">Spotify</h2>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">{sec.djEscuchar((dj as any).name)}</h2>
             <div className="rounded-2xl border border-white/10 overflow-hidden">
               <iframe
                 src={spotifyEmbed.src}
@@ -219,7 +220,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
 
         {/* Upcoming events */}
         <div>
-          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></h2>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.djAgenda((dj as any).name)}</h2>
           {events.length === 0 ? (
             <p className="text-sm text-white/40"><T k="dj.no_upcoming" /></p>
           ) : (
@@ -260,7 +261,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
           <>
             <div className="border-t border-white/8" />
             <div>
-              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.similar" /></h2>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.djSimilares((dj as any).name)}</h2>
               <Link
                 href={djPath(similar[0] as any)}
                 className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"

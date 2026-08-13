@@ -3,7 +3,7 @@ import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, homeCrumb } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, homeCrumb, formatEventDate } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
@@ -62,7 +62,7 @@ export default async function GenrePage({ params }: { params: { locale: string; 
                   slug: (e as any).slug,
                   title: e.name,
                   title_i18n: (e as any).name_i18n || undefined,
-                  date: new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
+                  date: formatEventDate(e.start_at, params.locale),
                   club: e.club_name || '-',
                   image: imgs[0],
                   sponsored: (e as any).sponsored || false,

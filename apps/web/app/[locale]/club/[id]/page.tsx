@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubMetaDescription, formatShortDate } from '@/lib/seo-pages'
+import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones } from '@/lib/seo-pages'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -68,6 +68,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
   // Por club.id y no por params.id: fetchClubEvents filtra por club_id.
   const events = await fetchClubEvents(club.id, 10)
+  const sec = secciones(params.locale)
 
   let images: string[] = []
   if (Array.isArray(club.images)) {
@@ -267,7 +268,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
             </svg>
           </div>
           <div>
-            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5"><T k="club.address" /></h2>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5">{sec.clubDireccion(club.name)}</h2>
             <p className="text-sm text-white/80 leading-snug">{club.address || club.zone || '—'}</p>
           </div>
         </div>
@@ -275,7 +276,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
         {/* Gallery */}
         {galleryImgs.length > 0 && (
           <div>
-            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2"><T k="club.photos" /></h2>
+            <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-2">{sec.clubFotos(club.name)}</h2>
             <div className="grid grid-cols-2 gap-2">
               {galleryImgs.slice(0, 6).map((src, i) => (
                 <div
@@ -294,7 +295,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
         {/* Upcoming events */}
         <div>
-          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3"><T k="dj.upcoming" /></h2>
+          <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.clubAgenda(club.name)}</h2>
           {events.length === 0 ? (
             <p className="text-sm text-white/40"><T k="dj.no_upcoming" /></p>
           ) : (
@@ -316,7 +317,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white leading-tight truncate group-hover:text-[#d8af3a] transition-colors">{e.name}</p>
                       <p className="text-xs text-white/50 mt-0.5">
-                        {new Date(e.start_at).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
+                        {formatEventDate(e.start_at, params.locale)}
                       </p>
                     </div>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white/30 group-hover:text-[#d8af3a] shrink-0 transition-colors">
