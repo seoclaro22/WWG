@@ -494,6 +494,37 @@ export function vacios(locale: string) {
   return VACIOS[locale] || VACIOS[routing.defaultLocale]
 }
 
+// Pagina 404. No habia ninguna: el layout raiz solo delega el <html>, asi que
+// la de serie de Next se renderizaba sin cabecera ni estilos y el usuario veia
+// una pantalla en negro vacia, sin saber que habia pasado ni por donde seguir.
+const NO_ENCONTRADO: Record<string, { code: string; title: string; text: string; home: string; discover: string }> = {
+  es: {
+    code: '404',
+    title: 'Esta página no existe',
+    text: 'El enlace está roto o la fiesta que buscabas ya no está en la agenda.',
+    home: 'Ir al inicio',
+    discover: 'Ver toda la agenda',
+  },
+  en: {
+    code: '404',
+    title: 'This page does not exist',
+    text: 'The link is broken, or the party you were looking for is no longer listed.',
+    home: 'Go to homepage',
+    discover: 'See all listings',
+  },
+  de: {
+    code: '404',
+    title: 'Diese Seite gibt es nicht',
+    text: 'Der Link ist defekt, oder die gesuchte Party steht nicht mehr im Programm.',
+    home: 'Zur Startseite',
+    discover: 'Ganzes Programm ansehen',
+  },
+}
+
+export function noEncontrado(locale: string) {
+  return NO_ENCONTRADO[locale] || NO_ENCONTRADO[routing.defaultLocale]
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
   return new Date(iso).toLocaleString(tag, {

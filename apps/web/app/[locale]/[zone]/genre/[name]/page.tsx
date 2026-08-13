@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Link } from '@/lib/navigation'
-import { fetchClubsPublic, fetchEvents, fetchZoneGenreCounts, fetchZonesMap, resolveZoneSlug } from '@/lib/db'
+import { fetchClubsPublic, fetchEvents, fetchZoneGenreCounts, fetchZonesMap, genreExists, resolveZoneSlug } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
@@ -34,6 +34,10 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   if (!zoneName) notFound()
 
   const genre = decodeURIComponent(params.name)
+  // Mismo motivo que la zona: sin esto el cruce zona x cualquier cadena
+  // devolvia un 200, y aqui se multiplica por el numero de zonas.
+  if (!(await genreExists(genre))) notFound()
+
   const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
   const path = `/${params.zone}/genre/${params.name}`
   const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
@@ -54,6 +58,8 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
   if (!zoneName) return notFound()
 
   const genre = decodeURIComponent(params.name)
+  if (!(await genreExists(genre))) return notFound()
+
   const { title, eyebrow, intro, empty } = zoneGenreMeta(genre, zoneName, params.locale)
   const [events, clubs] = await Promise.all([
     fetchEvents({ zone: zoneName, genre, limit: 40, sponsoredFirst: true }),
@@ -111,7 +117,7 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
             )
           })}
           {events.length === 0 && (
-            <p className="text-sm text-white/50 py-8 text-center">{empty}</p>
+            <p className="text-sm text-white/50 min-h-[45vh] flex items-center justify-center text-center">{empty}</p>
           )}
         </div>
 

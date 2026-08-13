@@ -1,5 +1,6 @@
+import { notFound } from 'next/navigation'
 import { Link } from '@/lib/navigation'
-import { fetchEvents } from '@/lib/db'
+import { fetchEvents, genreExists } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
@@ -8,6 +9,10 @@ import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
+  // Ver nota en /[zona]: con streaming el notFound() del componente llega
+  // tarde para fijar el 404.
+  if (!(await genreExists(name))) notFound()
+
   const { title, description, eyebrow } = genreMeta(name, params.locale)
   // Mismo umbral que los cruces zona x genero: un genero sin agenda es una
   // pagina vacia, y ofrecerla a Google solo resta calidad al dominio.
@@ -25,6 +30,8 @@ export async function generateMetadata({ params }: { params: { locale: string; n
 
 export default async function GenrePage({ params }: { params: { locale: string; name: string } }) {
   const name = decodeURIComponent(params.name)
+  if (!(await genreExists(name))) return notFound()
+
   const { title, eyebrow, intro, heading } = genreMeta(name, params.locale)
   const events = await fetchEvents({ genre: name, limit: 30 })
   const vacio = vacios(params.locale)
@@ -72,7 +79,11 @@ export default async function GenrePage({ params }: { params: { locale: string; 
             )
           })}
           {events.length === 0 && (
-            <div className="text-sm text-white/50 py-8 text-center">
+            // El contenedor mide 100vh, asi que con la lista vacia el mensaje
+            // quedaba pegado arriba y debajo habia media pantalla en negro.
+            // Centrado ocupa ese hueco y se lee como un estado vacio, no como
+            // una pagina a medio cargar.
+            <div className="text-sm text-white/50 min-h-[45vh] flex items-center justify-center text-center">
               {vacio.genero(name)}{' '}
               <Link href="/discover" className="text-[#d8af3a] hover:text-[#e8c85a] underline">{vacio.verAgenda}</Link>
             </div>

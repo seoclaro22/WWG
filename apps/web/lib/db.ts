@@ -134,6 +134,26 @@ export async function fetchZoneGenreCounts(zone: string) {
   return counts
 }
 
+// Si el genero existe de verdad en los datos.
+//
+// /genre/[name] montaba la pagina con cualquier cadena que le llegase en la
+// URL: /genre/zzz devolvia un 200 con su titulo y su descripcion. Eso es un
+// soft 404, y ademas abre un numero infinito de URLs indexables.
+//
+// Mira eventos y DJs, no solo la agenda proxima: un genero que existe pero se
+// ha quedado sin fechas sigue siendo una pagina legitima, y hacerla 404 seria
+// romper una URL que ya esta posicionada.
+export async function genreExists(genre: string) {
+  const sb = getSupabaseClient()
+  const [events, djs] = await Promise.all([
+    (sb.from('events').select('id', { count: 'exact', head: true }) as any).contains('genres', [genre]),
+    (sb.from('djs').select('id', { count: 'exact', head: true }) as any).contains('genres', [genre]),
+  ])
+  if (events.error) console.error('genreExists events error', events.error)
+  if (djs.error) console.error('genreExists djs error', djs.error)
+  return (events.count || 0) > 0 || (djs.count || 0) > 0
+}
+
 export async function fetchClubsPublic(params?: { q?: string; limit?: number; zone?: string; genre?: string }) {
   const sb = getSupabaseClient()
   let q = sb.from('clubs').select('*').eq('status','approved').order('name', { ascending: true })
