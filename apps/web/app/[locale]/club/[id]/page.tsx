@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones } from '@/lib/seo-pages'
+import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts } from '@/lib/seo-pages'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -69,6 +69,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
   // Por club.id y no por params.id: fetchClubEvents filtra por club_id.
   const events = await fetchClubEvents(club.id, 10)
   const sec = secciones(params.locale)
+  const alt = alts(params.locale)
 
   let images: string[] = []
   if (Array.isArray(club.images)) {
@@ -150,7 +151,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
             {logo && (
               <SafeImage
                 src={logo}
-                alt="logo"
+                alt={alt.logo(club.name)}
                 width={56}
                 height={56}
                 sizes="56px"
@@ -283,7 +284,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
                   key={i}
                   className={`relative w-full overflow-hidden rounded-xl border border-white/10 ${i === 0 && galleryImgs.length % 2 !== 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}
                 >
-                  <SafeImage src={src} alt={`foto-${i + 2}`} fill sizes="(max-width: 640px) 50vw, 300px" className="object-cover" />
+                  <SafeImage src={src} alt={alt.foto(club.name, i + 2)} fill sizes="(max-width: 640px) 50vw, 300px" className="object-cover" />
                 </div>
               ))}
             </div>

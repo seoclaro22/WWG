@@ -437,6 +437,21 @@ export function secciones(locale: string) {
   return SECCIONES[locale] || SECCIONES[routing.defaultLocale]
 }
 
+// Texto alternativo de las imagenes que no lo tenian util: el logo del club
+// iba como "logo" y las fotos de la galeria como "foto-2", que no describen
+// nada ni para un lector de pantalla ni para Google Imagenes. Van aqui y no
+// escritos en la ficha porque, como los encabezados, tienen que salir en el
+// idioma de la URL.
+const ALTS: Record<string, { logo: (n: string) => string; foto: (n: string, i: number) => string }> = {
+  es: { logo: (n) => `Logo de ${n}`, foto: (n, i) => `Interior de ${n}, foto ${i}` },
+  en: { logo: (n) => `${n} logo`, foto: (n, i) => `Inside ${n}, photo ${i}` },
+  de: { logo: (n) => `Logo von ${n}`, foto: (n, i) => `Innenraum von ${n}, Foto ${i}` },
+}
+
+export function alts(locale: string) {
+  return ALTS[locale] || ALTS[routing.defaultLocale]
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
   return new Date(iso).toLocaleString(tag, {

@@ -24,7 +24,10 @@ export function DjCard({ dj }: Props) {
         <Link href={ruta} className="w-24 h-24 rounded-lg bg-white/5 shrink-0 block overflow-hidden">
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={image} alt=<LocalText value={dj.name} i18n={dj.name_i18n||undefined} /> className="w-full h-full object-cover" />
+            {/* alt es un atributo de texto: aqui iba un <LocalText/>, que JSX
+                acepta pero React serializa como [object Object]. Va el nombre
+                a secas, que es lo que describe la foto. */}
+            <img src={image} alt={dj.name} className="w-full h-full object-cover" />
           ) : null}
         </Link>
         <div className="flex-1">
