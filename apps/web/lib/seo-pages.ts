@@ -316,6 +316,15 @@ export function zoneFaq(
   const day = facts.busiestWeekday === null ? null : WEEKDAY_NAMES[l][WEEKDAY_KEYS[facts.busiestWeekday]]
   const hour = facts.usualStartHour === null ? null : `${String(facts.usualStartHour).padStart(2, '0')}:00`
   const genres = facts.topGenres.slice(0, 3).join(', ')
+  // Castellon tiene una sola sala y la respuesta salia como "seguimos 1 salas
+  // con 11 fiestas". Es el unico sitio donde estas cifras se leen en una frase.
+  const n = (uno: string, varios: string, cantidad: number) => (cantidad === 1 ? uno : varios)
+  const salas = n('sala', 'salas', facts.venues)
+  const fiestas = n('fiesta anunciada', 'fiestas anunciadas', facts.events)
+  const venues = n('venue', 'venues', facts.venues)
+  const parties = n('announced party', 'announced parties', facts.events)
+  const clubsDe = n('Club', 'Clubs', facts.venues)
+  const partysDe = n('angekuendigte Party', 'angekuendigte Partys', facts.events)
   const price = facts.priceMin === null ? null
     : facts.priceMax !== null && facts.priceMax !== facts.priceMin
       ? `${facts.priceMin} - ${facts.priceMax} €`
@@ -328,21 +337,21 @@ export function zoneFaq(
       price: { q: `¿Cuánto cuesta la entrada en ${zone}?`, a: `Las entradas de la agenda actual de ${zone} van de ${price}. El precio depende del cartel y de si compras anticipada o en puerta.` },
       day: { q: `¿Qué noche se sale más en ${zone}?`, a: `El ${day} es el día con más fiestas programadas en ${zone} ahora mismo. Es también cuando más salas abren a la vez.` },
       genres: { q: `¿Qué música suena en ${zone}?`, a: `Lo que más se programa en ${zone} es ${genres}. Puedes filtrar la agenda por género para ver solo lo tuyo.` },
-      venues: { q: `¿Cuántas discotecas hay en ${zone}?`, a: `Ahora mismo seguimos ${facts.venues} salas de ${zone} con ${facts.events} fiestas anunciadas. La agenda se actualiza a diario.` },
+      venues: { q: `¿Cuántas discotecas hay en ${zone}?`, a: `Ahora mismo seguimos ${facts.venues} ${salas} de ${zone} con ${facts.events} ${fiestas}. La agenda se actualiza a diario.` },
     },
     en: {
       hour: { q: `What time do parties start in ${zone}?`, a: `Most sets in ${zone} kick off around ${hour}. Each listing shows its exact time, since rooftop and after parties fall outside that window.` },
       price: { q: `How much is a ticket in ${zone}?`, a: `Tickets in the current ${zone} listings run ${price}. The price depends on the line-up and on whether you buy in advance or at the door.` },
       day: { q: `Which night is biggest in ${zone}?`, a: `${day} is the busiest night in ${zone} right now. It is also when the most venues open at once.` },
       genres: { q: `What music is played in ${zone}?`, a: `The most programmed sounds in ${zone} are ${genres}. You can filter the listings by genre to see only what you want.` },
-      venues: { q: `How many clubs are there in ${zone}?`, a: `We currently track ${facts.venues} venues in ${zone} with ${facts.events} announced parties. Listings are updated daily.` },
+      venues: { q: `How many clubs are there in ${zone}?`, a: `We currently track ${facts.venues} ${venues} in ${zone} with ${facts.events} ${parties}. Listings are updated daily.` },
     },
     de: {
       hour: { q: `Wann beginnen die Partys in ${zone}?`, a: `Die meisten Sets in ${zone} starten gegen ${hour}. Jede Veranstaltung zeigt ihre genaue Uhrzeit, denn Rooftop- und After-Partys fallen aus diesem Rahmen.` },
       price: { q: `Was kostet der Eintritt in ${zone}?`, a: `Die Tickets im aktuellen Programm von ${zone} liegen bei ${price}. Der Preis haengt vom Line-up ab und davon, ob du im Vorverkauf oder an der Tuer kaufst.` },
       day: { q: `An welchem Abend ist in ${zone} am meisten los?`, a: `${day} ist aktuell der Abend mit den meisten Partys in ${zone}. Dann oeffnen auch die meisten Clubs gleichzeitig.` },
       genres: { q: `Welche Musik laeuft in ${zone}?`, a: `Am haeufigsten laeuft in ${zone} ${genres}. Du kannst das Programm nach Musikrichtung filtern.` },
-      venues: { q: `Wie viele Clubs gibt es in ${zone}?`, a: `Wir verfolgen derzeit ${facts.venues} Clubs in ${zone} mit ${facts.events} angekuendigten Partys. Taeglich aktualisiert.` },
+      venues: { q: `Wie viele Clubs gibt es in ${zone}?`, a: `Wir verfolgen derzeit ${facts.venues} ${clubsDe} in ${zone} mit ${facts.events} ${partysDe}. Taeglich aktualisiert.` },
     },
   }[l]!
 
