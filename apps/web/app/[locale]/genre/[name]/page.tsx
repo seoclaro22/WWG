@@ -3,7 +3,7 @@ import { fetchEvents } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, homeCrumb, formatEventDate } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, homeCrumb, formatEventDate, vacios } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
@@ -27,6 +27,7 @@ export default async function GenrePage({ params }: { params: { locale: string; 
   const name = decodeURIComponent(params.name)
   const { title, eyebrow, intro, heading } = genreMeta(name, params.locale)
   const events = await fetchEvents({ genre: name, limit: 30 })
+  const vacio = vacios(params.locale)
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
@@ -72,8 +73,8 @@ export default async function GenrePage({ params }: { params: { locale: string; 
           })}
           {events.length === 0 && (
             <div className="text-sm text-white/50 py-8 text-center">
-              No hay eventos de {name} programados ahora mismo.{' '}
-              <Link href="/discover" className="text-[#d8af3a] hover:text-[#e8c85a] underline">Ver toda la agenda</Link>
+              {vacio.genero(name)}{' '}
+              <Link href="/discover" className="text-[#d8af3a] hover:text-[#e8c85a] underline">{vacio.verAgenda}</Link>
             </div>
           )}
         </div>

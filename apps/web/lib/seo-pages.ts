@@ -452,6 +452,48 @@ export function alts(locale: string) {
   return ALTS[locale] || ALTS[routing.defaultLocale]
 }
 
+// Mensajes de listado vacio. Estaban escritos en castellano dentro de cada
+// pagina, asi que un usuario en /en o /de se encontraba "No hay clubs
+// disponibles" en medio de una pagina por lo demas traducida. Es ademas el
+// unico texto de la pagina cuando no hay inventario.
+const VACIOS: Record<string, {
+  clubs: string; djs: string
+  eventosFiltro: string; clubsZona: string; djsBusqueda: string
+  genero: (n: string) => string; verAgenda: string
+}> = {
+  es: {
+    clubs: 'No hay clubs disponibles.',
+    djs: 'No hay DJs disponibles.',
+    eventosFiltro: 'No hay eventos para esta combinación.',
+    clubsZona: 'No hay clubs para esta zona.',
+    djsBusqueda: 'No hay DJs para esta búsqueda.',
+    genero: (n) => `No hay eventos de ${n} programados ahora mismo.`,
+    verAgenda: 'Ver toda la agenda',
+  },
+  en: {
+    clubs: 'No clubs available.',
+    djs: 'No DJs available.',
+    eventosFiltro: 'No events match this combination.',
+    clubsZona: 'No clubs in this area.',
+    djsBusqueda: 'No DJs match this search.',
+    genero: (n) => `No ${n} events are scheduled right now.`,
+    verAgenda: 'See all listings',
+  },
+  de: {
+    clubs: 'Keine Clubs verfuegbar.',
+    djs: 'Keine DJs verfuegbar.',
+    eventosFiltro: 'Keine Events fuer diese Auswahl.',
+    clubsZona: 'Keine Clubs in dieser Gegend.',
+    djsBusqueda: 'Keine DJs fuer diese Suche.',
+    genero: (n) => `Aktuell sind keine ${n} Events geplant.`,
+    verAgenda: 'Ganzes Programm ansehen',
+  },
+}
+
+export function vacios(locale: string) {
+  return VACIOS[locale] || VACIOS[routing.defaultLocale]
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
   return new Date(iso).toLocaleString(tag, {

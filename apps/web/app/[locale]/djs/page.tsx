@@ -2,7 +2,7 @@ import { fetchDjsPublic } from '@/lib/db'
 import { DjCard2 } from '@/components/DjCard2'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta, ogImage } from '@/lib/seo'
-import { homeCrumb } from '@/lib/seo-pages'
+import { homeCrumb, vacios } from '@/lib/seo-pages'
 
 // Listado indexable de DJs. Antes solo existia dentro de /discover?tab=djs,
 // que es noindex por ser navegacion facetada: la ficha de cada DJ no tenia
@@ -54,7 +54,7 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
             />
           )
         })}
-        {djs.length === 0 && <div className="muted">No hay DJs disponibles.</div>}
+        {djs.length === 0 && <div className="muted">{vacios(params.locale).djs}</div>}
       </div>
     </div>
   )

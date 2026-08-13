@@ -9,7 +9,7 @@ import { DjCard2 } from '@/components/DjCard2'
 import { buildAlternates, localePath, listMeta } from '@/lib/seo'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 import { clubPath, djPath } from '@/lib/hrefs'
-import { formatEventDate } from '@/lib/seo-pages'
+import { formatEventDate, vacios } from '@/lib/seo-pages'
 
 // Los filtros (q, date, genre, zone, tab) son navegacion facetada: cada
 // combinacion es una URL distinta con el mismo inventario reordenado. Sin
@@ -87,6 +87,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 export default async function DiscoverPage({ params, searchParams }: { params: { locale: string }; searchParams: { q?: string; date?: string; genre?: string; zone?: string; tab?: string } }) {
   const lp = (p: string) => localePath(p, params.locale)
+  const vacio = vacios(params.locale)
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
@@ -222,7 +223,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                 />
               )
             })}
-            {events.length === 0 && <div className="muted">No hay eventos para esta combinacion.</div>}
+            {events.length === 0 && <div className="muted">{vacio.eventosFiltro}</div>}
           </div>
         )}
         {tab === 'clubs' && (
@@ -234,7 +235,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                 <ClubCard key={c.id} club={{ id: c.id, slug: c.slug, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
               )
             })}
-            {clubs.length === 0 && <div className="muted">No hay clubs para esta zona.</div>}
+            {clubs.length === 0 && <div className="muted">{vacio.clubsZona}</div>}
           </div>
         )}
         {tab === 'djs' && (
@@ -261,7 +262,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
                 />
               )
             })}
-            {djs.length === 0 && <div className="muted">No hay DJs para esta busqueda.</div>}
+            {djs.length === 0 && <div className="muted">{vacio.djsBusqueda}</div>}
           </div>
         )}
       </div>

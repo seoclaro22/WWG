@@ -5,7 +5,7 @@ import { LocalText } from '@/components/LocalText'
 import { T } from '@/components/T'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { homeCrumb } from '@/lib/seo-pages'
+import { homeCrumb, vacios } from '@/lib/seo-pages'
 import { clubPath } from '@/lib/hrefs'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
@@ -54,7 +54,7 @@ export default async function ClubsIndex({ params }: { params: { locale: string 
             </div>
           )
         })}
-        {clubs.length === 0 && <div className="muted">No hay clubs disponibles.</div>}
+        {clubs.length === 0 && <div className="muted">{vacios(params.locale).clubs}</div>}
       </div>
     </div>
   )
