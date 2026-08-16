@@ -10,7 +10,9 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts } from '@/lib/seo-pages'
+import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado } from '@/lib/seo-pages'
+import { AnswerBlock } from '@/components/AnswerBlock'
+import { openingHoursSpecification } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -19,7 +21,9 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // filtra por club_id. Antes iban con Promise.all y desde /club/la-santa la
   // agenda salia vacia, que es justo lo que da valor a esta descripcion.
   const club = (await fetchClub(params.id)) as any
-  if (!club) return { title: 'Club no encontrado' }
+  // El titulo del 404 en el idioma de la URL: estaba en castellano fijo, asi
+  // que /de/club/loquesea abria una pestaña titulada "Club no encontrado".
+  if (!club) return { title: noEncontrado(params.locale).title }
   const proximos = await fetchClubEvents(club.id, 30)
   const ruta = clubPath(club)
   const images: string[] = Array.isArray(club.images) ? club.images : []
@@ -41,7 +45,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
     club.description || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`,
   )
   return {
-    title: `${club.name} — discoteca${place}`,
+    title: tituloClub(club.name, lugar, params.locale),
     description,
     openGraph: {
       title: club.name,
@@ -67,7 +71,10 @@ export default async function ClubProfile({ params }: { params: { locale: string
   }
 
   // Por club.id y no por params.id: fetchClubEvents filtra por club_id.
-  const events = await fetchClubEvents(club.id, 10)
+  // 30 y no 10 porque el bloque de respuesta dice cuantas fiestas hay: con el
+  // tope en 10 un club con 14 anunciadas afirmaba tener 10.
+  const proximos = await fetchClubEvents(club.id, 30)
+  const events = proximos.slice(0, 10)
   const sec = secciones(params.locale)
   const alt = alts(params.locale)
 
@@ -92,6 +99,18 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
   const heroImg = images[0] || logo
   const galleryImgs = images.length > 1 ? images.slice(1) : []
+
+  const generos: string[] = Array.isArray(club.genres) ? club.genres : []
+  const resumen = resumenClub({
+    nombre: club.name,
+    lugar: club.town || club.zone || null,
+    direccion: club.address || null,
+    eventos: proximos.length,
+    proxima: proximos[0] ? formatShortDate((proximos[0] as any).start_at, params.locale) : null,
+    generos,
+  }, params.locale)
+
+  const horario = openingHoursSpecification(club.open_hours)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -118,6 +137,10 @@ export default async function ClubProfile({ params }: { params: { locale: string
         longitude: Number(club.lon),
       },
     } : {}),
+    // Solo si el dueño de la ficha lo ha rellenado y encaja en el formato: ver
+    // la nota de lib/opening-hours.ts. Un horario inventado manda a alguien a
+    // un local cerrado y ademas lo publica Google.
+    ...(horario ? { openingHoursSpecification: horario } : {}),
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
     } : {}),
@@ -257,6 +280,11 @@ export default async function ClubProfile({ params }: { params: { locale: string
             />
           </div>
         )}
+
+        {/* Respuesta corta: debajo de la descripcion del local, no antes.
+            Delante de todo lo compactaba y repetia lo que el usuario acababa
+            de leer en su propio idioma. */}
+        <AnswerBlock resumen={resumen} />
 
         {/* Divider */}
         <div className="border-t border-white/8" />

@@ -13,7 +13,8 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, dateTag, formatShortDate, secciones } from '@/lib/seo-pages'
+import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, noEncontrado } from '@/lib/seo-pages'
+import { AnswerBlock } from '@/components/AnswerBlock'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -67,7 +68,8 @@ function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   const e: any = await fetchEvent(params.id)
-  if (!e) return { title: 'Evento no encontrado' }
+  // Ver la nota de la ficha de club: el titulo del 404 iba en castellano fijo.
+  if (!e) return { title: noEncontrado(params.locale).title }
   // El idioma sale de la URL. Estaba fijado a es-ES, asi que /en y /de servian
   // la fecha en espanol dentro de su propia descripcion.
   const date = new Date(e.start_at).toLocaleDateString(dateTag(params.locale), { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
@@ -147,6 +149,16 @@ export default async function EventDetail({ params }: { params: { locale: string
   const description: string = (e as any).description || ''
   const descriptionI18n = (e as any).description_i18n || null
   const sec = secciones(params.locale)
+
+  const resumen = resumenEvento({
+    nombre: (e as any).name,
+    generos: Array.isArray((e as any).genres) ? (e as any).genres : [],
+    lugar: (e as any).club_name || null,
+    zona: (e as any).zone || null,
+    cuando: formatEventDate((e as any).start_at, params.locale),
+    lineup: lineup.map((d: any) => d.name),
+    reserva: Boolean((e as any).url_referral),
+  }, params.locale)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -309,6 +321,10 @@ export default async function EventDetail({ params }: { params: { locale: string
         {description && (
           <ClubDescriptionExpand text={description} i18n={descriptionI18n} />
         )}
+
+        {/* Respuesta corta: debajo de la descripcion, no antes. Ver la nota
+            de la ficha de club. */}
+        <AnswerBlock resumen={resumen} />
 
         {/* Divider */}
         <div className="border-t border-white/8" />

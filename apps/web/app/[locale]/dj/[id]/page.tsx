@@ -11,7 +11,8 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones } from '@/lib/seo-pages'
+import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones, resumenDj, tituloDj, noEncontrado } from '@/lib/seo-pages'
+import { AnswerBlock } from '@/components/AnswerBlock'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -42,7 +43,8 @@ function getSpotifyEmbed(input?: string | null) {
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   // En serie: params.id puede ser el slug y fetchDjEvents filtra por dj_id.
   const dj = await fetchDj(params.id)
-  if (!dj) return { title: 'DJ no encontrado' }
+  // Ver la nota de la ficha de club: el titulo del 404 iba en castellano fijo.
+  if (!dj) return { title: noEncontrado(params.locale).title }
   const upcoming = await fetchDjEvents(dj.id, 30)
   const ruta = djPath(dj)
   const images: string[] = Array.isArray(dj.images) ? dj.images : []
@@ -65,7 +67,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
     dj.short_bio || dj.bio || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`,
   )
   return {
-    title: `${dj.name}${genres ? ` — DJ de ${genres}` : ' — DJ'}`,
+    title: tituloDj(dj.name, Array.isArray(dj.genres) ? dj.genres : [], params.locale),
     description,
     // Sin sesiones anunciadas ni biografia la ficha es solo el nombre: se
     // sirve a quien llega desde el sitio, pero no se ofrece a Google.
@@ -93,7 +95,10 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   }
 
   // Por dj.id: fetchDjEvents y fetchSimilarDjs consultan por id, no por slug.
-  const events = await fetchDjEvents((dj as any).id, 10)
+  // 30 y no 10: el bloque de respuesta dice cuantas sesiones hay anunciadas,
+  // y con el tope en 10 esa cifra seria falsa para los DJs mas programados.
+  const proximas = await fetchDjEvents((dj as any).id, 30)
+  const events = proximas.slice(0, 10)
   const similar = await fetchSimilarDjs((dj as any).id, (dj as any).genres || [], 1)
   const sec = secciones(params.locale)
   const images: string[] = Array.isArray((dj as any).images) ? (dj as any).images : []
@@ -106,6 +111,14 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   const socialLinks: string[] = Object.values((dj as any).socials || {}).filter(
     (v): v is string => typeof v === 'string' && v.length > 0
   )
+
+  const resumen = resumenDj({
+    nombre: (dj as any).name,
+    generos: Array.isArray((dj as any).genres) ? (dj as any).genres : [],
+    eventos: proximas.length,
+    proxima: proximas[0] ? formatShortDate((proximas[0] as any).start_at, params.locale) : null,
+    club: (proximas[0] as any)?.club_name || null,
+  }, params.locale)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -193,6 +206,12 @@ export default async function DjProfile({ params }: { params: { locale: string; 
         {bio && (
           <ClubDescriptionExpand text={bio} i18n={bioI18n} />
         )}
+
+        {/* Respuesta corta: debajo de la bio, no antes. Ver la nota de la
+            ficha de club. Aqui pesa mas todavia, porque 302 de 403 fichas no
+            tienen biografia y sin esto la pagina no tiene ni una frase
+            completa. */}
+        <AnswerBlock resumen={resumen} />
 
         {/* Divider */}
         <div className="border-t border-white/8" />

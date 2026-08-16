@@ -608,3 +608,127 @@ export function clubMetaDescription(partes: DescPartes, locale: string, respaldo
 export function djMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
   return construir(DJ_DESC, partes, locale, respaldo)
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bloque de respuesta de las fichas
+//
+// Un asistente (ChatGPT, Perplexity, AI Overviews) no cita una galeria ni un
+// listado de tarjetas: cita una frase que responde la pregunta entera y que se
+// sostiene sola fuera de la pagina. Las fichas tenian los datos repartidos en
+// hero, chips, direccion y agenda, asi que no habia ninguna frase citable.
+//
+// Va en texto plano y debajo de la descripcion, y solo con datos que estan en
+// la base: nada de rellenar con adjetivos. Es solo la frase: nombre, lugar,
+// direccion y generos ya se ven en el hero y en los chips justo encima, asi
+// que declararlos otra vez aqui en forma de tabla era la redundancia visual
+// que se veia en pantalla.
+export type ResumenFicha = string
+
+// El nombre y el lugar ya estan en el hero, y los generos en los chips justo
+// encima: repetirlos aqui era la redundancia que se veia en pantalla. Solo
+// queda la parte que no esta en ningun otro sitio de la ficha en forma de
+// texto: cuantas fiestas hay y cuando es la siguiente.
+const RESUMEN_CLUB: Record<string, (p: {
+  nombre: string; lugar: string | null; eventos: number; proxima: string | null; generos: string[]
+}) => string> = {
+  es: (p) => p.eventos > 0
+    ? `${p.nombre} tiene ${p.eventos} ${p.eventos === 1 ? 'fiesta anunciada' : 'fiestas anunciadas'}${p.proxima ? `, la próxima el ${p.proxima}` : ''}.`
+    : `${p.nombre} no tiene fiestas anunciadas ahora mismo.`,
+  en: (p) => p.eventos > 0
+    ? `${p.nombre} has ${p.eventos} announced ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, the next one on ${p.proxima}` : ''}.`
+    : `${p.nombre} has no announced parties right now.`,
+  de: (p) => p.eventos > 0
+    ? `${p.nombre}: ${p.eventos === 1 ? '1 Party angekuendigt' : `${p.eventos} Partys angekuendigt`}${p.proxima ? `, die naechste am ${p.proxima}` : ''}.`
+    : `${p.nombre}: aktuell keine Partys angekuendigt.`,
+}
+
+// Tres generos como mucho. La Santa tiene nueve dados de alta y la frase salia
+// con una lista de nueve estilos al final, que ya no es una frase que nadie
+// vaya a citar. La ficha los sigue mostrando todos en los chips.
+const TOPE_GENEROS = 3
+
+export function resumenClub(p: {
+  nombre: string; lugar: string | null; direccion: string | null
+  eventos: number; proxima: string | null; generos: string[]
+}, locale: string): ResumenFicha {
+  const f = RESUMEN_CLUB[locale] || RESUMEN_CLUB[routing.defaultLocale]
+  return f({ ...p, generos: p.generos.slice(0, TOPE_GENEROS) })
+}
+
+// El genero ya sale en los chips justo encima: aqui solo queda la agenda.
+const RESUMEN_DJ: Record<string, (p: {
+  nombre: string; generos: string[]; eventos: number; proxima: string | null; club: string | null
+}) => string> = {
+  es: (p) => p.eventos > 0
+    ? `${p.nombre} tiene ${p.eventos} ${p.eventos === 1 ? 'sesión anunciada' : 'sesiones anunciadas'}${p.proxima ? `, la próxima el ${p.proxima}` : ''}${p.club ? ` en ${p.club}` : ''}.`
+    : `${p.nombre} no tiene sesiones anunciadas ahora mismo.`,
+  en: (p) => p.eventos > 0
+    ? `${p.nombre} has ${p.eventos} announced ${p.eventos === 1 ? 'set' : 'sets'}${p.proxima ? `, the next one on ${p.proxima}` : ''}${p.club ? ` at ${p.club}` : ''}.`
+    : `${p.nombre} has no announced sets right now.`,
+  de: (p) => p.eventos > 0
+    ? `${p.nombre}: ${p.eventos === 1 ? '1 Set angekuendigt' : `${p.eventos} Sets angekuendigt`}${p.proxima ? `, das naechste am ${p.proxima}` : ''}${p.club ? ` im ${p.club}` : ''}.`
+    : `${p.nombre}: aktuell keine Sets angekuendigt.`,
+}
+
+export function resumenDj(p: {
+  nombre: string; generos: string[]; eventos: number; proxima: string | null; club: string | null
+}, locale: string): ResumenFicha {
+  const f = RESUMEN_DJ[locale] || RESUMEN_DJ[routing.defaultLocale]
+  return f({ ...p, generos: p.generos.slice(0, TOPE_GENEROS) })
+}
+
+// Nombre, fecha, local y zona ya estan bajo el hero; los generos, en los
+// chips; el line-up, en sus propias tarjetas mas abajo. Lo unico que no esta
+// dicho como frase en ningun otro sitio de la ficha es si se puede reservar.
+const RESUMEN_EVENTO: Record<string, (p: {
+  nombre: string; generos: string[]; lugar: string | null; zona: string | null
+  cuando: string; lineup: string[]; reserva: boolean
+}) => string> = {
+  es: (p) => p.reserva
+    ? `Las entradas para ${p.nombre} se reservan desde esta ficha.`
+    : `${p.nombre} no tiene reserva de entradas online todavía.`,
+  en: (p) => p.reserva
+    ? `Tickets for ${p.nombre} can be booked from this page.`
+    : `${p.nombre} has no online ticket booking yet.`,
+  de: (p) => p.reserva
+    ? `Tickets fuer ${p.nombre} koennen ueber diese Seite gebucht werden.`
+    : `Fuer ${p.nombre} gibt es noch keine Online-Ticketbuchung.`,
+}
+
+export function resumenEvento(p: {
+  nombre: string; generos: string[]; lugar: string | null; zona: string | null
+  cuando: string; lineup: string[]; reserva: boolean
+}, locale: string): ResumenFicha {
+  const f = RESUMEN_EVENTO[locale] || RESUMEN_EVENTO[routing.defaultLocale]
+  return f(p)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Titulos de las fichas
+//
+// Estaban escritos en castellano para los tres idiomas, y el del DJ concatenaba
+// hasta tres generos: "AJ CHRISTOU — DJ de Tech House, Minimal tech house,
+// Groove | Where We Go" son 74 caracteres y Google corta sobre los 60. Un solo
+// genero es ademas lo que se busca de verdad ("dj tech house mallorca"), no la
+// lista entera.
+const TITULO_CLUB: Record<string, (n: string, lugar: string | null) => string> = {
+  es: (n, l) => `${n}: discoteca${l ? ` en ${l}` : ''}`,
+  en: (n, l) => `${n}: nightclub${l ? ` in ${l}` : ''}`,
+  de: (n, l) => `${n}: Club${l ? ` in ${l}` : ''}`,
+}
+
+export function tituloClub(nombre: string, lugar: string | null, locale: string) {
+  return (TITULO_CLUB[locale] || TITULO_CLUB[routing.defaultLocale])(nombre, lugar)
+}
+
+const TITULO_DJ: Record<string, (n: string, g: string | null) => string> = {
+  es: (n, g) => `${n}: DJ${g ? ` de ${g}` : ''}`,
+  en: (n, g) => `${n}: ${g ? `${g} ` : ''}DJ`,
+  de: (n, g) => `${n}: ${g ? `${g} ` : ''}DJ`,
+}
+
+// Un solo genero a proposito: ver la nota de TITULO_CLUB.
+export function tituloDj(nombre: string, generos: string[], locale: string) {
+  const g = generos.length ? generos[0] : null
+  return (TITULO_DJ[locale] || TITULO_DJ[routing.defaultLocale])(nombre, g)
+}
