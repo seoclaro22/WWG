@@ -9,7 +9,7 @@ import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import {
   MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug,
-  zoneFaq, zoneFaqHeading, zoneMeta,
+  zoneFaq, zoneFaqHeading, zoneMeta, zoneGuide, zoneGuideHeadings,
 } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
@@ -52,6 +52,10 @@ export default async function ZonePage({ params }: { params: { locale: string; z
     fetchZoneFacts(zoneName),
   ])
   const faq = zoneFaq(zoneName, params.locale, facts)
+  // undefined en cualquier ciudad que no se haya investigado todavia: la
+  // pagina sigue funcionando igual, solo sin este bloque.
+  const guide = zoneGuide(zoneName, params.locale)
+  const guideH = zoneGuideHeadings(params.locale)
 
   const copy = zoneMeta(zoneName, params.locale)
   const labels = relatedLinksLabels(params.locale)
@@ -83,6 +87,51 @@ export default async function ZonePage({ params }: { params: { locale: string; z
           <h1 className="text-3xl font-bold text-white">{copy.title}</h1>
           <p className="text-sm text-white/60 mt-2 max-w-xl">{copy.intro}</p>
         </div>
+
+        {/* Guia evergreen: texto fijo, no depende de la agenda. Es lo que
+            sostiene la pagina indexada mientras la ciudad no tiene inventario
+            y lo que responde "que zona elijo" y "cuanto me va a costar". */}
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.vidaNocturna(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.intro}</p>
+          </div>
+        )}
+
+        {guide && guide.zonas.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.zonas(zoneName)}</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {guide.zonas.map((z) => (
+                <div key={z.titulo} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="text-sm font-medium text-white">{z.titulo}</h3>
+                  <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{z.texto}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.temporada(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.temporada}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.discotecasFamosas(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.discotecasFamosas}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.transporte(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.transporte}</p>
+          </div>
+        )}
 
         {/* Los rotulos de seccion eran <p> con pinta de titulo: se leian como
             encabezados pero no lo eran, asi que la unica jerarquia que veia
@@ -152,6 +201,30 @@ export default async function ZonePage({ params }: { params: { locale: string; z
             )}
           </div>
         </div>
+
+        {/* Precio y vestimenta: lo que se pregunta antes de decidir salir,
+            redactado como orientacion general y no como dato verificado de un
+            club concreto. Ver la nota de zoneGuide en seo-pages.ts. */}
+        {guide && (
+          <div className="space-y-3 pt-2">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.precio(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.precio}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.vestimenta(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.vestimenta}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.seguridad(zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.seguridad}</p>
+          </div>
+        )}
 
         {/* Lo unico de la pagina que no caduca con la agenda. Va al final
             porque quien ya sabe a donde va viene a por el listado; esto es
