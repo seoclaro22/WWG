@@ -154,7 +154,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] max-h-[70vh]">
         {heroImg ? (
-          <SafeImage src={heroImg} alt={club.name} fill priority sizes="100vw" className="object-cover" />
+          <SafeImage src={heroImg} alt={alt.portadaClub(club.name)} fill priority sizes="100vw" className="object-cover" />
         ) : (
           <div className="w-full h-full bg-white/5" />
         )}
@@ -339,7 +339,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
                     className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                   >
                     {evImg ? (
-                      <SafeImage src={evImg} alt={e.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                      <SafeImage src={evImg} alt={alt.miniEvento(e.name)} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                     )}

@@ -11,7 +11,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
-import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones, resumenDj, tituloDj, noEncontrado } from '@/lib/seo-pages'
+import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones, resumenDj, tituloDj, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
@@ -104,6 +104,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   const images: string[] = Array.isArray((dj as any).images) ? (dj as any).images : []
   const heroImg = images[0] || null
   const spotifyEmbed = getSpotifyEmbed((dj as any).spotify_embed)
+  const alt = alts(params.locale)
   const bio: string = (dj as any).bio || ''
   const bioI18n = (dj as any).bio_i18n || null
   // Solo enlaces reales: filtra huecos vacios que a veces quedan en el json
@@ -157,7 +158,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-h-[80vh]">
         {heroImg ? (
-          <SafeImage src={heroImg} alt={(dj as any).name} fill priority sizes="100vw" className="object-cover object-top" />
+          <SafeImage src={heroImg} alt={alt.portadaDj((dj as any).name)} fill priority sizes="100vw" className="object-cover object-top" />
         ) : (
           <div className="w-full h-full bg-white/5" />
         )}
@@ -254,7 +255,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
                     className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                   >
                     {evImg ? (
-                      <SafeImage src={evImg} alt={e.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+                      <SafeImage src={evImg} alt={alt.miniEvento(e.name)} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                     )}
@@ -286,7 +287,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
                 className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
               >
                 {(Array.isArray((similar[0] as any).images) && (similar[0] as any).images[0]) ? (
-                  <SafeImage src={(similar[0] as any).images[0]} alt={(similar[0] as any).name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
+                  <SafeImage src={(similar[0] as any).images[0]} alt={alt.miniDj((similar[0] as any).name)} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
                 ) : (
                   <div className="w-14 h-14 rounded-full bg-white/8 border border-white/10 shrink-0" />
                 )}

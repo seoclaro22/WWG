@@ -13,7 +13,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, noEncontrado } from '@/lib/seo-pages'
+import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 
 function getSpotifyEmbed(input?: string | null) {
@@ -42,7 +42,7 @@ function getSpotifyEmbed(input?: string | null) {
 
 // Fila compacta de evento. La usan "Mas del club" y "Te puede interesar": es
 // el mismo markup en dos sitios, y duplicarlo era la alternativa.
-function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
+function EventRow({ ev, locale, showVenue = false }: { ev: any; locale: string; showVenue?: boolean }) {
   const evImgs: string[] = Array.isArray(ev.images) ? ev.images : []
   const evImg = evImgs[0] || null
   return (
@@ -51,7 +51,7 @@ function EventRow({ ev, showVenue = false }: { ev: any; showVenue?: boolean }) {
       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
     >
       {evImg ? (
-        <SafeImage src={evImg} alt={ev.name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
+        <SafeImage src={evImg} alt={alts(locale).miniEvento(ev.name)} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-xl object-cover border border-white/10 shrink-0" />
       ) : (
         <div className="w-14 h-14 rounded-xl bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
       )}
@@ -249,7 +249,7 @@ export default async function EventDetail({ params }: { params: { locale: string
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-h-[80vh]">
         {cover ? (
-          <SafeImage src={cover} alt={(e as any).name} fill priority sizes="100vw" className="object-cover object-top" />
+          <SafeImage src={cover} alt={alts(params.locale).portadaEvento((e as any).name)} fill priority sizes="100vw" className="object-cover object-top" />
         ) : (
           <div className="w-full h-full bg-white/5" />
         )}
@@ -347,7 +347,7 @@ export default async function EventDetail({ params }: { params: { locale: string
                       className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all group"
                     >
                       {djImg ? (
-                        <SafeImage src={djImg} alt={(d as any).name} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
+                        <SafeImage src={djImg} alt={alts(params.locale).miniDj((d as any).name)} width={56} height={56} sizes="56px" className="w-14 h-14 rounded-full object-cover object-top border border-white/10 shrink-0" />
                       ) : (
                         <div className="w-14 h-14 rounded-full bg-white/8 border border-white/10 shrink-0 flex items-center justify-center text-white/20 text-xl">♪</div>
                       )}
@@ -418,7 +418,7 @@ export default async function EventDetail({ params }: { params: { locale: string
               <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.eventoMasDelClub(e.club_name)}</h2>
               <div className="space-y-2">
                 {moreFromClub.map((ev: any) => (
-                  <EventRow key={ev.id} ev={ev} />
+                  <EventRow key={ev.id} ev={ev} locale={params.locale} />
                 ))}
               </div>
             </div>
@@ -436,7 +436,7 @@ export default async function EventDetail({ params }: { params: { locale: string
               <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-3">{sec.eventoRelacionados('')}</h2>
               <div className="space-y-2">
                 {related.map((ev: any) => (
-                  <EventRow key={ev.id} ev={ev} showVenue />
+                  <EventRow key={ev.id} ev={ev} locale={params.locale} showVenue />
                 ))}
               </div>
             </div>

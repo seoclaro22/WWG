@@ -451,10 +451,30 @@ export function secciones(locale: string) {
 // nada ni para un lector de pantalla ni para Google Imagenes. Van aqui y no
 // escritos en la ficha porque, como los encabezados, tienen que salir en el
 // idioma de la URL.
-const ALTS: Record<string, { logo: (n: string) => string; foto: (n: string, i: number) => string }> = {
-  es: { logo: (n) => `Logo de ${n}`, foto: (n, i) => `Interior de ${n}, foto ${i}` },
-  en: { logo: (n) => `${n} logo`, foto: (n, i) => `Inside ${n}, photo ${i}` },
-  de: { logo: (n) => `Logo von ${n}`, foto: (n, i) => `Innenraum von ${n}, Foto ${i}` },
+// La portada de club/DJ/evento y las miniaturas de agenda llevaban solo el
+// nombre como alt ("LA SANTA", "AJ CHRISTOU"): decia quien es, no que es la
+// imagen. Un lector de pantalla o un buscador de imagenes no puede distinguir
+// eso de un logo o de un texto suelto.
+const ALTS: Record<string, {
+  logo: (n: string) => string; foto: (n: string, i: number) => string
+  portadaClub: (n: string) => string; portadaDj: (n: string) => string; portadaEvento: (n: string) => string
+  miniEvento: (n: string) => string; miniDj: (n: string) => string
+}> = {
+  es: {
+    logo: (n) => `Logo de ${n}`, foto: (n, i) => `Interior de ${n}, foto ${i}`,
+    portadaClub: (n) => `Foto de ${n}`, portadaDj: (n) => `Foto de ${n}`, portadaEvento: (n) => `Cartel de ${n}`,
+    miniEvento: (n) => `Cartel de ${n}`, miniDj: (n) => `Foto de ${n}`,
+  },
+  en: {
+    logo: (n) => `${n} logo`, foto: (n, i) => `Inside ${n}, photo ${i}`,
+    portadaClub: (n) => `Photo of ${n}`, portadaDj: (n) => `Photo of ${n}`, portadaEvento: (n) => `${n} flyer`,
+    miniEvento: (n) => `${n} flyer`, miniDj: (n) => `Photo of ${n}`,
+  },
+  de: {
+    logo: (n) => `Logo von ${n}`, foto: (n, i) => `Innenraum von ${n}, Foto ${i}`,
+    portadaClub: (n) => `Foto von ${n}`, portadaDj: (n) => `Foto von ${n}`, portadaEvento: (n) => `Flyer von ${n}`,
+    miniEvento: (n) => `Flyer von ${n}`, miniDj: (n) => `Foto von ${n}`,
+  },
 }
 
 export function alts(locale: string) {
