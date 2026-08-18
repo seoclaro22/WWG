@@ -998,9 +998,15 @@ export function recortar(texto: string, max = 155) {
 type DescPartes = { nombre: string; lugar?: string | null; eventos: number; proxima?: string | null }
 
 const CLUB_DESC: Record<string, (p: DescPartes) => string> = {
-  es: (p) => `Agenda de ${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'fiesta próxima' : 'fiestas próximas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Line-ups, entradas y cómo llegar.`,
-  en: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''} listings: ${p.eventos} upcoming ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Line-ups, tickets and how to get there.`,
-  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'kommende Party' : 'kommende Partys'}${p.proxima ? `, die naechste am ${p.proxima}` : ''}. Line-ups, Tickets und Anfahrt.`,
+  es: (p) => p.eventos > 0
+    ? `Agenda de ${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'fiesta próxima' : 'fiestas próximas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Line-ups, entradas y cómo llegar.`
+    : `${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: horario, entrada, cómo llegar. Descubre dónde salir de fiesta con línea-ups, precios y reservas online en Where We Go.`,
+  en: (p) => p.eventos > 0
+    ? `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''} listings: ${p.eventos} upcoming ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Line-ups, tickets and how to get there.`
+    : `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: hours, entry price, directions. Find nightlife, DJs, line-ups, and online ticket booking at Where We Go.`,
+  de: (p) => p.eventos > 0
+    ? `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'kommende Party' : 'kommende Partys'}${p.proxima ? `, die naechste am ${p.proxima}` : ''}. Line-ups, Tickets und Anfahrt.`
+    : `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: Oeffnungszeiten, Eintritt, Anfahrt. Entdecke Nachtleben, DJs, Line-ups und Online-Ticketbuchung im Where We Go Club-Guide.`,
 }
 
 const DJ_DESC: Record<string, (p: DescPartes) => string> = {
@@ -1133,9 +1139,9 @@ export function resumenEvento(p: {
 // genero es ademas lo que se busca de verdad ("dj tech house mallorca"), no la
 // lista entera.
 const TITULO_CLUB: Record<string, (n: string, lugar: string | null) => string> = {
-  es: (n, l) => `${n}: discoteca${l ? ` en ${l}` : ''}`,
-  en: (n, l) => `${n}: nightclub${l ? ` in ${l}` : ''}`,
-  de: (n, l) => `${n}: Club${l ? ` in ${l}` : ''}`,
+  es: (n, l) => `${n}${l ? ` ${l}` : ''} - Horario, entrada y reservas | Where We Go`,
+  en: (n, l) => `${n}${l ? ` ${l}` : ''} - Hours, tickets & reservations | Where We Go`,
+  de: (n, l) => `${n}${l ? ` ${l}` : ''} - Öffnungszeiten, Eintritt & Tickets | Where We Go`,
 }
 
 export function tituloClub(nombre: string, lugar: string | null, locale: string) {
