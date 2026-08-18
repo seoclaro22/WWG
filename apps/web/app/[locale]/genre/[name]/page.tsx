@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
 import { Link } from '@/lib/navigation'
-import { fetchEvents, genreExists } from '@/lib/db'
+import { fetchEvents, fetchGenreZoneCounts, genreExists } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, homeCrumb, formatEventDate, vacios } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, genreZonesHeading, homeCrumb, formatEventDate, vacios, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
@@ -33,8 +33,14 @@ export default async function GenrePage({ params }: { params: { locale: string; 
   if (!(await genreExists(name))) return notFound()
 
   const { title, eyebrow, intro, heading } = genreMeta(name, params.locale)
-  const events = await fetchEvents({ genre: name, limit: 30 })
+  const [events, zonas] = await Promise.all([
+    fetchEvents({ genre: name, limit: 30 }),
+    fetchGenreZoneCounts(name),
+  ])
   const vacio = vacios(params.locale)
+  // Mismo umbral que el resto del sitio: no se enlaza un cruce zona x genero
+  // que se serviria noindex al otro lado.
+  const zonasConAgenda = zonas.filter((z) => z.count >= MIN_EVENTS_TO_INDEX)
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
@@ -89,6 +95,27 @@ export default async function GenrePage({ params }: { params: { locale: string; 
             </div>
           )}
         </div>
+
+        {/* Sin este bloque la pagina de genero global no enlazaba a ninguna de
+            sus paginas hijas: era el unico punto del sitio con enlazado
+            interno solo de entrada, nunca de salida. */}
+        {zonasConAgenda.length > 0 && (
+          <div className="space-y-3 pt-2 border-t border-white/10">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{genreZonesHeading(params.locale)}</h2>
+            <div className="flex flex-wrap gap-2">
+              {zonasConAgenda.map((z) => (
+                <Link
+                  key={z.slug}
+                  href={`/${z.slug}/genre/${params.name}`}
+                  className="text-xs px-3 py-1.5 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 transition-colors"
+                  prefetch={false}
+                >
+                  {zoneGenreMeta(name, z.name, params.locale).eyebrow}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

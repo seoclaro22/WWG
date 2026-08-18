@@ -134,6 +134,21 @@ export async function fetchZoneGenreCounts(zone: string) {
   return counts
 }
 
+// Inversa de fetchZoneGenreCounts: para un genero, cuantos eventos proximos
+// tiene en cada zona. Alimenta el bloque de "genero en cada ciudad" de
+// /genre/[name], que hasta ahora no enlazaba hacia ningun cruce zona x
+// genero y dejaba la pagina con mas trafico potencial sin salida interna.
+export async function fetchGenreZoneCounts(genre: string) {
+  const zonesMap = await fetchZonesMap()
+  const zones = Array.from(zonesMap.entries())
+  const counts = await Promise.all(
+    zones.map(([, name]) => fetchEvents({ zone: name, genre, limit: 500 })),
+  )
+  return zones
+    .map(([slug, name], i) => ({ slug, name, count: counts[i].length }))
+    .filter((z) => z.count > 0)
+}
+
 // Si el genero existe de verdad en los datos.
 //
 // /genre/[name] montaba la pagina con cualquier cadena que le llegase en la

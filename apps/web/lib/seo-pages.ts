@@ -778,6 +778,14 @@ export function relatedLinksLabels(locale: string) {
   return copy[locale] || copy[routing.defaultLocale]
 }
 
+// Encabezado del bloque de /genre/[name] que enlaza a cada cruce zona x
+// genero con agenda real. Sin este texto la pagina de genero global se
+// quedaba sin ninguna salida hacia sus paginas hijas.
+export function genreZonesHeading(locale: string) {
+  const copy: Record<string, string> = { es: 'Por ciudad', en: 'By city', de: 'Nach Stadt' }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
 // Formato de fecha por idioma. Las fichas existentes formatean siempre en
 // es-ES, aunque la URL sea /en o /de.
 const DATE_LOCALES: Record<string, string> = { es: 'es-ES', en: 'en-GB', de: 'de-DE' }
