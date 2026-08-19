@@ -34,3 +34,5 @@ apps/web/dev.err
 apps/web/*.tsbuildinfo
 .claude/
 apps/web/.claude/
+
+.vercel
