@@ -1,17 +1,36 @@
-import { notFound } from 'next/navigation'
-import { Link } from '@/lib/navigation'
-import { fetchEvents, fetchGenreZoneCounts, genreExists } from '@/lib/db'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { Link, localizedPath } from '@/lib/navigation'
+import { fetchEvents, fetchGenreZoneCounts, genreExists, resolveGenreSlug } from '@/lib/db'
+import { genrePath, zoneGenrePath } from '@/lib/hrefs'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, genreMeta, ogImage } from '@/lib/seo'
 import { MIN_EVENTS_TO_INDEX, genreZonesHeading, homeCrumb, formatEventDate, vacios, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
+// El segmento de la URL es el slug del genero. Se sigue aceptando el nombre
+// codificado que publicabamos antes (/genre/Global%20Hits), porque esas URLs
+// estan indexadas: se resuelven igual y el componente responde un 308 al slug
+// para trasladar la autoridad sin dejar dos URLs con el mismo contenido.
+async function resolveGenre(param: string) {
+  const bySlug = await resolveGenreSlug(param)
+  if (bySlug) return { name: bySlug, legacy: false }
+  let legacy: string
+  try {
+    legacy = decodeURIComponent(param)
+  } catch {
+    return null
+  }
+  if (await genreExists(legacy)) return { name: legacy, legacy: true }
+  return null
+}
+
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
-  const name = decodeURIComponent(params.name)
   // Ver nota en /[zona]: con streaming el notFound() del componente llega
   // tarde para fijar el 404.
-  if (!(await genreExists(name))) notFound()
+  const resolved = await resolveGenre(params.name)
+  if (!resolved) notFound()
+  const name = resolved.name
 
   const { title, description, eyebrow } = genreMeta(name, params.locale)
   // Mismo umbral que los cruces zona x genero: un genero sin agenda es una
@@ -21,16 +40,18 @@ export async function generateMetadata({ params }: { params: { locale: string; n
   return {
     title,
     description,
-    alternates: buildAlternates(`/genre/${encodeURIComponent(name)}`, params.locale),
-    openGraph: { title, description, type: 'website', url: `/genre/${encodeURIComponent(name)}`, images },
+    alternates: buildAlternates(genrePath(name), params.locale),
+    openGraph: { title, description, type: 'website', url: genrePath(name), images },
     twitter: { card: 'summary_large_image', images },
     ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 
 export default async function GenrePage({ params }: { params: { locale: string; name: string } }) {
-  const name = decodeURIComponent(params.name)
-  if (!(await genreExists(name))) return notFound()
+  const resolved = await resolveGenre(params.name)
+  if (!resolved) return notFound()
+  const name = resolved.name
+  if (resolved.legacy) permanentRedirect(localizedPath(genrePath(name), params.locale))
 
   const { title, eyebrow, intro, heading } = genreMeta(name, params.locale)
   const [events, zonas] = await Promise.all([
@@ -106,7 +127,7 @@ export default async function GenrePage({ params }: { params: { locale: string; 
               {zonasConAgenda.map((z) => (
                 <Link
                   key={z.slug}
-                  href={`/${z.slug}/genre/${params.name}`}
+                  href={zoneGenrePath(z.slug, name)}
                   className="text-xs px-3 py-1.5 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 transition-colors"
                   prefetch={false}
                 >

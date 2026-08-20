@@ -35,6 +35,29 @@ export function djIsIndexable(
   return (dj.short_bio || dj.bio || '').trim().length >= MIN_DJ_BIO_TO_INDEX
 }
 
+// Las fichas de club eran el ultimo bloque generado sin umbral: entraban al
+// sitemap con solo `status = 'approved'`, mientras zonas, DJs y generos ya
+// pasaban por su filtro. Una ficha sin agenda, sin foto y con dos lineas de
+// descripcion no le gana a la ficha de Google Maps del mismo local: es la
+// misma informacion con menos datos, y por volumen arrastra la calidad media
+// del dominio.
+//
+// La ficha sigue existiendo y enlazada desde /clubs y desde las zonas; lo que
+// se retira es la invitacion a indexarla hasta que tenga algo propio.
+export const MIN_CLUB_DESC_TO_INDEX = 160
+
+export function clubIsIndexable(
+  club: { description?: string | null; images?: unknown; logo_url?: string | null } | null | undefined,
+  upcomingEvents: number,
+) {
+  if (!club) return false
+  // Con agenda propia la ficha ya aporta lo que no tiene ninguna otra fuente.
+  if (upcomingEvents > 0) return true
+  const hasImage = (Array.isArray(club.images) && club.images.length > 0) || !!club.logo_url
+  const hasText = (club.description || '').trim().length >= MIN_CLUB_DESC_TO_INDEX
+  return hasImage && hasText
+}
+
 export type WhenKey = 'today' | 'weekend'
 
 // Slugs traducidos: la ventaja de estas paginas es la keyword temporal

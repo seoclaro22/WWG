@@ -6,6 +6,7 @@ import { dictionaries } from '@/lib/dictionaries'
 import { routing } from '@/i18n/routing'
 import { MIN_EVENTS_TO_INDEX, nearMeta, nearSlug, whenMeta, whenRange, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
 import { listMeta } from '@/lib/seo'
+import { genrePath } from '@/lib/hrefs'
 
 // Solo los generos con agenda real. Un genero "activo" en la tabla puede no
 // tener ni un evento: sus paginas ya salian noindex y fuera del sitemap, pero
@@ -142,7 +143,7 @@ export async function Footer({ locale }: { locale: string }) {
               cada uno se estiraba la fila entera del grid de arriba. */}
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
             {genres.map((name) => (
-              <Link key={name} href={`/genre/${encodeURIComponent(name)}`} className="text-xs text-white/55 hover:text-gold" prefetch={false}>
+              <Link key={name} href={genrePath(name)} className="text-xs text-white/55 hover:text-gold" prefetch={false}>
                 {name}
               </Link>
             ))}

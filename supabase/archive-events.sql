@@ -1,5 +1,9 @@
 -- Archivado de eventos pasados sin perder estadisticas
 -- Ejecutar en el SQL Editor de Supabase (una sola vez).
+--
+-- El fix de `images`/`slug` no copiados al archivo (huerfanos en Storage,
+-- eventos archivados irresolubles) vive en fix-archive-images.sql, que se
+-- ejecuta despues de este script.
 
 -- 1) Tabla de archivo: snapshot ligero del evento para que las estadisticas
 --    puedan seguir resolviendo nombres despues del borrado.

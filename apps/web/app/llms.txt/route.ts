@@ -1,6 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase'
 import { fetchZoneFacts, fetchZonesMap } from '@/lib/db'
-import { clubPath, djPath, eventPath } from '@/lib/hrefs'
+import { clubPath, djPath, eventPath, genrePath } from '@/lib/hrefs'
 import { nearSlug, whenSlug, zoneFaq } from '@/lib/seo-pages'
 
 export const revalidate = 3600
@@ -133,7 +133,7 @@ export async function GET() {
   if (genreCounts.size) {
     lines.push('## Generos musicales')
     for (const [g, n] of Array.from(genreCounts.entries()).sort((a, b) => b[1] - a[1])) {
-      lines.push(`- [${g}](${BASE}/genre/${encodeURIComponent(g)}): ${n} ${n === 1 ? 'fiesta anunciada' : 'fiestas anunciadas'}.`)
+      lines.push(`- [${g}](${BASE}${genrePath(g)}): ${n} ${n === 1 ? 'fiesta anunciada' : 'fiestas anunciadas'}.`)
     }
     lines.push('')
   }

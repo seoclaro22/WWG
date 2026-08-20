@@ -1,6 +1,7 @@
-import { notFound } from 'next/navigation'
-import { Link } from '@/lib/navigation'
-import { fetchClubsPublic, fetchEvents, fetchZoneGenreCounts, fetchZonesMap, genreExists, resolveZoneSlug } from '@/lib/db'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { Link, localizedPath } from '@/lib/navigation'
+import { fetchClubsPublic, fetchEvents, fetchZoneGenreCounts, fetchZonesMap, genreExists, resolveGenreSlug, resolveZoneSlug } from '@/lib/db'
+import { genrePath, genreSlug, zoneGenrePath } from '@/lib/hrefs'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
@@ -22,9 +23,26 @@ export async function generateStaticParams() {
     // bajo demanda y sale noindex.
     return Array.from(counts.entries())
       .filter(([, n]) => n >= MIN_EVENTS_TO_INDEX)
-      .map(([genre]) => ({ zone, name: encodeURIComponent(genre) }))
+      .map(([genre]) => ({ zone, name: genreSlug(genre) }))
   }))
   return routing.locales.flatMap((locale) => perZone.flat().map((p) => ({ locale, ...p })))
+}
+
+// Igual que en /genre/[name]: el segmento es el slug, y el nombre codificado
+// que publicabamos antes se sigue aceptando para redirigirlo con un 308.
+async function resolveGenre(param: string) {
+  const bySlug = await resolveGenreSlug(param)
+  if (bySlug) return { name: bySlug, legacy: false }
+  let legacy: string
+  try {
+    legacy = decodeURIComponent(param)
+  } catch {
+    return null
+  }
+  // Mismo motivo que la zona: sin esto el cruce zona x cualquier cadena
+  // devolvia un 200, y aqui se multiplica por el numero de zonas.
+  if (await genreExists(legacy)) return { name: legacy, legacy: true }
+  return null
 }
 
 export async function generateMetadata({ params }: { params: { locale: string; zone: string; name: string } }) {
@@ -33,13 +51,12 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   // tarde para fijar el 404.
   if (!zoneName) notFound()
 
-  const genre = decodeURIComponent(params.name)
-  // Mismo motivo que la zona: sin esto el cruce zona x cualquier cadena
-  // devolvia un 200, y aqui se multiplica por el numero de zonas.
-  if (!(await genreExists(genre))) notFound()
+  const resolved = await resolveGenre(params.name)
+  if (!resolved) notFound()
+  const genre = resolved.name
 
   const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
-  const path = `/${params.zone}/genre/${params.name}`
+  const path = zoneGenrePath(params.zone, genre)
   const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
   const images = ogImage({ eyebrow, title: `${genre} · ${zoneName}`, subtitle: description })
 
@@ -57,8 +74,10 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
   const zoneName = await resolveZoneSlug(params.zone)
   if (!zoneName) return notFound()
 
-  const genre = decodeURIComponent(params.name)
-  if (!(await genreExists(genre))) return notFound()
+  const resolved = await resolveGenre(params.name)
+  if (!resolved) return notFound()
+  const genre = resolved.name
+  if (resolved.legacy) permanentRedirect(localizedPath(zoneGenrePath(params.zone, genre), params.locale))
 
   const { title, eyebrow, intro, empty } = zoneGenreMeta(genre, zoneName, params.locale)
   const [events, clubs] = await Promise.all([
@@ -122,7 +141,7 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
         </div>
 
         <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
-          <Link href={`/genre/${params.name}`} className="text-xs px-3 py-1.5 rounded-full border border-[#d8af3a]/30 text-[#d8af3a] hover:bg-[#d8af3a]/10 transition-colors" prefetch={false}>
+          <Link href={genrePath(genre)} className="text-xs px-3 py-1.5 rounded-full border border-[#d8af3a]/30 text-[#d8af3a] hover:bg-[#d8af3a]/10 transition-colors" prefetch={false}>
             {genre}
           </Link>
           <Link href={`/${params.zone}`} className="text-xs px-3 py-1.5 rounded-full border border-white/15 text-white/60 hover:text-white transition-colors" prefetch={false}>

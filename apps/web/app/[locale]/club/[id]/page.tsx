@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado } from '@/lib/seo-pages'
+import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 import { openingHoursSpecification } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
@@ -56,6 +56,10 @@ export async function generateMetadata({ params }: { params: { locale: string; i
     },
     twitter: { card: 'summary_large_image' },
     alternates: buildAlternates(ruta, params.locale),
+    // Coherente con clubEntries() del sitemap: la ficha sin agenda, sin foto y
+    // sin descripcion propia no se ofrece a indexar, pero se sigue rastreando
+    // para que los enlaces a sus eventos y a su zona cuenten.
+    ...(clubIsIndexable(club, proximos.length) ? {} : { robots: { index: false, follow: true } }),
   }
 }
 

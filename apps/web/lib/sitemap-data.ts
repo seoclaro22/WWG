@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next'
 import { getSupabaseClient } from '@/lib/supabase'
-import { countUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
+import { countUpcomingEvents, fetchClubIdsWithUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
 import { localizedUrl, hreflangMap } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
+import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, clubIsIndexable, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
 import { routing } from '@/i18n/routing'
-import { clubPath, djPath, eventPath } from '@/lib/hrefs'
+import { clubPath, djPath, eventPath, genrePath, zoneGenrePath } from '@/lib/hrefs'
 
 // Los datos de cada bloque del sitemap, separados de la ruta que los sirve.
 // Antes vivian todos en app/sitemap.ts; se extrajeron al partir el sitemap en
@@ -76,12 +76,20 @@ export async function eventEntries(): Promise<Entry[]> {
   )
 }
 
+// Solo las fichas con contenido propio, igual que los DJ. El resto sigue
+// existiendo y enlazada desde /clubs y desde su zona, pero no se ofrece a
+// indexar: ver clubIsIndexable en seo-pages.ts.
 export async function clubEntries(): Promise<Entry[]> {
   const sb = getSupabaseClient()
-  const { data } = await sb.from('clubs').select('id,slug,created_at').eq('status', 'approved').limit(1000)
-  return (data || []).flatMap((c: any) =>
-    entries(clubPath(c), { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
-  )
+  const [{ data }, withEvents] = await Promise.all([
+    sb.from('clubs').select('id,slug,created_at,description,images,logo_url').eq('status', 'approved').limit(1000),
+    fetchClubIdsWithUpcomingEvents(),
+  ])
+  return (data || [])
+    .filter((c: any) => clubIsIndexable(c, withEvents.has(c.id) ? 1 : 0))
+    .flatMap((c: any) =>
+      entries(clubPath(c), { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
+    )
 }
 
 // Solo los DJ con contenido propio. El resto sigue existiendo y enlazado
@@ -107,7 +115,7 @@ export async function genreEntries(): Promise<Entry[]> {
   const out = await Promise.all((data || []).map(async (g: any) => {
     const found = await fetchEvents({ genre: g.name, limit: MIN_EVENTS_TO_INDEX })
     if (found.length < MIN_EVENTS_TO_INDEX) return []
-    return entries(`/genre/${encodeURIComponent(g.name)}`, { changeFrequency: 'daily', priority: 0.6 })
+    return entries(genrePath(g.name), { changeFrequency: 'daily', priority: 0.6 })
   }))
   return out.flat()
 }
@@ -152,7 +160,7 @@ export async function zoneEntries(): Promise<Entry[]> {
       const counts = await fetchZoneGenreCounts(zoneName)
       for (const [genre, n] of counts) {
         if (n < MIN_EVENTS_TO_INDEX) continue
-        out.push(...entries(`/${slug}/genre/${encodeURIComponent(genre)}`, { changeFrequency: 'daily', priority: 0.7 }))
+        out.push(...entries(zoneGenrePath(slug, genre), { changeFrequency: 'daily', priority: 0.7 }))
       }
 
       return out

@@ -1,5 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase'
 import type { EventPublic, Club } from './types'
+import { genreSlug } from '@/lib/hrefs'
 
 function normalizeEventFromDate(from?: string) {
   const now = new Date()
@@ -342,6 +343,36 @@ export function slugifyZone(value: string) {
     .replace(/^-+|-+$/g, '')
 }
 
+// slug -> nombre real del genero ("global-hits" -> "Global Hits").
+//
+// Se construye de los mismos datos que mira genreExists (eventos y DJs) y no
+// de la tabla `genres`: hay generos usados en eventos que no estan dados de
+// alta ahi, y esas paginas ya devolvian 200 antes de este cambio. Resolver
+// solo por la tabla las habria convertido en 404.
+export async function fetchGenresMap() {
+  const sb = getSupabaseClient()
+  const [eventsRes, djsRes] = await Promise.all([
+    sb.from('events').select('genres').not('genres', 'is', null).limit(2000),
+    sb.from('djs').select('genres').not('genres', 'is', null).limit(1000),
+  ])
+  const rows = [...(eventsRes.data || []), ...(djsRes.data || [])] as Array<{ genres?: string[] | null }>
+  const map = new Map<string, string>()
+  for (const row of rows) {
+    for (const raw of row.genres || []) {
+      const name = String(raw).trim()
+      if (!name) continue
+      const slug = genreSlug(name)
+      if (!slug || map.has(slug)) continue
+      map.set(slug, name)
+    }
+  }
+  return map
+}
+
+export async function resolveGenreSlug(slug: string) {
+  return (await fetchGenresMap()).get(slug) || null
+}
+
 export async function fetchZonesMap() {
   const sb = getSupabaseClient()
   const [clubsRes, eventsRes] = await Promise.all([
@@ -371,6 +402,23 @@ export async function resolveZoneSlug(slug: string) {
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 export function isUuid(value: string) {
   return UUID_RE.test(value)
+}
+
+// Un evento cuya URL sigue viva pero ya paso por archive_old_events(): no
+// esta en `events` ni en events_public, asi que fetchEvent devuelve null y
+// la ficha caia en un 404 seco. events_archive_public da lo justo (club_id)
+// para mandar a la ficha del club en su lugar. Requiere haber aplicado
+// supabase/fix-archive-images.sql; si esa vista no existe todavia esto
+// simplemente no encuentra nada y la pagina sigue cayendo en 404 como antes.
+export async function fetchArchivedEventClub(idOrSlug: string) {
+  const sb = getSupabaseClient()
+  const { data, error } = await sb
+    .from('events_archive_public')
+    .select('club_id')
+    .eq(isUuid(idOrSlug) ? 'id' : 'slug', idOrSlug)
+    .maybeSingle()
+  if (error) return null
+  return (data as { club_id: string | null } | null)?.club_id || null
 }
 
 export async function fetchClub(idOrSlug: string) {
@@ -460,6 +508,35 @@ export async function fetchDjEvents(djId: string, limit = 10) {
 //
 // Va en dos consultas para todo el catalogo, no una por DJ: quien pregunta
 // esto es el sitemap, que tiene que decidir sobre ~200 fichas de una vez.
+// Los clubs que tienen agenda anunciada, en una sola consulta. Es lo que
+// distingue una ficha nuestra de la de Google Maps, y por tanto el primer
+// criterio de clubIsIndexable.
+export async function fetchClubIdsWithUpcomingEvents(): Promise<Set<string>> {
+  const sb = getSupabaseClient()
+  const nowIso = new Date().toISOString()
+  let { data, error } = await sb
+    .from('events_public')
+    .select('club_id')
+    .not('club_id', 'is', null)
+    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+    .eq('status', 'published')
+    .limit(2000)
+  // Mismo respaldo que el resto de consultas a events_public: la vista no
+  // siempre expone `status`.
+  if (error && String(error.message || '').toLowerCase().includes('status')) {
+    const retry = await sb
+      .from('events_public')
+      .select('club_id')
+      .not('club_id', 'is', null)
+      .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+      .limit(2000)
+    data = retry.data as any
+    error = retry.error as any
+  }
+  if (error) { console.error('fetchClubIdsWithUpcomingEvents error', error); return new Set() }
+  return new Set((data || []).map((e: any) => e.club_id).filter(Boolean))
+}
+
 export async function fetchDjIdsWithUpcomingEvents(): Promise<Set<string>> {
   const sb = getSupabaseClient()
   const nowIso = new Date().toISOString()

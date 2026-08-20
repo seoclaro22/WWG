@@ -1,7 +1,7 @@
 import { Link, localizedPath } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
-import { fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, fetchRelatedEvents, slugifyZone } from '@/lib/db'
-import { clubPath, djPath, eventPath } from '@/lib/hrefs'
+import { fetchArchivedEventClub, fetchEvent, fetchEventLineup, fetchClub, fetchClubEvents, fetchRelatedEvents, slugifyZone } from '@/lib/db'
+import { clubPath, djPath, eventPath, genrePath } from '@/lib/hrefs'
 import { EventCountdown } from '@/components/EventCountdown'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
@@ -111,7 +111,15 @@ export async function generateMetadata({ params }: { params: { locale: string; i
 
 export default async function EventDetail({ params }: { params: { locale: string; id: string } }) {
   const e: any = await fetchEvent(params.id)
-  if (!e) return notFound()
+  if (!e) {
+    // El evento ya termino y pasa hace tiempo por archive_old_events(): en
+    // vez de un 404 seco se manda al usuario (y al rastreador) a la ficha del
+    // club, que sigue viva y es lo mas cercano que queda a esa URL.
+    const clubId = await fetchArchivedEventClub(params.id)
+    const club = clubId ? await fetchClub(clubId) : null
+    if (club) permanentRedirect(localizedPath(clubPath(club), params.locale))
+    return notFound()
+  }
 
   // Igual que en clubs y DJs: la URL vieja con UUID responde 308 al slug.
   if (e.slug && params.id !== e.slug) {
@@ -308,7 +316,7 @@ export default async function EventDetail({ params }: { params: { locale: string
             {(e as any).genres.map((g: string, i: number) => (
               <Link
                 key={i}
-                href={`/genre/${encodeURIComponent(g)}`}
+                href={genrePath(g)}
                 className="text-xs px-3 py-1 rounded-full border border-[#d8af3a]/40 text-[#d8af3a]/90 bg-[#d8af3a]/8 font-medium hover:bg-[#d8af3a]/15 transition-colors"
               >
                 {g}

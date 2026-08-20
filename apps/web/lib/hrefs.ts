@@ -17,3 +17,32 @@ export function djPath(d: ConSlug) {
 export function eventPath(e: ConSlug) {
   return `/event/${e.slug || e.id}`
 }
+
+// Los generos no viven en una tabla con slug propio: son cadenas dentro del
+// array `genres` de eventos y DJs, y la URL se construia con
+// encodeURIComponent del nombre. Eso publicaba URLs como
+// /mallorca/genre/Global%20Hits, con el %20 dentro del slug.
+//
+// El slug se calcula del nombre en vez de leerse de la base de datos para que
+// enlazar no cueste una consulta: la resolucion inversa (slug -> nombre) si
+// necesita el mapa, y esta en db.ts.
+//
+// Mismo algoritmo que slugifyZone: se repite aqui porque este modulo lo
+// importan componentes de cliente y db.ts arrastra el cliente de servidor de
+// Supabase.
+export function genreSlug(name: string) {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+export function genrePath(name: string) {
+  return `/genre/${genreSlug(name)}`
+}
+
+export function zoneGenrePath(zoneSlug: string, name: string) {
+  return `/${zoneSlug}/genre/${genreSlug(name)}`
+}
