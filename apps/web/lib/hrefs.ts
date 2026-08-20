@@ -39,10 +39,20 @@ export function genreSlug(name: string) {
     .replace(/^-+|-+$/g, '')
 }
 
-export function genrePath(name: string) {
-  return `/genre/${genreSlug(name)}`
+// El segmento de la URL tambien se traduce, como "hoy"/"today"/"heute": un
+// sitio en castellano con una palabra en ingles en la URL ("genre") no
+// encaja con como busca ese idioma, y para en/de es justo la palabra que se
+// espera. Alemán toma prestada la misma palabra que ingles (uso habitual).
+const GENRE_SEGMENT: Record<string, string> = { es: 'genero', en: 'genre', de: 'genre' }
+
+export function genreSegment(locale: string) {
+  return GENRE_SEGMENT[locale] || GENRE_SEGMENT.es
 }
 
-export function zoneGenrePath(zoneSlug: string, name: string) {
-  return `/${zoneSlug}/genre/${genreSlug(name)}`
+export function genrePath(name: string, locale: string) {
+  return `/${genreSegment(locale)}/${genreSlug(name)}`
+}
+
+export function zoneGenrePath(zoneSlug: string, name: string, locale: string) {
+  return `/${zoneSlug}/${genreSegment(locale)}/${genreSlug(name)}`
 }

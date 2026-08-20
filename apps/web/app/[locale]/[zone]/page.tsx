@@ -153,7 +153,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
             {genres.map((g) => (
               <Link
                 key={g}
-                href={zoneGenrePath(params.zone, g)}
+                href={zoneGenrePath(params.zone, g, params.locale)}
                 className="text-xs px-3 py-1.5 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 transition-colors"
                 prefetch={false}
               >

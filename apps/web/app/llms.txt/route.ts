@@ -133,7 +133,7 @@ export async function GET() {
   if (genreCounts.size) {
     lines.push('## Generos musicales')
     for (const [g, n] of Array.from(genreCounts.entries()).sort((a, b) => b[1] - a[1])) {
-      lines.push(`- [${g}](${BASE}${genrePath(g)}): ${n} ${n === 1 ? 'fiesta anunciada' : 'fiestas anunciadas'}.`)
+      lines.push(`- [${g}](${BASE}${genrePath(g, 'es')}): ${n} ${n === 1 ? 'fiesta anunciada' : 'fiestas anunciadas'}.`)
     }
     lines.push('')
   }

@@ -316,7 +316,7 @@ export default async function EventDetail({ params }: { params: { locale: string
             {(e as any).genres.map((g: string, i: number) => (
               <Link
                 key={i}
-                href={genrePath(g)}
+                href={genrePath(g, params.locale)}
                 className="text-xs px-3 py-1 rounded-full border border-[#d8af3a]/40 text-[#d8af3a]/90 bg-[#d8af3a]/8 font-medium hover:bg-[#d8af3a]/15 transition-colors"
               >
                 {g}

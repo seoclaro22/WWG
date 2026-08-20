@@ -143,7 +143,7 @@ export async function Footer({ locale }: { locale: string }) {
               cada uno se estiraba la fila entera del grid de arriba. */}
           <div className="flex flex-wrap gap-x-4 gap-y-1.5">
             {genres.map((name) => (
-              <Link key={name} href={genrePath(name)} className="text-xs text-white/55 hover:text-gold" prefetch={false}>
+              <Link key={name} href={genrePath(name, locale)} className="text-xs text-white/55 hover:text-gold" prefetch={false}>
                 {name}
               </Link>
             ))}

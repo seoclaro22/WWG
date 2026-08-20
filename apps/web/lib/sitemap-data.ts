@@ -115,7 +115,7 @@ export async function genreEntries(): Promise<Entry[]> {
   const out = await Promise.all((data || []).map(async (g: any) => {
     const found = await fetchEvents({ genre: g.name, limit: MIN_EVENTS_TO_INDEX })
     if (found.length < MIN_EVENTS_TO_INDEX) return []
-    return entries(genrePath(g.name), { changeFrequency: 'daily', priority: 0.6 })
+    return localizedEntries((locale) => genrePath(g.name, locale), { changeFrequency: 'daily', priority: 0.6 })
   }))
   return out.flat()
 }
@@ -160,7 +160,7 @@ export async function zoneEntries(): Promise<Entry[]> {
       const counts = await fetchZoneGenreCounts(zoneName)
       for (const [genre, n] of counts) {
         if (n < MIN_EVENTS_TO_INDEX) continue
-        out.push(...entries(zoneGenrePath(slug, genre), { changeFrequency: 'daily', priority: 0.7 }))
+        out.push(...localizedEntries((locale) => zoneGenrePath(slug, genre, locale), { changeFrequency: 'daily', priority: 0.7 }))
       }
 
       return out

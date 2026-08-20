@@ -315,7 +315,7 @@ export const dictionaries: Record<string, Dict> = {
     'benefits.tickets': 'Historial en Tickets con tus reservas.',
     'benefits.sync': 'Sincronizacion entre dispositivos.',
     'benefits.reviews': 'Escribir resenas.',
-    'benefits.push': 'Notificaciones push (proximamente).',
+    'benefits.push': 'Notificaciones push de tus favoritos.',
 
     'reviews.title': 'Resenas',
     'reviews.empty': 'Aun no hay resenas publicadas.',
@@ -647,7 +647,7 @@ export const dictionaries: Record<string, Dict> = {
     'benefits.tickets': 'Tickets history with recent reservations.',
     'benefits.sync': 'Sync across devices.',
     'benefits.reviews': 'Write reviews.',
-    'benefits.push': 'Push notifications (soon).',
+    'benefits.push': 'Push notifications for your favorites.',
 
     'reviews.title': 'Reviews',
     'reviews.empty': 'No reviews yet.',
@@ -979,7 +979,7 @@ export const dictionaries: Record<string, Dict> = {
     'benefits.tickets': 'Tickets-Verlauf mit Reservierungen.',
     'benefits.sync': 'Synchronisierung uber Gerate.',
     'benefits.reviews': 'Bewertungen schreiben.',
-    'benefits.push': 'Push-Benachrichtigungen (bald).',
+    'benefits.push': 'Push-Benachrichtigungen für deine Favoriten.',
 
     'reviews.title': 'Bewertungen',
     'reviews.empty': 'Noch keine Bewertungen.',
