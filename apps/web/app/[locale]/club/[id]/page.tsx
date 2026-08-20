@@ -32,6 +32,12 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // Sin town se cae a zone, y sin zone se omite en vez de inventar Mallorca.
   const lugar = club.town || club.zone || null
   const place = lugar ? ` en ${lugar}` : ''
+  // Sin eventos, clubMetaDescription usa este respaldo tal cual (ver
+  // construir() en seo-pages.ts). Antes siempre era club.description, en
+  // castellano, asi que /en/club/x y /de/club/x anunciaban un idioma en el
+  // hreflang y entregaban otro en el snippet de busqueda. Con eventos si hay
+  // agenda, la plantilla de clubMetaDescription ya es propia de cada idioma.
+  const descripcionLocal = club.description_i18n?.[params.locale] || club.description
   // La agenda por delante de la descripcion: es lo unico que este resultado
   // tiene y no tienen la web oficial, Maps ni el Instagram del local.
   const description = clubMetaDescription(
@@ -42,7 +48,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       proxima: proximos[0] ? formatShortDate((proximos[0] as any).start_at, params.locale) : null,
     },
     params.locale,
-    club.description || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`,
+    descripcionLocal || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`,
   )
   return {
     title: tituloClub(club.name, lugar, params.locale),
@@ -123,7 +129,9 @@ export default async function ClubProfile({ params }: { params: { locale: string
     // que le dice a Google que hablan del mismo local y no de dos entidades.
     '@id': `https://wherewego.site${clubPath(club)}#club`,
     name: club.name,
-    ...(club.description ? { description: String(club.description).slice(0, 500) } : {}),
+    ...((club.description_i18n?.[params.locale] || club.description)
+      ? { description: String(club.description_i18n?.[params.locale] || club.description).slice(0, 500) }
+      : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
     address: {
       '@type': 'PostalAddress',
