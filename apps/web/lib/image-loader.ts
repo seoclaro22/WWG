@@ -1,23 +1,31 @@
-// Las imagenes de nuestro storage las redimensiona Supabase, no Vercel.
+// Las imagenes de nuestro storage se sirven ya redimensionadas, sin pasar por
+// ningun optimizador en tiempo de peticion.
 //
-// El optimizador de Vercel tiene un tope de 5000 transformaciones al mes y,
-// una vez agotado, devuelve 402 Payment Required en lugar de la imagen. En
-// produccion eso se veia como imagenes rotas a medias: los tamanos ya
-// cacheados seguian saliendo y los nuevos no, asi que en movil (que pide
-// anchos distintos a los del escritorio) faltaban casi todas.
+// Historia: primero se uso el optimizador de Vercel (tope de 5000
+// transformaciones al mes, al agotarse devuelve 402 y las imagenes salen rotas
+// a medias). Se cambio a /render/image/ de Supabase creyendo que no tenia
+// tope, pero si lo tiene y es mucho mas bajo: el plan Pro incluye 100
+// "imagenes origen" distintas por ciclo de facturacion, contadas por imagen
+// unica y no por transformacion. Un directorio con cientos de fichas lo supera
+// siempre, y al superarlo el proyecto entra en modo solo lectura.
 //
-// Supabase transforma desde el mismo storage con /render/image/ en vez de
-// /object/, sin tope de transformaciones. Verificado sobre una imagen real:
-// 128px -> 8.6 KB, 256px -> 16 KB, 640px -> 26.7 KB, frente a 51.7 KB del
-// original. No amplia por encima del tamano de origen ni falla al pedir
-// anchos mayores, asi que no hace falta acotar el ancho.
+// Solucion: los tamanos se generan una vez al subir (components/UploadImage.tsx)
+// y se guardan como objetos independientes. Aqui solo se elige cual pedir, asi
+// que el contador de transformaciones se queda en cero.
+//
+// La URL guardada en la base de datos declara que variantes existen:
+//
+//   .../object/public/media/events/1737-flyer.webp?v=256,640
+//
+// que significa que ademas del fichero base hay un _256.webp y un _640.webp al
+// lado. Sin ese ?v= la imagen es antigua (subida antes de este cambio) y se
+// sirve tal cual: pesa mas, pero nunca se rompe. Eso permite migrar las
+// imagenes viejas poco a poco en vez de con un corte seco.
 const SUPABASE_OBJECT = '/storage/v1/object/public/'
-const SUPABASE_RENDER = '/storage/v1/render/image/public/'
 
 export default function imageLoader({
   src,
   width,
-  quality,
 }: {
   src: string
   width: number
@@ -28,11 +36,26 @@ export default function imageLoader({
   // SafeImage, asi que en la practica esto solo cubre rutas locales.
   if (!src.includes(SUPABASE_OBJECT)) return src
 
-  const url = src.replace(SUPABASE_OBJECT, SUPABASE_RENDER)
-  const sep = url.includes('?') ? '&' : '?'
-  // resize=contain es obligatorio, no un extra. Con solo width, Supabase
-  // estrecha la imagen y le deja el alto original: una foto de 2560x1707
-  // pedida a 400 sale 400x1707, deformada. Con contain sale 400x267, que es
-  // la proporcion real. Verificado sobre imagenes cuadradas y apaisadas.
-  return `${url}${sep}width=${width}&resize=contain&quality=${quality || 75}`
+  const declared = /[?&]v=([\d,]+)/.exec(src)
+  // Imagen sin variantes generadas: se devuelve intacta, incluida su query.
+  if (!declared) return src
+
+  const q = src.indexOf('?')
+  const base = q === -1 ? src : src.slice(0, q)
+
+  const widths = declared[1]
+    .split(',')
+    .map((n) => parseInt(n, 10))
+    .filter((n) => Number.isFinite(n) && n > 0)
+    .sort((a, b) => a - b)
+
+  // La mas pequena que cubra el ancho pedido. Si ninguna llega, el fichero
+  // base ya es el mayor que se genero.
+  const pick = widths.find((w) => w >= width)
+  if (pick === undefined) return base
+
+  const dot = base.lastIndexOf('.')
+  return dot === -1
+    ? `${base}_${pick}`
+    : `${base.slice(0, dot)}_${pick}${base.slice(dot)}`
 }
