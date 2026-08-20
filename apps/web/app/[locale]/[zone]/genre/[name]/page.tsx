@@ -1,14 +1,14 @@
 import { notFound, permanentRedirect } from 'next/navigation'
 import { Link, localizedPath } from '@/lib/navigation'
 import { fetchClubsPublic, fetchEvents, fetchZoneGenreCounts, fetchZonesMap, genreExists, resolveGenreSlug, resolveZoneSlug } from '@/lib/db'
-import { genrePath, genreSlug, zoneGenrePath } from '@/lib/hrefs'
+import { clubPath, genrePath, genreSlug, zoneGenrePath } from '@/lib/hrefs'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
 import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
-import { MIN_EVENTS_TO_INDEX, formatEventDate, zoneGenreMeta } from '@/lib/seo-pages'
+import { genreZoneGuide, genreZoneGuideHeadings, MIN_EVENTS_TO_INDEX, formatEventDate, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 export const revalidate = 300
@@ -80,6 +80,8 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
   if (resolved.legacy) permanentRedirect(localizedPath(zoneGenrePath(params.zone, genre), params.locale))
 
   const { title, eyebrow, intro, empty } = zoneGenreMeta(genre, zoneName, params.locale)
+  const guide = genreZoneGuide(zoneName, genre, params.locale)
+  const guideH = genreZoneGuideHeadings(params.locale)
   const [events, clubs] = await Promise.all([
     fetchEvents({ zone: zoneName, genre, limit: 40, sponsoredFirst: true }),
     fetchClubsPublic({ zone: zoneName, genre, limit: 8 }),
@@ -106,6 +108,16 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
           <h1 className="text-3xl font-bold text-white">{title}</h1>
           <p className="text-sm text-white/60 mt-2 max-w-xl">{intro}</p>
         </div>
+
+        {/* Guia evergreen: texto fijo e investigado, no depende de la agenda.
+            Ver la nota de genreZoneGuide en seo-pages.ts. Solo existe para el
+            cruce zona x genero que se ha investigado de verdad. */}
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.escena(genre, zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.intro}</p>
+          </div>
+        )}
 
         {clubs.length > 0 && (
           <div className="grid gap-3">
@@ -139,6 +151,46 @@ export default async function ZoneGenrePage({ params }: { params: { locale: stri
             <p className="text-sm text-white/50 min-h-[45vh] flex items-center justify-center text-center">{empty}</p>
           )}
         </div>
+
+        {guide && guide.salas.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.salas(genre, zoneName)}</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {guide.salas.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={clubPath({ id: s.slug, slug: s.slug })}
+                  className="block rounded-2xl border border-white/10 bg-white/5 p-4 hover:border-[#d8af3a]/30 transition-colors"
+                  prefetch={false}
+                >
+                  <h3 className="text-sm font-medium text-white">{s.titulo}</h3>
+                  <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{s.texto}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.temporada(genre, zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.temporada}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.precio(genre, zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.precio}</p>
+          </div>
+        )}
+
+        {guide && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.consejos(genre, zoneName)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.consejos}</p>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
           <Link href={genrePath(genre)} className="text-xs px-3 py-1.5 rounded-full border border-[#d8af3a]/30 text-[#d8af3a] hover:bg-[#d8af3a]/10 transition-colors" prefetch={false}>

@@ -790,6 +790,104 @@ export function zoneGuide(zone: string, locale: string): ZoneGuide | undefined {
   return porZona[locale] || porZona[routing.defaultLocale]
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Guia evergreen del cruce zona x genero
+//
+// Mismo motivo y misma regla que ZONE_GUIDES: solo entra el cruce que se ha
+// investigado de verdad, con datos verificables (nombres de sala, horarios,
+// rango de precio), nunca una plantilla generica repetida por genero. Nace
+// para /mallorca/genre/techno, la primera keyword que un cliente pidio
+// posicionar en el numero 1: la pagina ya tenia agenda real (eventos +
+// clubs etiquetados Techno), pero nada de contenido fijo que sostuviera la
+// URL fuera de temporada o le diera a Google algo mas que un listado.
+export type GenreZoneGuide = {
+  intro: string
+  salas: { titulo: string; texto: string; slug: string }[]
+  temporada: string
+  precio: string
+  consejos: string
+}
+
+const GENRE_ZONE_GUIDES: Record<string, Record<string, Record<string, GenreZoneGuide>>> = {
+  Mallorca: {
+    Techno: {
+      es: {
+        intro: 'Mallorca tiene una escena de techno propia, separada de los macroclubs turísticos de Magaluf. Junto a Amok, la sala de referencia de los últimos años, hay un circuito de salas de 200 a 400 personas en Palma con sesiones semanales de techno y tech house todo el año, no solo en temporada alta.',
+        salas: [
+          { titulo: 'Amok', slug: 'amok-mallorca', texto: 'La sala de techno y house más relevante de la isla, cerca del aeropuerto en Playa de Palma. Programa sesiones de viernes a sábado (00:00-06:00) con nombres del circuito europeo, y los domingos monta la Tribu Sunset Party en su terraza.' },
+          { titulo: 'BCM Mallorca', slug: 'bcm-mallorca', texto: 'El macroclub de Magaluf, el más grande y con más producción de la isla. No es una sala de techno en sí, pero sus noches de temporada alta traen a DJs internacionales de la escena (Hannah Laing entre los carteles de 2026).' },
+          { titulo: 'Wave Club', slug: 'wave-club', texto: 'Sala de Ponent, en Palma, con programación semanal de techno y tech house dentro del circuito de clubs más pequeños y menos turísticos de la ciudad.' },
+          { titulo: 'Selva Club', slug: 'selva-club', texto: 'Otra de las salas de referencia del circuito underground palmesano, con sesiones de techno regulares fuera del radar de las guías turísticas.' },
+        ],
+        temporada: 'Amok programa techno y house los siete días de la semana durante buena parte del año, así que no depende solo del verano. BCM y el resto de macroclubs de Magaluf sí son estacionales: abren de abril/mayo a octubre y cierran por completo en invierno. Julio y agosto concentran los carteles más fuertes, pero también las entradas más caras y las salas más llenas.',
+        precio: 'La entrada estándar en Amok ronda entre 15 y 35 €, más barata cuanto antes se compre (early bird). En el resto de salas de techno de Palma, fuera del circuito de macroclubs, lo habitual es un rango de 10 a 20 €. El ambiente arranca tarde: la hora punta real está entre las 2:00 y las 5:00.',
+        consejos: 'Comprar la entrada con antelación es lo que marca la diferencia de precio, sobre todo en Amok. Si el plan es solo techno y no macroclub turístico, las salas de Ponent (Wave, Selva) dan un ambiente más local que Magaluf. Y como el pico de la noche es de madrugada, llegar antes de las 2:00 significa encontrarse la sala todavía vacía.',
+      },
+      en: {
+        intro: "Mallorca has its own techno scene, separate from the touristy megaclubs of Magaluf. Alongside Amok, the island's reference venue of the last few years, there's a circuit of 200-to-400-capacity rooms in Palma running weekly techno and tech house sessions year-round, not just in high season.",
+        salas: [
+          { titulo: 'Amok', slug: 'amok-mallorca', texto: "The island's leading techno and house venue, near the airport in Playa de Palma. Runs Friday-to-Saturday sessions (midnight-6am) with names from the European circuit, plus a Sunday sunset party on its terrace." },
+          { titulo: 'BCM Mallorca', slug: 'bcm-mallorca', texto: "The Magaluf megaclub, the island's biggest and most production-heavy. Not a dedicated techno room, but its high-season nights bring in international names from the scene (Hannah Laing was on the 2026 lineup)." },
+          { titulo: 'Wave Club', slug: 'wave-club', texto: "A room in Palma's Ponent district with a weekly techno and tech house line-up, part of the city's smaller, less touristy club circuit." },
+          { titulo: 'Selva Club', slug: 'selva-club', texto: "Another reference venue on Palma's underground circuit, with regular techno sessions off the tourist-guide radar." },
+        ],
+        temporada: "Amok books techno and house seven nights a week for most of the year, so it isn't just a summer thing. BCM and the rest of the Magaluf megaclubs are seasonal: they run from April/May to October and close completely over winter. July and August bring the biggest line-ups, but also the highest prices and the most crowded rooms.",
+        precio: 'A standard ticket at Amok runs €15 to €35, cheaper the earlier you buy (early bird). Elsewhere on the Palma techno circuit, outside the megaclub scene, expect €10 to €20. The night starts late: the real peak runs from 2am to 5am.',
+        consejos: "Buying ahead is what makes the price difference, especially at Amok. If the plan is pure techno rather than a touristy megaclub, the Ponent rooms (Wave, Selva) give a more local vibe than Magaluf. And since the peak hits in the small hours, arriving before 2am means the room is still empty.",
+      },
+      de: {
+        intro: 'Mallorca hat eine eigene Techno-Szene, getrennt von den touristischen Megaclubs in Magaluf. Neben Amok, dem wichtigsten Club der letzten Jahre, gibt es in Palma einen Kreis von Locations für 200 bis 400 Gäste mit wöchentlichen Techno- und Tech-House-Sets, das ganze Jahr über, nicht nur in der Hochsaison.',
+        salas: [
+          { titulo: 'Amok', slug: 'amok-mallorca', texto: 'Der wichtigste Techno- und House-Club der Insel, nahe dem Flughafen in Playa de Palma. Freitag bis Samstag von Mitternacht bis 6 Uhr mit Namen aus der europäischen Szene, sonntags Sunset Party auf der Terrasse.' },
+          { titulo: 'BCM Mallorca', slug: 'bcm-mallorca', texto: 'Der Megaclub in Magaluf, der größte und produktionsstärkste der Insel. Kein reiner Techno-Club, aber in der Hochsaison holt er internationale Namen der Szene (2026 unter anderem Hannah Laing).' },
+          { titulo: 'Wave Club', slug: 'wave-club', texto: 'Club im Palmaer Stadtteil Ponent mit wöchentlichem Techno- und Tech-House-Programm, Teil der kleineren, weniger touristischen Club-Szene der Stadt.' },
+          { titulo: 'Selva Club', slug: 'selva-club', texto: 'Ein weiterer wichtiger Club der Palmaer Underground-Szene mit regelmäßigen Techno-Sets abseits der Touristenführer.' },
+        ],
+        temporada: 'Amok bucht Techno und House an sieben Abenden die Woche, fast das ganze Jahr über, unabhängig von der Sommersaison. BCM und die übrigen Megaclubs in Magaluf sind dagegen saisonal: geöffnet von April/Mai bis Oktober, im Winter komplett geschlossen. Juli und August bringen die stärksten Line-ups, aber auch die höchsten Preise und die vollsten Clubs.',
+        precio: 'Der Standardeintritt bei Amok liegt bei 15 bis 35 €, günstiger im Vorverkauf (Early Bird). In den übrigen Techno-Clubs von Palma, außerhalb der Megaclub-Szene, sind 10 bis 20 € üblich. Die Nacht beginnt spät: der eigentliche Höhepunkt liegt zwischen 2 und 5 Uhr.',
+        consejos: 'Der Vorverkauf macht den Preisunterschied aus, vor allem bei Amok. Wer reinen Techno statt eines touristischen Megaclubs sucht, findet in Ponent (Wave, Selva) eine lokalere Atmosphäre als in Magaluf. Und da der Höhepunkt erst in den frühen Morgenstunden kommt, ist der Club vor 2 Uhr noch leer.',
+      },
+    },
+  },
+}
+
+export function genreZoneGuide(zone: string, genre: string, locale: string): GenreZoneGuide | undefined {
+  const porZona = GENRE_ZONE_GUIDES[zone]
+  const porGenero = porZona?.[genre]
+  if (!porGenero) return undefined
+  return porGenero[locale] || porGenero[routing.defaultLocale]
+}
+
+export function genreZoneGuideHeadings(locale: string) {
+  const copy: Record<string, {
+    escena: (g: string, z: string) => string; salas: (g: string, z: string) => string
+    temporada: (g: string, z: string) => string; precio: (g: string, z: string) => string; consejos: (g: string, z: string) => string
+  }> = {
+    es: {
+      escena: (g, z) => `La escena de ${g} en ${z}`,
+      salas: (g, z) => `Dónde escuchar ${g} en ${z}`,
+      temporada: (g, z) => `Cuándo ir a fiestas de ${g} en ${z}`,
+      precio: (g, z) => `Cuánto cuesta una fiesta de ${g} en ${z}`,
+      consejos: (g, z) => `Consejos para una noche de ${g} en ${z}`,
+    },
+    en: {
+      escena: (g, z) => `The ${g} scene in ${z}`,
+      salas: (g, z) => `Where to hear ${g} in ${z}`,
+      temporada: (g, z) => `When to go to ${g} parties in ${z}`,
+      precio: (g, z) => `How much a ${g} night costs in ${z}`,
+      consejos: (g, z) => `Tips for a ${g} night in ${z}`,
+    },
+    de: {
+      escena: (g, z) => `Die ${g}-Szene in ${z}`,
+      salas: (g, z) => `Wo man ${g} in ${z} hört`,
+      temporada: (g, z) => `Wann man zu ${g}-Partys in ${z} gehen sollte`,
+      precio: (g, z) => `Was eine ${g}-Nacht in ${z} kostet`,
+      consejos: (g, z) => `Tipps für eine ${g}-Nacht in ${z}`,
+    },
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
 // Etiquetas de los enlaces internos que llevan desde /[zona] a sus paginas
 // hijas. Sin estos enlaces las paginas nuevas solo existirian en el sitemap.
 export function relatedLinksLabels(locale: string) {
