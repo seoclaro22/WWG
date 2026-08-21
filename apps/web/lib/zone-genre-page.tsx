@@ -13,7 +13,7 @@ import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
-import { buildAlternates, ogImage } from '@/lib/seo'
+import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import { genreZoneGuide, genreZoneGuideHeadings, MIN_EVENTS_TO_INDEX, formatEventDate, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
@@ -78,7 +78,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
   return {
     title,
     description,
-    alternates: buildAlternates(path, params.locale),
+    alternates: buildAlternatesFor((l) => zoneGenrePath(params.zone, genre, l), params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
     ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
