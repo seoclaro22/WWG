@@ -925,7 +925,7 @@ export function dateTag(locale: string) {
 // Santa", "sesiones de AJ Christou").
 type Seccion = (nombre: string) => string
 const SECCIONES: Record<string, {
-  clubAgenda: Seccion; clubDireccion: Seccion; clubFotos: Seccion
+  clubAgenda: Seccion; clubDireccion: Seccion; clubFotos: Seccion; clubHorario: Seccion
   djAgenda: Seccion; djSimilares: Seccion; djEscuchar: Seccion
   eventoLineup: Seccion; eventoMasDelClub: Seccion; eventoRelacionados: Seccion
 }> = {
@@ -933,6 +933,7 @@ const SECCIONES: Record<string, {
     clubAgenda: (n) => `Próximos eventos en ${n}`,
     clubDireccion: (n) => `Dónde está ${n}`,
     clubFotos: (n) => `Fotos de ${n}`,
+    clubHorario: (n) => `Horario de ${n}`,
     djAgenda: (n) => `Próximas sesiones de ${n}`,
     djSimilares: (n) => `DJs parecidos a ${n}`,
     djEscuchar: (n) => `Escucha a ${n}`,
@@ -944,6 +945,7 @@ const SECCIONES: Record<string, {
     clubAgenda: (n) => `Upcoming events at ${n}`,
     clubDireccion: (n) => `Where ${n} is`,
     clubFotos: (n) => `Photos of ${n}`,
+    clubHorario: (n) => `${n} opening hours`,
     djAgenda: (n) => `Upcoming ${n} sets`,
     djSimilares: (n) => `DJs similar to ${n}`,
     djEscuchar: (n) => `Listen to ${n}`,
@@ -955,6 +957,7 @@ const SECCIONES: Record<string, {
     clubAgenda: (n) => `Kommende Events im ${n}`,
     clubDireccion: (n) => `Wo ${n} liegt`,
     clubFotos: (n) => `Fotos von ${n}`,
+    clubHorario: (n) => `Öffnungszeiten von ${n}`,
     djAgenda: (n) => `Kommende Sets von ${n}`,
     djSimilares: (n) => `DJs ähnlich wie ${n}`,
     djEscuchar: (n) => `${n} anhören`,

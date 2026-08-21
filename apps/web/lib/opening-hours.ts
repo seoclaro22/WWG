@@ -72,3 +72,18 @@ export function openingHoursSpecification(raw: unknown) {
     closes: f.cierra,
   }))
 }
+
+const DIA_LOCAL: Record<string, Record<string, string>> = {
+  es: { Monday: 'Lunes', Tuesday: 'Martes', Wednesday: 'Miércoles', Thursday: 'Jueves', Friday: 'Viernes', Saturday: 'Sábado', Sunday: 'Domingo' },
+  en: { Monday: 'Monday', Tuesday: 'Tuesday', Wednesday: 'Wednesday', Thursday: 'Thursday', Friday: 'Friday', Saturday: 'Saturday', Sunday: 'Sunday' },
+  de: { Monday: 'Montag', Tuesday: 'Dienstag', Wednesday: 'Mittwoch', Thursday: 'Donnerstag', Friday: 'Freitag', Saturday: 'Samstag', Sunday: 'Sonntag' },
+}
+
+// Texto visible en la ficha, no solo el JSON-LD: "Viernes 23:30–06:00". Sin
+// esto el horario solo llegaba a Google via schema y nunca a quien lee la
+// pagina, que es la mitad de lo que pregunta la gente en el buscador.
+export function horarioTexto(raw: unknown, locale: string): { dia: string; franja: string }[] {
+  const franjas = parseOpenHours(raw)
+  const dias = DIA_LOCAL[locale] || DIA_LOCAL.es
+  return franjas.map((f) => ({ dia: dias[f.dia] || f.dia, franja: `${f.abre}–${f.cierra}` }))
+}

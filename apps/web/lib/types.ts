@@ -22,5 +22,6 @@ export type Club = {
   description: string | null
   description_i18n?: Record<string, string> | null
   address: string | null
+  phone?: string | null
   status: string
 }

@@ -12,7 +12,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
 import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
-import { openingHoursSpecification } from '@/lib/opening-hours'
+import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -121,6 +121,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
   }, params.locale)
 
   const horario = openingHoursSpecification(club.open_hours)
+  const horarioVisible = horarioTexto(club.open_hours, params.locale)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -133,6 +134,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
       ? { description: String(club.description_i18n?.[params.locale] || club.description).slice(0, 500) }
       : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
+    ...(club.phone ? { telephone: club.phone } : {}),
     address: {
       '@type': 'PostalAddress',
       ...(club.address ? { streetAddress: club.address } : {}),
@@ -228,6 +230,17 @@ export default async function ClubProfile({ params }: { params: { locale: string
             </svg>
             <T k="action.directions" />
           </a>
+          {club.phone && (
+            <a
+              href={`tel:${club.phone}`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/8 border border-white/10 text-white/80 text-sm font-medium hover:bg-white/12 hover:text-white transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path d="M2.5 1.5a1 1 0 0 1 1-.94l2 .17a1 1 0 0 1 .87.76l.4 1.6a1 1 0 0 1-.28.98l-.9.9a8.5 8.5 0 0 0 3.5 3.5l.9-.9a1 1 0 0 1 .98-.28l1.6.4a1 1 0 0 1 .76.87l.17 2a1 1 0 0 1-.94 1 10 10 0 0 1-10.06-10.06z" fill="currentColor"/>
+              </svg>
+              {club.phone}
+            </a>
+          )}
           {links?.instagram && (
             <a
               href={links.instagram}
@@ -313,6 +326,27 @@ export default async function ClubProfile({ params }: { params: { locale: string
             <p className="text-sm text-white/80 leading-snug">{club.address || club.zone || '—'}</p>
           </div>
         </div>
+
+        {/* Horario: solo si el dueño de la ficha lo ha rellenado, ver la nota
+            de lib/opening-hours.ts. */}
+        {horarioVisible.length > 0 && (
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 w-8 h-8 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center shrink-0">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6.5" stroke="rgba(255,255,255,0.5)" strokeWidth="1.3"/>
+                <path d="M8 4.5V8l2.5 1.5" stroke="rgba(255,255,255,0.5)" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold mb-0.5">{sec.clubHorario(club.name)}</h2>
+              <div className="text-sm text-white/80 leading-snug space-y-0.5">
+                {horarioVisible.map((h, i) => (
+                  <p key={i}>{h.dia} <span className="text-white/50">{h.franja}</span></p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Gallery */}
         {galleryImgs.length > 0 && (
