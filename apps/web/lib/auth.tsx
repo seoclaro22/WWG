@@ -52,6 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signUp(email: string, password: string) {
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+    fetch('/api/welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {})
   }
   async function signOut() {
     await supabase.auth.signOut()

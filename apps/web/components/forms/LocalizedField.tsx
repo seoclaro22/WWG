@@ -13,12 +13,12 @@ export function InputField({ name, labelKey, placeholderKey, type='text', requir
   )
 }
 
-export function TextAreaField({ name, labelKey, placeholderKey, rows=3 }: { name: string; labelKey: string; placeholderKey: string; rows?: number }) {
+export function TextAreaField({ name, labelKey, placeholderKey, rows=3, required=false }: { name: string; labelKey: string; placeholderKey: string; rows?: number; required?: boolean }) {
   const { t } = useI18n()
   return (
     <div className="space-y-1.5">
       <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">{t(labelKey)}</label>
-      <textarea name={name} rows={rows} className={`${inputCls} resize-none`} placeholder={t(placeholderKey)} />
+      <textarea name={name} rows={rows} required={required} className={`${inputCls} resize-none`} placeholder={t(placeholderKey)} />
     </div>
   )
 }

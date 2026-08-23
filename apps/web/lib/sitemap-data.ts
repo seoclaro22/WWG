@@ -57,6 +57,7 @@ export async function staticEntries(): Promise<Entry[]> {
     ...entries('/clubs', { changeFrequency: 'daily', priority: 0.7 }),
     ...entries('/djs', { changeFrequency: 'daily', priority: 0.7 }),
     ...entries('/promote', { changeFrequency: 'monthly', priority: 0.5 }),
+    ...entries('/contact', { changeFrequency: 'monthly', priority: 0.4 }),
     ...entries('/que-es-where-we-go', { changeFrequency: 'monthly', priority: 0.6 }),
     // Slug distinto por idioma: la keyword es la ruta.
     ...localizedEntries((locale) => `/${nearSlug(locale)}`, { changeFrequency: 'daily', priority: 0.9 }),

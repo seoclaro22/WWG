@@ -263,6 +263,15 @@ export const dictionaries: Record<string, Dict> = {
 
     'common.login_to_view': 'Inicia sesion para ver esta seccion.',
 
+    'contact.title': 'Contacto',
+    'contact.subtitle': 'Escribenos y te respondemos lo antes posible.',
+    'contact.name': 'Nombre',
+    'contact.email': 'Email',
+    'contact.message': 'Mensaje',
+    'contact.submit': 'Enviar mensaje',
+    'contact.success': 'Gracias. Hemos recibido tu mensaje.',
+    'contact.error_invalid': 'Revisa el nombre, el email y el mensaje: son obligatorios y el email debe ser valido.',
+
     'promote.title': 'Promociona tu Evento/Club',
     'promote.type': 'Tipo',
     'promote.type.event': 'Evento',
@@ -595,6 +604,15 @@ export const dictionaries: Record<string, Dict> = {
 
     'common.login_to_view': 'Login to view this section.',
 
+    'contact.title': 'Contact',
+    'contact.subtitle': 'Send us a message and we will get back to you soon.',
+    'contact.name': 'Name',
+    'contact.email': 'Email',
+    'contact.message': 'Message',
+    'contact.submit': 'Send message',
+    'contact.success': 'Thanks. We received your message.',
+    'contact.error_invalid': 'Check the name, email and message: all are required and the email must be valid.',
+
     'promote.title': 'Promote your Event/Club',
     'promote.type': 'Type',
     'promote.type.event': 'Event',
@@ -926,6 +944,15 @@ export const dictionaries: Record<string, Dict> = {
     'legal.notice': 'Unsere Richtlinien:',
 
     'common.login_to_view': 'Zum Anzeigen bitte anmelden.',
+
+    'contact.title': 'Kontakt',
+    'contact.subtitle': 'Schreib uns, wir melden uns so schnell wie moglich.',
+    'contact.name': 'Name',
+    'contact.email': 'E-Mail',
+    'contact.message': 'Nachricht',
+    'contact.submit': 'Nachricht senden',
+    'contact.success': 'Danke. Wir haben deine Nachricht erhalten.',
+    'contact.error_invalid': 'Prufe Name, E-Mail und Nachricht: alle sind Pflichtfelder und die E-Mail muss gultig sein.',
 
     'promote.title': 'Event/Club bewerben',
     'promote.type': 'Typ',

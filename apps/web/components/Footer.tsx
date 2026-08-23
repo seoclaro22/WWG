@@ -118,6 +118,7 @@ export async function Footer({ locale }: { locale: string }) {
             <li><Link href="/djs" className="hover:text-gold" prefetch={false}>{listMeta('djs', locale).title}</Link></li>
             <li><Link href="/que-es-where-we-go" className="hover:text-gold" prefetch={false}>{t('about.eyebrow')}</Link></li>
             <li><Link href="/promote" className="hover:text-gold" prefetch={false}>{t('nav.promote')}</Link></li>
+            <li><Link href="/contact" className="hover:text-gold" prefetch={false}>{t('contact.title')}</Link></li>
             <li><Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link></li>
             <li><Link href="/cookies" className="hover:text-gold" prefetch={false}>Cookies</Link></li>
           </ul>
