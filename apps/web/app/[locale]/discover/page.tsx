@@ -92,7 +92,7 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
   const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount, clubsCount, djsCount] = await Promise.all([
-    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 600, sponsoredFirst: true }) : Promise.resolve([] as any[]),
+    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 600, sponsoredFirst: true, grace: searchParams?.date === 'today' }) : Promise.resolve([] as any[]),
     tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 300 }) : Promise.resolve([] as any[]),
     tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 900 }) : Promise.resolve([] as any[]),
     fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   const { title, description, eyebrow } = whenMeta(key, zoneName, params.locale)
   const path = `/${params.zone}/${params.when}`
   const { from, to } = whenRange(key)
-  const count = (await fetchEvents({ zone: zoneName, from, to, limit: MIN_EVENTS_TO_INDEX })).length
+  const count = (await fetchEvents({ zone: zoneName, from, to, limit: MIN_EVENTS_TO_INDEX, grace: key === 'today' })).length
   const images = ogImage({ eyebrow, title: zoneName, subtitle: description })
 
   return {
@@ -53,7 +53,7 @@ export default async function WhenPage({ params }: { params: { locale: string; z
 
   const { title, eyebrow, intro, empty } = whenMeta(key, zoneName, params.locale)
   const { from, to } = whenRange(key)
-  const events = await fetchEvents({ zone: zoneName, from, to, limit: 60, sponsoredFirst: true })
+  const events = await fetchEvents({ zone: zoneName, from, to, limit: 60, sponsoredFirst: true, grace: key === 'today' })
 
   const dict = dictionaries[params.locale] || dictionaries[routing.defaultLocale]
   const other = WHEN_KEYS.filter((k) => k !== key)

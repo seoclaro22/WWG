@@ -150,7 +150,7 @@ export async function zoneEntries(): Promise<Entry[]> {
 
       for (const key of WHEN_KEYS) {
         const { from, to } = whenRange(key)
-        const found = await fetchEvents({ zone: zoneName, from, to, limit: MIN_EVENTS_TO_INDEX })
+        const found = await fetchEvents({ zone: zoneName, from, to, limit: MIN_EVENTS_TO_INDEX, grace: key === 'today' })
         if (found.length < MIN_EVENTS_TO_INDEX) continue
         out.push(...localizedEntries(
           (locale) => `/${slug}/${whenSlug(key, locale)}`,

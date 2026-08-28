@@ -17,18 +17,18 @@ function normalizeEventFromDate(from?: string) {
 // end_at esta poblado en el 100% de los eventos actuales, pero el or() cubre
 // tambien el caso de que algun evento futuro se cree sin end_at.
 //
-// Ademas de eso, el listado general da un dia y medio de margen tras el
-// end_at antes de retirar el evento: alguien mirando el sabado de madrugada
-// (justo cuando termino la fiesta del viernes) tiene que poder seguir
-// viendola, no que desaparezca en el segundo exacto en que acaba.
-const GRACE_MS = 36 * 60 * 60 * 1000
+// Ademas de eso, el listado general (y la pagina "hoy") dan 24h de margen
+// tras el end_at antes de retirar el evento: alguien mirando el sabado de
+// madrugada (justo cuando termino la fiesta del viernes) tiene que poder
+// seguir viendola, no que desaparezca en el segundo exacto en que acaba.
+const GRACE_MS = 24 * 60 * 60 * 1000
 
 function applyStillOnFilter<T extends { or: (s: string) => T }>(q: T, effectiveFrom: string, graceMs = 0): T {
   const cutoff = graceMs ? new Date(new Date(effectiveFrom).getTime() - graceMs).toISOString() : effectiveFrom
   return q.or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
 }
 
-export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string; sponsoredFirst?: boolean }) {
+export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string; sponsoredFirst?: boolean; grace?: boolean }) {
   const sb = getSupabaseClient()
   const effectiveFrom = normalizeEventFromDate(params?.from)
   let q = sb.from('events_public').select('*')
@@ -41,10 +41,13 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
     // Búsqueda simple por nombre/desc/club
     q = q.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
   }
-  // Con "to" la llamada ya pide una ventana concreta (hoy, fin de semana,
-  // un dia del calendario): ahi el margen no aplica, porque desvirtuaria esa
-  // ventana. Sin "to" es el listado general, donde si tiene sentido.
-  q = applyStillOnFilter(q, effectiveFrom, params?.to ? 0 : GRACE_MS)
+  // Con "to" la llamada pide una ventana concreta (hoy, fin de semana, un dia
+  // del calendario). Por defecto ahi no hay margen para no desvirtuar la
+  // ventana, salvo que el llamador pida explicitamente "grace: true" (la
+  // pagina "hoy", que si debe incluir la cola de la noche anterior).
+  // Sin "to" es el listado general, donde el margen aplica siempre.
+  const applyGrace = params?.grace ?? !params?.to
+  q = applyStillOnFilter(q, effectiveFrom, applyGrace ? GRACE_MS : 0)
   if (params?.to) q = q.lte('start_at', params.to)
   if (params?.genre) q = q.contains('genres', [params.genre])
   if (params?.zone) q = (q as any).eq('zone', params.zone)
@@ -67,7 +70,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
       if (params?.q) {
         retryQ = retryQ.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
       }
-      retryQ = applyStillOnFilter(retryQ, effectiveFrom, params?.to ? 0 : GRACE_MS)
+      retryQ = applyStillOnFilter(retryQ, effectiveFrom, applyGrace ? GRACE_MS : 0)
       if (params?.to) retryQ = retryQ.lte('start_at', params.to)
       if (params?.genre) retryQ = retryQ.contains('genres', [params.genre])
       if (params?.zone && !zoneMissing) retryQ = (retryQ as any).eq('zone', params.zone)
