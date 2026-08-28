@@ -17,11 +17,11 @@ function normalizeEventFromDate(from?: string) {
 // end_at esta poblado en el 100% de los eventos actuales, pero el or() cubre
 // tambien el caso de que algun evento futuro se cree sin end_at.
 //
-// Ademas de eso, el listado general (y la pagina "hoy") dan 24h de margen
-// tras el end_at antes de retirar el evento: alguien mirando el sabado de
+// Ademas de eso, el listado general (y la pagina "hoy") dan un margen tras
+// el end_at antes de retirar el evento: alguien mirando el sabado de
 // madrugada (justo cuando termino la fiesta del viernes) tiene que poder
 // seguir viendola, no que desaparezca en el segundo exacto en que acaba.
-const GRACE_MS = 24 * 60 * 60 * 1000
+const GRACE_MS = 18 * 60 * 60 * 1000
 
 function applyStillOnFilter<T extends { or: (s: string) => T }>(q: T, effectiveFrom: string, graceMs = 0): T {
   const cutoff = graceMs ? new Date(new Date(effectiveFrom).getTime() - graceMs).toISOString() : effectiveFrom
