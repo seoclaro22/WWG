@@ -52,13 +52,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
   if (params?.genre) q = q.contains('genres', [params.genre])
   if (params?.zone) q = (q as any).eq('zone', params.zone)
   q = (q as any).eq('status', 'published')
-  // Con margen, un evento que ya empezo (y solo sigue por la cola de
-  // gracia) queda por delante de la fiesta de la tarde de hoy si se limita
-  // ordenando por start_at a nivel de SQL: 00:00 es cronologicamente antes
-  // que 16:30 aunque a esas horas ya lleve toda la noche en pie. Sin limit
-  // aqui, se reordena en JS mas abajo (upcoming primero) y se recorta ya
-  // reordenado.
-  if (params?.limit && !applyGrace) q = q.limit(params.limit)
+  if (params?.limit) q = q.limit(params.limit)
   let { data, error } = await q
   if (error) {
     const msg = String(error.message || '').toLowerCase()
@@ -84,7 +78,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
       // Sin limit propio: el fallback tiene que devolver lo mismo que la
       // consulta principal. Un tope aqui recortaba en silencio solo cuando
       // fallaba una columna, que es justo cuando peor se detecta.
-      if (params?.limit && !applyGrace) retryQ = retryQ.limit(params.limit)
+      if (params?.limit) retryQ = retryQ.limit(params.limit)
       const retry = await retryQ
       data = retry.data as any
       error = retry.error as any
@@ -94,31 +88,7 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
     console.error('fetchEvents error', error)
     return []
   }
-  let events = (data || []) as EventPublic[]
-  if (applyGrace) {
-    // Los que ya empezaron (solo siguen por el margen de gracia) van detras
-    // de los que aun no, sin tocar el orden por start_at dentro de cada
-    // grupo. Asi "hoy 16:30" sale antes que "vie 00:00" aunque ese ultimo
-    // sea cronologicamente anterior.
-    const nowMs = Date.now()
-    const started = (e: EventPublic) => new Date(e.start_at).getTime() <= nowMs
-    events = events
-      .map((e, i) => ({ e, i }))
-      .sort((a, b) => {
-        if (params?.sponsoredFirst) {
-          const sa = a.e.sponsored ? 0 : 1
-          const sb = b.e.sponsored ? 0 : 1
-          if (sa !== sb) return sa - sb
-        }
-        const pa = started(a.e) ? 1 : 0
-        const pb = started(b.e) ? 1 : 0
-        if (pa !== pb) return pa - pb
-        return a.i - b.i
-      })
-      .map(({ e }) => e)
-    if (params?.limit) events = events.slice(0, params.limit)
-  }
-  return events
+  return (data || []) as EventPublic[]
 }
 
 export async function countUpcomingEvents(params?: { zone?: string }) {
