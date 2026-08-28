@@ -1079,9 +1079,19 @@ export function noEncontrado(locale: string) {
   return NO_ENCONTRADO[locale] || NO_ENCONTRADO[routing.defaultLocale]
 }
 
+// Una sesion de las 00:00 a las 06:00 es, en la calle, la madrugada de la
+// noche anterior: "vie. 00:00-06:00" es la noche del viernes, no el sabado.
+// Se usa solo para el dia/weekday que se muestra o se cuenta; la hora exacta
+// (start_at/end_at reales) no se toca en ningun otro sitio.
+export function nightShiftedDate(iso: string): Date {
+  const d = new Date(iso)
+  if (d.getUTCHours() < 6) d.setUTCDate(d.getUTCDate() - 1)
+  return d
+}
+
 export function formatEventDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
-  return new Date(iso).toLocaleString(tag, {
+  return nightShiftedDate(iso).toLocaleString(tag, {
     weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
   })
 }
@@ -1090,7 +1100,7 @@ export function formatEventDate(iso: string, locale: string) {
 // formatEventDate lleva ademas la hora, que ahi solo gasta caracteres.
 export function formatShortDate(iso: string, locale: string) {
   const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
-  return new Date(iso).toLocaleString(tag, {
+  return nightShiftedDate(iso).toLocaleString(tag, {
     weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC',
   })
     .replace(/,/g, '')
