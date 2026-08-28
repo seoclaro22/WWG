@@ -1,7 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase'
 import type { EventPublic, Club } from './types'
 import { genreSlug } from '@/lib/hrefs'
-import { nightShiftedDate } from '@/lib/seo-pages'
 
 function normalizeEventFromDate(from?: string) {
   const now = new Date()
@@ -306,9 +305,7 @@ export async function fetchZoneFacts(zone: string): Promise<ZoneFacts> {
       timeZone: 'Europe/Madrid', hour: '2-digit', hour12: false,
     }).format(d).slice(0, 2))
     if (!isPlaceholder && !Number.isNaN(hour)) hours.set(hour, (hours.get(hour) || 0) + 1)
-    // Mismo criterio de "noche" que formatEventDate: 00:00-06:00 cuenta para
-    // el dia anterior, o el viernes noche acababa contando como sabado.
-    const wd = nightShiftedDate(e.start_at).getUTCDay()
+    const wd = new Date(e.start_at).getDay()
     weekdays.set(wd, (weekdays.get(wd) || 0) + 1)
     for (const g of e.genres || []) genres.set(g, (genres.get(g) || 0) + 1)
     if (e.club_name) venues.add(e.club_name)
