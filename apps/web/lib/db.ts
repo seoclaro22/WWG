@@ -28,6 +28,19 @@ function applyStillOnFilter<T extends { or: (s: string) => T }>(q: T, effectiveF
   return q.or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
 }
 
+// Un evento "vie 00:00" es, para quien mira el listado, el cierre de la
+// noche del viernes, no la apertura del sabado: tiene que salir despues del
+// ultimo evento etiquetado "viernes" y antes del primero etiquetado
+// "sabado", aunque cronologicamente las 00:00 sean anteriores a las 23:45
+// del mismo dia. Sumar 24h a la hora de cualquier evento de madrugada
+// (00:00-05:59) lo manda al final de SU PROPIO dia mostrado sin tocar
+// start_at ni la fecha/hora que se ensena.
+function displayOrderKey(iso: string): number {
+  const ms = new Date(iso).getTime()
+  const hour = new Date(iso).getUTCHours()
+  return hour < 6 ? ms + 24 * 60 * 60 * 1000 : ms
+}
+
 export async function fetchEvents(params?: { q?: string; limit?: number; from?: string; to?: string; genre?: string; zone?: string; sponsoredFirst?: boolean; grace?: boolean }) {
   const sb = getSupabaseClient()
   const effectiveFrom = normalizeEventFromDate(params?.from)
@@ -52,7 +65,9 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
   if (params?.genre) q = q.contains('genres', [params.genre])
   if (params?.zone) q = (q as any).eq('zone', params.zone)
   q = (q as any).eq('status', 'published')
-  if (params?.limit) q = q.limit(params.limit)
+  // Sin limit aqui: el orden final (displayOrderKey) puede mover eventos de
+  // madrugada al final de su dia, asi que el recorte se hace despues de
+  // reordenar, no antes.
   let { data, error } = await q
   if (error) {
     const msg = String(error.message || '').toLowerCase()
@@ -75,10 +90,6 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
       if (params?.genre) retryQ = retryQ.contains('genres', [params.genre])
       if (params?.zone && !zoneMissing) retryQ = (retryQ as any).eq('zone', params.zone)
       if (!statusMissing) retryQ = (retryQ as any).eq('status', 'published')
-      // Sin limit propio: el fallback tiene que devolver lo mismo que la
-      // consulta principal. Un tope aqui recortaba en silencio solo cuando
-      // fallaba una columna, que es justo cuando peor se detecta.
-      if (params?.limit) retryQ = retryQ.limit(params.limit)
       const retry = await retryQ
       data = retry.data as any
       error = retry.error as any
@@ -88,7 +99,23 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
     console.error('fetchEvents error', error)
     return []
   }
-  return (data || []) as EventPublic[]
+  let events = (data || []) as EventPublic[]
+  events = events
+    .map((e, i) => ({ e, i }))
+    .sort((a, b) => {
+      if (params?.sponsoredFirst) {
+        const sa = a.e.sponsored ? 0 : 1
+        const sb = b.e.sponsored ? 0 : 1
+        if (sa !== sb) return sa - sb
+      }
+      const ka = displayOrderKey(a.e.start_at)
+      const kb = displayOrderKey(b.e.start_at)
+      if (ka !== kb) return ka - kb
+      return a.i - b.i
+    })
+    .map(({ e }) => e)
+  if (params?.limit) events = events.slice(0, params.limit)
+  return events
 }
 
 export async function countUpcomingEvents(params?: { zone?: string }) {
