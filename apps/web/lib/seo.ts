@@ -174,7 +174,7 @@ export function listMeta(page: 'discover' | 'clubs' | 'djs', locale: string) {
 // en el propio componente, y un componente cliente no puede exportar metadata:
 // salian sin titulo propio, sin canonical y sin hreflang. Estos textos los
 // consume el layout servidor de cada una.
-const LEGAL_META: Record<string, Record<'privacy' | 'cookies', { title: string; description: string }>> = {
+const LEGAL_META: Record<string, Record<'privacy' | 'cookies' | 'legal', { title: string; description: string }>> = {
   es: {
     privacy: {
       title: 'Política de Privacidad',
@@ -183,6 +183,10 @@ const LEGAL_META: Record<string, Record<'privacy' | 'cookies', { title: string; 
     cookies: {
       title: 'Política de Cookies',
       description: 'Qué cookies usa Where We Go, para qué sirven las técnicas y las analíticas, cuánto duran y cómo cambiar tu consentimiento en cualquier momento.',
+    },
+    legal: {
+      title: 'Aviso Legal',
+      description: 'Datos identificativos del titular de Where We Go, condiciones de uso del sitio, propiedad intelectual y legislación aplicable.',
     },
   },
   en: {
@@ -194,6 +198,10 @@ const LEGAL_META: Record<string, Record<'privacy' | 'cookies', { title: string; 
       title: 'Cookie Policy',
       description: 'Which cookies Where We Go uses, what the technical and analytics ones are for, how long they last and how to change your consent at any time.',
     },
+    legal: {
+      title: 'Legal Notice',
+      description: 'Identification of the party behind Where We Go, terms of use of the site, intellectual property and applicable law.',
+    },
   },
   de: {
     privacy: {
@@ -204,10 +212,14 @@ const LEGAL_META: Record<string, Record<'privacy' | 'cookies', { title: string; 
       title: 'Cookie-Richtlinie',
       description: 'Welche Cookies Where We Go verwendet, wofür die technischen und die analytischen dienen, wie lange sie gelten und wie du deine Einwilligung jederzeit änderst.',
     },
+    legal: {
+      title: 'Impressum',
+      description: 'Angaben zum Betreiber von Where We Go, Nutzungsbedingungen der Website, geistiges Eigentum und anwendbares Recht.',
+    },
   },
 }
 
-export function legalMeta(page: 'privacy' | 'cookies', locale: string) {
+export function legalMeta(page: 'privacy' | 'cookies' | 'legal', locale: string) {
   return (LEGAL_META[locale] || LEGAL_META[routing.defaultLocale])[page]
 }
 

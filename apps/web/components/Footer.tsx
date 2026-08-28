@@ -7,6 +7,7 @@ import { routing } from '@/i18n/routing'
 import { MIN_EVENTS_TO_INDEX, nearMeta, nearSlug, whenMeta, whenRange, whenSlug, WHEN_KEYS } from '@/lib/seo-pages'
 import { listMeta } from '@/lib/seo'
 import { genrePath } from '@/lib/hrefs'
+import { ResetConsentButton } from '@/components/CookieConsent'
 
 // Solo los generos con agenda real. Un genero "activo" en la tabla puede no
 // tener ni un evento: sus paginas ya salian noindex y fuera del sitemap, pero
@@ -119,8 +120,6 @@ export async function Footer({ locale }: { locale: string }) {
             <li><Link href="/que-es-where-we-go" className="hover:text-gold" prefetch={false}>{t('about.eyebrow')}</Link></li>
             <li><Link href="/promote" className="hover:text-gold" prefetch={false}>{t('nav.promote')}</Link></li>
             <li><Link href="/contact" className="hover:text-gold" prefetch={false}>{t('contact.title')}</Link></li>
-            <li><Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link></li>
-            <li><Link href="/cookies" className="hover:text-gold" prefetch={false}>Cookies</Link></li>
           </ul>
         </div>
 
@@ -152,7 +151,21 @@ export async function Footer({ locale }: { locale: string }) {
         </div>
       )}
 
-      <p className="mt-8 pt-6 border-t border-white/5 text-xs text-white/55">© {new Date().getFullYear()} Where We Go</p>
+      {/* Barra legal aparte y no metida en la columna "Where We Go": son los
+          enlaces que exige la LSSI-CE (aviso legal) y el RGPD (privacidad,
+          cookies), y antes solo vivian escondidos en /account. Ademas del
+          enlace a la politica de cookies, un boton para reabrir el banner de
+          consentimiento en cualquier momento, que es justo lo que pide la
+          normativa: poder cambiar de opinion tan facil como se acepto. */}
+      <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-white/55">
+        <p>© {new Date().getFullYear()} Where We Go</p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link href="/legal" className="hover:text-gold" prefetch={false}>{t('footer.legal')}</Link>
+          <Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link>
+          <Link href="/cookies" className="hover:text-gold" prefetch={false}>{t('footer.cookiesPolicy')}</Link>
+          <ResetConsentButton />
+        </div>
+      </div>
     </footer>
   )
 }

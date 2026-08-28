@@ -343,7 +343,9 @@ export const dictionaries: Record<string, Dict> = {
     'share.copied': 'Enlace copiado. Pegalo en Instagram.',
     'footer.zones': 'Zonas',
     'footer.genres': 'Géneros',
-    'footer.language': 'Idioma'
+    'footer.language': 'Idioma',
+    'footer.legal': 'Aviso Legal',
+    'footer.cookiesPolicy': 'Política de Cookies'
   },
   en: {
     'nav.home': 'Discover',
@@ -684,7 +686,9 @@ export const dictionaries: Record<string, Dict> = {
     'share.copied': 'Link copied. Paste it in Instagram.',
     'footer.zones': 'Zones',
     'footer.genres': 'Genres',
-    'footer.language': 'Language'
+    'footer.language': 'Language',
+    'footer.legal': 'Legal Notice',
+    'footer.cookiesPolicy': 'Cookie Policy'
   },
   de: {
     'nav.home': 'Entdecken',
@@ -1025,6 +1029,8 @@ export const dictionaries: Record<string, Dict> = {
     'share.copied': 'Link kopiert. Fuege ihn in Instagram ein.',
     'footer.zones': 'Zonen',
     'footer.genres': 'Genres',
-    'footer.language': 'Sprache'
+    'footer.language': 'Sprache',
+    'footer.legal': 'Impressum',
+    'footer.cookiesPolicy': 'Cookie-Richtlinie'
   }
 }
