@@ -21,7 +21,7 @@ function normalizeEventFromDate(from?: string) {
 // el end_at antes de retirar el evento: alguien mirando el sabado de
 // madrugada (justo cuando termino la fiesta del viernes) tiene que poder
 // seguir viendola, no que desaparezca en el segundo exacto en que acaba.
-const GRACE_MS = 18 * 60 * 60 * 1000
+const GRACE_MS = 14 * 60 * 60 * 1000
 
 function applyStillOnFilter<T extends { or: (s: string) => T }>(q: T, effectiveFrom: string, graceMs = 0): T {
   const cutoff = graceMs ? new Date(new Date(effectiveFrom).getTime() - graceMs).toISOString() : effectiveFrom
