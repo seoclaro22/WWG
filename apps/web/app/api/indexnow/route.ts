@@ -39,6 +39,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'forbidden' }, { status: 403 })
   }
 
+  // Defensa extra por si un token de moderador se filtra: max 20 pings
+  // por cuenta cada 5 minutos, aunque el rol sea legitimo.
+  const { data: allowed } = await sb.rpc('check_rate_limit', {
+    p_bucket: `indexnow:${authData.user.id}`,
+    p_max: 20,
+    p_window_seconds: 300,
+  })
+  if (!allowed) {
+    return NextResponse.json({ ok: false, error: 'rate_limited' }, { status: 429 })
+  }
+
   // Solo se anuncia lo que un buscador puede ver: un borrador no esta publicado
   // y avisar de el seria mandar a rastrear un 404.
   const { data: event } = await sb

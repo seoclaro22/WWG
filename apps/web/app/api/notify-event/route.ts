@@ -58,6 +58,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'forbidden' }, { status: 403 })
   }
 
+  // Defensa extra por si un token de moderador se filtra: max 20 notificaciones
+  // por cuenta cada 5 minutos, aunque el rol sea legitimo.
+  const { data: allowed } = await sb.rpc('check_rate_limit', {
+    p_bucket: `notify-event:${authData.user.id}`,
+    p_max: 20,
+    p_window_seconds: 300,
+  })
+  if (!allowed) {
+    return NextResponse.json({ ok: false, error: 'rate_limited' }, { status: 429 })
+  }
+
   const { data: event, error: evErr } = await sb
     .from('events')
     .select('id,name,club_id,status')
