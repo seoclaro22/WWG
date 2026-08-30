@@ -272,36 +272,45 @@ export function nearMeta(locale: string) {
   return copy[locale] || copy[routing.defaultLocale]
 }
 
+// Islas: en aleman la preposicion correcta es "auf" (auf Mallorca, auf Ibiza),
+// no "in" como en una ciudad. Un titulo "Partys in Mallorca" es un error
+// gramatical que cualquier hablante nativo nota al momento.
+const GERMAN_ISLAND_ZONES = new Set(['Mallorca', 'Ibiza', 'Menorca', 'Formentera'])
+function germanZonePrep(zone: string) {
+  return GERMAN_ISLAND_ZONES.has(zone) ? 'auf' : 'in'
+}
+
 // Pagina de zona. Estaba escrita solo en espanol aunque la URL fuese /en o
 // /de, asi que /en/mallorca competia en Google con un titulo en castellano.
 export function zoneMeta(zone: string, locale: string) {
+  const prep = germanZonePrep(zone)
   const copy: Record<string, { title: string; description: string; eyebrow: string; intro: string; clubs: string; events: string; empty: string }> = {
     es: {
-      title: `Discotecas y eventos en ${zone}`,
-      description: `Descubre las mejores discotecas, fiestas y DJs de ${zone}. Agenda de eventos nocturnos actualizada a diario con line-ups, horarios y entradas.`,
+      title: `Las mejores fiestas en ${zone}: discotecas y DJs`,
+      description: `¿Dónde salir en ${zone}? Las mejores fiestas, discotecas y DJs de la zona, con agenda actualizada a diario, horarios, precios y entradas.`,
       eyebrow: 'Zona',
-      intro: `La agenda nocturna de ${zone}: discotecas, fiestas y DJs actualizados a diario. Encuentra tu plan y reserva entradas con Where We Go.`,
+      intro: `¿Dónde salir de fiesta en ${zone}? La agenda con discotecas, DJs y eventos actualizada a diario. Encuentra tu plan y reserva entradas con Where We Go.`,
       clubs: `Discotecas en ${zone}`,
       events: `Próximos eventos en ${zone}`,
       empty: `No hay eventos programados en ${zone} ahora mismo.`,
     },
     en: {
-      title: `Clubs and Events in ${zone}`,
-      description: `Discover the best clubs, parties and DJs in ${zone}. Nightlife listings updated daily with line-ups, times and tickets.`,
+      title: `Best Parties in ${zone}: Clubs, DJs and Events`,
+      description: `Where's the best party in ${zone}? Top clubs, DJs and events in the area, with daily listings, times, prices and tickets.`,
       eyebrow: 'Area',
-      intro: `${zone} nightlife: clubs, parties and DJs updated daily. Find your plan and book tickets with Where We Go.`,
+      intro: `The listings for the best parties in ${zone}: clubs, DJs and events updated daily. Find your plan and book tickets with Where We Go.`,
       clubs: `Clubs in ${zone}`,
       events: `Upcoming events in ${zone}`,
       empty: `Nothing is scheduled in ${zone} right now.`,
     },
     de: {
-      title: `Clubs und Events in ${zone}`,
-      description: `Entdecke die besten Clubs, Partys und DJs in ${zone}. Täglich aktualisierte Termine mit Line-ups, Zeiten und Tickets.`,
+      title: `Die besten Partys ${prep} ${zone}: Clubs und DJs`,
+      description: `Wo steigt die Party ${prep} ${zone}? Die besten Clubs, DJs und Events der Gegend, täglich aktualisiert mit Zeiten, Preisen und Tickets.`,
       eyebrow: 'Gegend',
-      intro: `Das Nachtleben von ${zone}: Clubs, Partys und DJs, täglich aktualisiert. Finde deinen Plan und buche Tickets mit Where We Go.`,
-      clubs: `Clubs in ${zone}`,
-      events: `Kommende Events in ${zone}`,
-      empty: `Aktuell ist nichts in ${zone} geplant.`,
+      intro: `Wo feiert man ${prep} ${zone}? Das Programm mit Clubs, DJs und Events, täglich aktualisiert. Finde deinen Plan und buche Tickets mit Where We Go.`,
+      clubs: `Clubs ${prep} ${zone}`,
+      events: `Kommende Events ${prep} ${zone}`,
+      empty: `Aktuell ist nichts ${prep} ${zone} geplant.`,
     },
   }
   return copy[locale] || copy[routing.defaultLocale]
