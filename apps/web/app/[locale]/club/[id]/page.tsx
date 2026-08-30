@@ -15,6 +15,7 @@ import { AnswerBlock } from '@/components/AnswerBlock'
 import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
+import { QuickEdit } from '@/components/admin/QuickEdit'
 
 export async function generateMetadata({ params }: { params: { locale: string; id: string } }) {
   // En serie y no en paralelo: params.id puede ser el slug, y fetchClubEvents
@@ -164,6 +165,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <QuickEdit kind="club" id={club.id} />
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] max-h-[70vh]">

@@ -1,13 +1,10 @@
-﻿"use client"
+"use client"
 import { AdminGuard } from '@/components/admin/AdminGuard'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useDebounce } from '@/components/hooks/useDebounce'
-import { GenreSelect } from '@/components/GenreSelect'
-import { UploadImage } from '@/components/UploadImage'
-
-type DJ = { id?: string; name: string; short_bio?: string | null; bio?: string | null; spotify_embed?: string | null; genres?: string[] | null; images?: any; short_bio_i18n?: any; bio_i18n?: any }
+import { AdminDJ, DJForm, djErrorMessage, djPayload } from '@/components/admin/DJForm'
 
 // Cliente compartido de toda la app; ver lib/supabase-browser.ts.
 function sb() { return supabaseBrowser }
@@ -21,9 +18,9 @@ export default function AdminDJsPage() {
 }
 
 function DJsManager() {
-  const [items, setItems] = useState<DJ[]>([])
+  const [items, setItems] = useState<AdminDJ[]>([])
   const [q, setQ] = useState('')
-  const [editing, setEditing] = useState<DJ | null>(null)
+  const [editing, setEditing] = useState<AdminDJ | null>(null)
   const [saving, setSaving] = useState(false)
   const dq = useDebounce(q, 300)
 
@@ -41,44 +38,29 @@ function DJsManager() {
     window.dispatchEvent(new CustomEvent('nighthub-toast', { detail: { message } }))
   }
 
-  function missingSpotifyColumn(error: any) {
-    const msg = String(error?.message || '')
-    if (/spotify_embed/i.test(msg)) {
-      toast('Falta la columna spotify_embed en la tabla djs. Actualiza la base de datos.')
-      return true
-    }
-    return false
-  }
-
-  async function save(dj: DJ) {
+  // Actualiza la lista en memoria en vez de recargar: con 500 DJs, releer la
+  // tabla entera para reflejar un campo editado es la diferencia entre guardar
+  // al instante y esperar a la consulta.
+  async function save(dj: AdminDJ) {
     if (saving) return
     const s = sb()
-    const payload = {
-      name: dj.name,
-      short_bio: dj.short_bio || null,
-      bio: dj.bio ?? null,
-      spotify_embed: dj.spotify_embed || null,
-      genres: dj.genres || [],
-      images: dj.images || [],
-      short_bio_i18n: dj.short_bio_i18n || null,
-      bio_i18n: dj.bio_i18n || null
-    }
+    const payload = djPayload(dj)
     setSaving(true)
     try {
       if (dj.id) {
         const { error } = await s.from('djs').update(payload).eq('id', dj.id)
-        if (error) { if (!missingSpotifyColumn(error)) toast('No se pudo guardar el DJ: ' + error.message); return }
+        if (error) { toast(djErrorMessage(error, 'guardar')); return }
         setItems(prev => prev.map(it => it.id === dj.id ? { ...it, ...payload } : it))
       } else {
         const { data, error } = await s.from('djs').insert(payload).select('id').maybeSingle()
-        if (error) { if (!missingSpotifyColumn(error)) toast('No se pudo crear el DJ: ' + error.message); return }
+        if (error) { toast(djErrorMessage(error, 'crear')); return }
         if (data?.id) setItems(prev => [{ id: data.id, ...payload } as any, ...prev])
         else await load()
       }
       setEditing(null)
       toast('DJ guardado.')
     } catch (e: any) {
-      toast('No se pudo guardar el DJ: ' + (e?.message || 'Error desconocido'))
+      toast(djErrorMessage(e, 'guardar'))
     } finally {
       setSaving(false)
     }
@@ -121,75 +103,6 @@ function DJsManager() {
           </div>
         ))}
         {items.length === 0 && <div className="muted">Sin resultados</div>}
-      </div>
-    </div>
-  )
-}
-
-function DJForm({ initial, onCancel, onSave, saving }: { initial: DJ; onCancel: () => void; onSave: (d: DJ) => void; saving: boolean }) {
-  const [form, setForm] = useState<DJ>({ ...initial, genres: initial.genres || [], images: initial.images || [] })
-  const cover = Array.isArray(form.images) && form.images.length ? form.images[0] : null
-  return (
-    <div className="card p-4 space-y-3">
-      <div className="grid md:grid-cols-2 gap-3">
-        <div className="md:col-span-2">
-          <label className="block text-sm">Nombre</label>
-          <input value={form.name} onChange={e=>setForm({ ...form, name: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm">Géneros</label>
-          <GenreSelect value={form.genres || []} onChange={(vals)=>setForm({ ...form, genres: vals })} allowCreate />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm">Descripción corta (listado)</label>
-          <textarea value={form.short_bio || ''} onChange={e=>{ const v=e.target.value; const clipped = v.length>200? v.slice(0,200): v; setForm({ ...form, short_bio: clipped }) }} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={2} placeholder="Resumen breve para la tarjeta del DJ" />
-          <div className="text-[11px] text-white/50 mt-1">Se recomienda 140–200 caracteres.</div>
-        </div>
-        <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm">Descripción corta (EN)</label>
-            <textarea value={(form.short_bio_i18n?.en) || ''} onChange={e=>setForm({ ...form, short_bio_i18n: { ...(form.short_bio_i18n||{}), en: e.target.value } })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={2} />
-          </div>
-          <div>
-            <label className="block text-sm">Descripción corta (DE)</label>
-            <textarea value={(form.short_bio_i18n?.de) || ''} onChange={e=>setForm({ ...form, short_bio_i18n: { ...(form.short_bio_i18n||{}), de: e.target.value } })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={2} />
-          </div>
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm">Bio larga (ficha)</label>
-          <textarea value={form.bio || ''} onChange={e=>setForm({ ...form, bio: e.target.value })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={4} />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm">Spotify (embed o URL)</label>
-          <textarea
-            value={form.spotify_embed || ''}
-            onChange={e=>setForm({ ...form, spotify_embed: e.target.value })}
-            className="w-full bg-transparent border border-white/10 rounded-xl p-2"
-            rows={3}
-            placeholder="Pega el codigo iframe de Spotify o un enlace"
-          />
-          <div className="text-[11px] text-white/50 mt-1">Se guarda el embed para mostrarlo en la ficha del DJ.</div>
-        </div>
-        <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm">Bio (EN)</label>
-            <textarea value={(form.bio_i18n?.en) || ''} onChange={e=>setForm({ ...form, bio_i18n: { ...(form.bio_i18n||{}), en: e.target.value } })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={4} />
-          </div>
-          <div>
-            <label className="block text-sm">Bio (DE)</label>
-            <textarea value={(form.bio_i18n?.de) || ''} onChange={e=>setForm({ ...form, bio_i18n: { ...(form.bio_i18n||{}), de: e.target.value } })} className="w-full bg-transparent border border-white/10 rounded-xl p-2" rows={4} />
-          </div>
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm">Imagen (portada)</label>
-          <UploadImage value={cover || undefined} onChange={(url)=>{ if (url) setForm({ ...form, images: [url] }); else setForm({ ...form, images: [] }) }} folder="djs" />
-        </div>
-      </div>
-      <div className="flex gap-2">
-        <button className="btn btn-primary" type="button" onClick={()=>onSave(form)} disabled={saving}>
-          {saving ? 'Guardando...' : 'Guardar'}
-        </button>
-        <button className="btn btn-secondary" type="button" onClick={onCancel} disabled={saving}>Cancelar</button>
       </div>
     </div>
   )

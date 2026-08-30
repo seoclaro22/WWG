@@ -15,6 +15,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
 import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
+import { QuickEdit } from '@/components/admin/QuickEdit'
 
 function getSpotifyEmbed(input?: string | null) {
   const raw = (input || '').trim()
@@ -236,6 +237,7 @@ export default async function EventDetail({ params }: { params: { locale: string
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <QuickEdit kind="event" id={e.id} />
 
       {/* ── Fondo difuminado con la imagen del evento ────────────── */}
       {cover && (

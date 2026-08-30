@@ -3,6 +3,7 @@ import { SafeImage } from '@/components/SafeImage'
 import { fetchDj, fetchDjEvents, fetchSimilarDjs } from '@/lib/db'
 import { djPath, eventPath } from '@/lib/hrefs'
 import { notFound, permanentRedirect } from 'next/navigation'
+import { QuickEdit } from '@/components/admin/QuickEdit'
 import { FavoriteButton } from '@/components/FavoriteButton'
 import { LDate } from '@/components/LDate'
 import { LocalText } from '@/components/LocalText'
@@ -137,6 +138,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] overflow-hidden bg-[#07060a]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <QuickEdit kind="dj" id={dj.id} />
 
       {/* ── Fondo difuminado con la foto del DJ ─────────────────── */}
       {heroImg && (
