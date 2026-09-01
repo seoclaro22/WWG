@@ -1155,7 +1155,21 @@ function construir(
   return respaldo ? recortar(respaldo) : ''
 }
 
+// Mismo motivo que en el titulo: sin agenda, construir() entrega el
+// respaldo (la descripcion informativa de la ficha) en frio, sin ningun
+// gancho de entradas/agenda. Se le antepone uno corto, igual que hace ya
+// CLUB_DESC cuando si hay eventos.
+const CLUB_DESC_HOOK: Record<string, (n: string, lugar: string | null) => string> = {
+  es: (n, l) => `Entradas y agenda de ${n}${l ? ` en ${l}` : ''}.`,
+  en: (n, l) => `Tickets and events at ${n}${l ? ` in ${l}` : ''}.`,
+  de: (n, l) => `Tickets und Termine fuer ${n}${l ? ` in ${l}` : ''}.`,
+}
+
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
+  if (partes.eventos === 0 && respaldo) {
+    const hook = CLUB_DESC_HOOK[locale] || CLUB_DESC_HOOK[routing.defaultLocale]
+    return recortar(`${hook(partes.nombre, partes.lugar || null)} ${respaldo}`)
+  }
   return construir(CLUB_DESC, partes, locale, respaldo)
 }
 
@@ -1276,10 +1290,15 @@ export function resumenEvento(p: {
 // Groove | Where We Go" son 74 caracteres y Google corta sobre los 60. Un solo
 // genero es ademas lo que se busca de verdad ("dj tech house mallorca"), no la
 // lista entera.
+// "discoteca en X" describe la ficha, pero quien busca el nombre de un club
+// la noche antes de salir quiere entradas y lista, no una descripcion: en el
+// SERP de "la santa benicasim" los tres resultados por encima de esta ficha
+// llevan "Entradas, Listas & VIPs" / "Listas y Entradas" en el titulo. Se
+// alinea el titulo con esa intencion en vez de con la ficha.
 const TITULO_CLUB: Record<string, (n: string, lugar: string | null) => string> = {
-  es: (n, l) => `${n}: discoteca${l ? ` en ${l}` : ''}`,
-  en: (n, l) => `${n}: nightclub${l ? ` in ${l}` : ''}`,
-  de: (n, l) => `${n}: Club${l ? ` in ${l}` : ''}`,
+  es: (n, l) => `${n}: entradas y agenda${l ? ` en ${l}` : ''}`,
+  en: (n, l) => `${n}: tickets and events${l ? ` in ${l}` : ''}`,
+  de: (n, l) => `${n}: Tickets und Termine${l ? ` in ${l}` : ''}`,
 }
 
 export function tituloClub(nombre: string, lugar: string | null, locale: string) {
