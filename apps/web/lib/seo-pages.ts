@@ -1162,11 +1162,14 @@ export function clubMetaDescription(partes: DescPartes, locale: string, respaldo
 // Con sesiones anunciadas, construir() usa solo la plantilla de fechas y
 // descarta el short_bio: mucha demanda de busqueda sobre DJs es "quien es"
 // (nombre real, origen), no "cuando toca", y esa plantilla nunca lo responde
-// aunque el dato exista en la ficha. Se pega el short_bio al final si cabe.
+// aunque el dato exista en la ficha. El short_bio va primero: es lo que
+// falta en la busqueda "quien es", y si el recorte de 155 caracteres tiene
+// que comerse algo, mejor que sea la fecha de la sesion que ya se ve en el
+// hero de la ficha.
 export function djMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
   if (partes.eventos > 0 && respaldo) {
     const f = DJ_DESC[locale] || DJ_DESC[routing.defaultLocale]
-    return recortar(`${f(partes)} ${respaldo}`)
+    return recortar(`${respaldo} ${f(partes)}`)
   }
   return construir(DJ_DESC, partes, locale, respaldo)
 }
