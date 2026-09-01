@@ -1159,7 +1159,15 @@ export function clubMetaDescription(partes: DescPartes, locale: string, respaldo
   return construir(CLUB_DESC, partes, locale, respaldo)
 }
 
+// Con sesiones anunciadas, construir() usa solo la plantilla de fechas y
+// descarta el short_bio: mucha demanda de busqueda sobre DJs es "quien es"
+// (nombre real, origen), no "cuando toca", y esa plantilla nunca lo responde
+// aunque el dato exista en la ficha. Se pega el short_bio al final si cabe.
 export function djMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
+  if (partes.eventos > 0 && respaldo) {
+    const f = DJ_DESC[locale] || DJ_DESC[routing.defaultLocale]
+    return recortar(`${f(partes)} ${respaldo}`)
+  }
   return construir(DJ_DESC, partes, locale, respaldo)
 }
 
