@@ -40,6 +40,16 @@ export default function ContactPage({ searchParams }: { searchParams?: { ok?: st
         )}
 
         <form className="bg-white/4 border border-white/10 rounded-3xl p-5 space-y-4" action={submitContact}>
+          {/* Honeypot: invisible para una persona, pero cualquier bot que
+              rellene todos los inputs del HTML cae aqui. Ver actions.ts. */}
+          <input
+            type="text"
+            name="company"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute -left-[9999px] w-px h-px opacity-0"
+          />
           <InputField name="name" labelKey="contact.name" placeholderKey="contact.name" required />
           <InputField name="email" type="email" labelKey="contact.email" placeholderKey="contact.email" required />
           <TextAreaField name="message" labelKey="contact.message" placeholderKey="contact.message" rows={5} required />
