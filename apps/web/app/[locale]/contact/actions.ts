@@ -42,7 +42,7 @@ export async function submitContact(formData: FormData) {
   // formulario abierto al publico, asi que la barrera real es esta mas el
   // limite por IP de abajo.
   if (clean(formData.get('company'), 200)) {
-    redirect('/contact?ok=1')
+    redirect('/thanks')
   }
 
   if (!name || !message || !EMAIL_RE.test(email)) {
@@ -52,7 +52,7 @@ export async function submitContact(formData: FormData) {
   // Igual que el honeypot: se descarta en silencio (pantalla de exito) para
   // no darle a quien manda esto una senal de que ha sido bloqueado.
   if (looksLikeSpam(message)) {
-    redirect('/contact?ok=1')
+    redirect('/thanks')
   }
 
   const ip = clientIp()
@@ -76,5 +76,5 @@ export async function submitContact(formData: FormData) {
   } catch {
     ok = false
   }
-  redirect(ok ? '/contact?ok=1' : '/contact?ok=0')
+  redirect(ok ? '/thanks' : '/contact?ok=0')
 }

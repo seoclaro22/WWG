@@ -269,7 +269,9 @@ export const dictionaries: Record<string, Dict> = {
     'contact.email': 'Email',
     'contact.message': 'Mensaje',
     'contact.submit': 'Enviar mensaje',
-    'contact.success': 'Gracias. Hemos recibido tu mensaje.',
+    'thanks.title': 'Mensaje enviado',
+    'thanks.body': 'Gracias por escribirnos. Hemos recibido tu mensaje y te responderemos lo antes posible.',
+    'thanks.cta': 'Volver al inicio',
     'contact.error_invalid': 'Revisa el nombre, el email y el mensaje: son obligatorios y el email debe ser valido.',
 
     'promote.title': 'Promociona tu Evento/Club',
@@ -612,7 +614,9 @@ export const dictionaries: Record<string, Dict> = {
     'contact.email': 'Email',
     'contact.message': 'Message',
     'contact.submit': 'Send message',
-    'contact.success': 'Thanks. We received your message.',
+    'thanks.title': 'Message sent',
+    'thanks.body': 'Thanks for reaching out. We received your message and will get back to you soon.',
+    'thanks.cta': 'Back to home',
     'contact.error_invalid': 'Check the name, email and message: all are required and the email must be valid.',
 
     'promote.title': 'Promote your Event/Club',
@@ -955,7 +959,9 @@ export const dictionaries: Record<string, Dict> = {
     'contact.email': 'E-Mail',
     'contact.message': 'Nachricht',
     'contact.submit': 'Nachricht senden',
-    'contact.success': 'Danke. Wir haben deine Nachricht erhalten.',
+    'thanks.title': 'Nachricht gesendet',
+    'thanks.body': 'Danke fuer deine Nachricht. Wir haben sie erhalten und melden uns so schnell wie moglich.',
+    'thanks.cta': 'Zurueck zur Startseite',
     'contact.error_invalid': 'Prufe Name, E-Mail und Nachricht: alle sind Pflichtfelder und die E-Mail muss gultig sein.',
 
     'promote.title': 'Event/Club bewerben',

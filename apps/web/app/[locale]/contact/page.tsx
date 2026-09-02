@@ -8,7 +8,11 @@ export function generateMetadata({ params }: { params: { locale: string } }) {
 }
 
 export default function ContactPage({ searchParams }: { searchParams?: { ok?: string } }) {
-  const ok = searchParams?.ok === '1'
+  // ok=1 (exito) ya no llega aqui: submitContact redirige a /thanks. Solo
+  // queda el caso de error, que se queda en el propio formulario para que
+  // el usuario no pierda lo que habia escrito... salvo el propio mensaje,
+  // que el form no conserva entre server actions; ver nota en actions.ts
+  // si esto se convierte en friccion real.
   const failed = searchParams?.ok === '0'
 
   return (
@@ -30,15 +34,6 @@ export default function ContactPage({ searchParams }: { searchParams?: { ok?: st
             <p className="text-sm text-red-300"><T k="contact.error_invalid" /></p>
           </div>
         )}
-        {ok && (
-          <div className="flex gap-3 bg-emerald-400/10 border border-emerald-400/20 rounded-2xl p-4">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" className="shrink-0 mt-0.5" strokeLinecap="round">
-              <path d="M20 6L9 17l-5-5"/>
-            </svg>
-            <p className="text-sm text-emerald-300"><T k="contact.success" /></p>
-          </div>
-        )}
-
         <form className="bg-white/4 border border-white/10 rounded-3xl p-5 space-y-4" action={submitContact}>
           {/* Honeypot: invisible para una persona, pero cualquier bot que
               rellene todos los inputs del HTML cae aqui. Ver actions.ts. */}

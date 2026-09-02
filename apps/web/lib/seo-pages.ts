@@ -272,6 +272,69 @@ export function nearMeta(locale: string) {
   return copy[locale] || copy[routing.defaultLocale]
 }
 
+// Guia evergreen + FAQ de la pagina "cerca de mi".
+//
+// La pagina solo tenia el localizador y el listado de ciudades: nada de
+// contenido fijo, así que para una keyword de volumen alto y dificultad baja
+// (18k busquedas/mes) era la pagina mas fina de todo el sitio, muy por debajo
+// de lo que ya lleva /[zona] (guia + FAQ). Mismo patron aqui, pero generico
+// en vez de investigado por ciudad: esta pagina no es de una zona, es el hub
+// que las reune todas.
+export function nearGuideHeadings(locale: string) {
+  const copy: Record<string, { comoFunciona: string; porQueUsar: string }> = {
+    es: { comoFunciona: 'Cómo funciona', porQueUsar: 'Por qué usar Where We Go' },
+    en: { comoFunciona: 'How it works', porQueUsar: 'Why use Where We Go' },
+    de: { comoFunciona: 'So funktioniert es', porQueUsar: 'Warum Where We Go nutzen' },
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
+export function nearGuide(locale: string) {
+  const copy: Record<string, { comoFunciona: string; porQueUsar: string }> = {
+    es: {
+      comoFunciona: 'Where We Go detecta tu ubicación en el navegador, con tu permiso, y te lleva directo a la agenda de tu ciudad: discotecas, fiestas y DJs de hoy, de este finde o de toda la semana. Si prefieres no compartir tu ubicación, elige tu ciudad en la lista de abajo — el resultado es el mismo.',
+      porQueUsar: 'En vez de buscar discoteca por discoteca, ves de un vistazo qué ciudades tienen agenda activa ahora mismo, con horarios, line-ups y el enlace directo para conseguir entradas. La agenda se actualiza a diario, así que lo que ves es lo que hay programado de verdad.',
+    },
+    en: {
+      comoFunciona: "Where We Go detects your location in the browser, with your permission, and takes you straight to your city's listings: clubs, parties and DJs for today, this weekend or the whole week. Prefer not to share your location? Pick your city from the list below — same result.",
+      porQueUsar: 'Instead of searching club by club, you see at a glance which cities have an active agenda right now, with times, line-ups and a direct link to buy tickets. Listings are updated daily, so what you see is what is actually scheduled.',
+    },
+    de: {
+      comoFunciona: 'Where We Go erkennt mit deiner Erlaubnis deinen Standort im Browser und bringt dich direkt zum Programm deiner Stadt: Clubs, Partys und DJs für heute, dieses Wochenende oder die ganze Woche. Möchtest du deinen Standort nicht teilen? Wähle deine Stadt aus der Liste unten — gleiches Ergebnis.',
+      porQueUsar: 'Statt Club für Club zu suchen, siehst du auf einen Blick, welche Städte gerade ein aktives Programm haben, mit Zeiten, Line-ups und direktem Link zum Ticketkauf. Das Programm wird täglich aktualisiert, du siehst also, was wirklich geplant ist.',
+    },
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
+export function nearFaqHeading(locale: string) {
+  return zoneFaqHeading(locale)
+}
+
+export function nearFaq(locale: string): ZoneFaq[] {
+  const copy: Record<string, ZoneFaq[]> = {
+    es: [
+      { q: '¿Where We Go usa mi ubicación para algo más?', a: 'No. Tu ubicación solo se usa en el navegador para identificar tu ciudad y mostrarte su agenda; no se guarda ni se comparte.' },
+      { q: '¿Qué pasa si mi ciudad no tiene agenda todavía?', a: 'Te mostramos las ciudades activas para que elijas dónde salir esta noche mientras se abre agenda en la tuya.' },
+      { q: '¿Es gratis usar Where We Go?', a: 'Sí, consultar la agenda es gratis. Las entradas de cada evento las gestiona directamente el club o promotor a través del enlace de compra.' },
+      { q: '¿Con qué frecuencia se actualiza la agenda?', a: 'A diario. Clubs y promotores publican sus fiestas y line-ups directamente en Where We Go.' },
+    ],
+    en: [
+      { q: 'Does Where We Go use my location for anything else?', a: 'No. Your location is only used in the browser to identify your city and show its listings; it is never stored or shared.' },
+      { q: "What if my city doesn't have listings yet?", a: 'We show you the active cities so you can pick where to go out tonight while yours gets covered.' },
+      { q: 'Is Where We Go free to use?', a: 'Yes, browsing the listings is free. Tickets for each event are handled directly by the club or promoter through the purchase link.' },
+      { q: 'How often are listings updated?', a: 'Daily. Clubs and promoters publish their parties and line-ups directly on Where We Go.' },
+    ],
+    de: [
+      { q: 'Nutzt Where We Go meinen Standort für etwas anderes?', a: 'Nein. Dein Standort wird nur im Browser genutzt, um deine Stadt zu erkennen und ihr Programm zu zeigen; er wird nicht gespeichert oder weitergegeben.' },
+      { q: 'Was, wenn meine Stadt noch kein Programm hat?', a: 'Wir zeigen dir die aktiven Städte, damit du wählen kannst, wo du heute Nacht feierst, während deine Stadt aufgebaut wird.' },
+      { q: 'Ist Where We Go kostenlos?', a: 'Ja, das Programm anzusehen ist kostenlos. Tickets für jedes Event werden direkt vom Club oder Veranstalter über den Kauflink abgewickelt.' },
+      { q: 'Wie oft wird das Programm aktualisiert?', a: 'Täglich. Clubs und Veranstalter veröffentlichen ihre Partys und Line-ups direkt auf Where We Go.' },
+    ],
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
 // Islas: en aleman la preposicion correcta es "auf" (auf Mallorca, auf Ibiza),
 // no "in" como en una ciudad. Un titulo "Partys in Mallorca" es un error
 // gramatical que cualquier hablante nativo nota al momento.

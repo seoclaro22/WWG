@@ -3,8 +3,8 @@ import { Link } from '@/lib/navigation'
 import { countUpcomingEvents, fetchZonesMap } from '@/lib/db'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { NearMeLocator } from '@/components/NearMeLocator'
-import { buildAlternatesFor, ogImage } from '@/lib/seo'
-import { homeCrumb, nearMeta, nearSlug, whenMeta, whenSlug } from '@/lib/seo-pages'
+import { buildAlternatesFor, localizedUrl, ogImage } from '@/lib/seo'
+import { homeCrumb, nearFaq, nearFaqHeading, nearGuide, nearGuideHeadings, nearMeta, nearSlug, whenMeta, whenSlug } from '@/lib/seo-pages'
 
 // Cuerpo compartido de la pagina "cerca de mi". Vive aqui y no en app/ porque
 // cada idioma tiene su propia carpeta de ruta (el slug es la keyword), y todas
@@ -43,6 +43,24 @@ export async function NearMePage({ locale, expected }: { locale: string; expecte
 
   const copy = nearMeta(locale)
   const todaySlug = whenSlug('today', locale)
+  const guide = nearGuide(locale)
+  const guideH = nearGuideHeadings(locale)
+  const faq = nearFaq(locale)
+
+  // ItemList: mismo motivo que EventListJsonLd en /[zona] — sin esto el
+  // listado de ciudades es una pila de <li>, nada que le diga a Google (o a
+  // un asistente) que esto es un directorio de ciudades con agenda.
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: copy.h1,
+    itemListElement: withCounts.map((z, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: z.name,
+      url: localizedUrl(`/${z.slug}`, locale),
+    })),
+  }
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
@@ -51,6 +69,8 @@ export async function NearMePage({ locale, expected }: { locale: string; expecte
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
       <div className="relative z-10 space-y-6">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, '\\u003c') }} />
+
         <Breadcrumbs locale={locale} items={[
           { name: homeCrumb(locale), href: '/' },
           { name: copy.eyebrow },
@@ -88,6 +108,31 @@ export async function NearMePage({ locale, expected }: { locale: string; expecte
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Guia evergreen: sostiene la pagina como recurso de verdad, no solo
+            un localizador con un listado, y le da a Google/IA algo que citar
+            fuera de la agenda del dia. */}
+        <div className="space-y-3 pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.comoFunciona}</h2>
+          <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.comoFunciona}</p>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.porQueUsar}</h2>
+          <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.porQueUsar}</p>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{nearFaqHeading(locale)}</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {faq.map((f) => (
+              <div key={f.q} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <h3 className="text-sm font-medium text-white">{f.q}</h3>
+                <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{f.a}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
