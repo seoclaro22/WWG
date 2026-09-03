@@ -12,6 +12,10 @@ export function Navbar() {
         <Link href="/" className="font-semibold tracking-wide text-gold">WWG</Link>
         <div className="flex items-center gap-3 text-sm">
           <Link className="hover:text-gold" href="/discover?tab=events" prefetch={false}>{t('nav.home')}</Link>
+          <Link className="flex items-center gap-1 text-[#00f0ff] hover:text-white px-2 py-0.5 rounded-lg border border-[#00f0ff]/30 hover:border-[#00f0ff] bg-[#00f0ff]/5 transition-all text-xs font-semibold" href="/map" prefetch={false}>
+            <span>🗺️</span>
+            <span>{t('nav.map')}</span>
+          </Link>
           <Link className="hover:text-gold" href="/promote" prefetch={false}>{t('nav.promote')}</Link>
           <LocaleSwitcher />
           <UserMenu />

@@ -1,7 +1,7 @@
 "use client"
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { useRouter } from '@/lib/navigation'
+import { useRouter, Link } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
@@ -557,7 +557,7 @@ export function LandingPage() {
               </div>
             )}
           </div>
-          <div className="flex flex-col items-center gap-2 anim-points">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 anim-points pt-1">
             <button
               type="button"
               onClick={() => requestGeo(true)}
@@ -566,7 +566,17 @@ export function LandingPage() {
               <span className="inline-block w-2 h-2 rounded-full bg-[#8dd0ff] shadow-[0_0_10px_rgba(141,208,255,0.8)]" />
               {geoStatus === 'locating' ? t('landing.using_location') : t('landing.use_location')}
             </button>
-            {statusMsg && <div className="text-xs text-white/60">{statusMsg}</div>}
+
+            <Link
+              href="/map"
+              prefetch={false}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00f0ff]/10 border border-[#00f0ff]/30 hover:border-[#00f0ff] hover:bg-[#00f0ff]/20 transition text-sm font-semibold text-[#00f0ff] shadow-[0_0_16px_rgba(0,240,255,0.2)]"
+            >
+              <span>🗺️</span>
+              <span>{t('nav.map')}</span>
+            </Link>
+
+            {statusMsg && <div className="w-full text-xs text-white/60 text-center">{statusMsg}</div>}
           </div>
         </form>
       </section>

@@ -17,8 +17,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.111.0",
+    "@types/leaflet": "^1.9.22",
     "clsx": "2.1.1",
     "framer-motion": "^12.42.2",
+    "leaflet": "^1.9.4",
+    "maplibre-gl": "^6.6.0",
     "next": "14.2.35",
     "next-intl": "^3.26.5",
     "ogl": "^1.0.11",
