@@ -56,7 +56,7 @@ export function EventMap3D({
 
     setMapReady(true)
 
-    setTimeout(() => {
+    const invalidateTimeout = setTimeout(() => {
       map.invalidateSize()
     }, 150)
 
@@ -66,7 +66,9 @@ export function EventMap3D({
     resizeObserver.observe(containerRef.current)
 
     return () => {
+      clearTimeout(invalidateTimeout)
       resizeObserver.disconnect()
+      map.stop()
       map.remove()
       mapRef.current = null
     }
