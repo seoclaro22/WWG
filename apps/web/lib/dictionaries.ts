@@ -12,7 +12,7 @@ export const dictionaries: Record<string, Dict> = {
 
     'landing.badge': 'Agenda local curada por expertos',
     'landing.locale_hint': 'ES · EN · DE',
-    'landing.subtitle': 'Dónde salir de fiesta en tu ciudad, cada noche.',
+    'landing.subtitle': 'Dónde hay fiesta hoy en tu ciudad.',
     'landing.placeholder': '¿En qué ciudad quieres salir de fiesta hoy?',
     'landing.cta': 'Buscar planes',
     'landing.stats_events': 'eventos',

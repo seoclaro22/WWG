@@ -75,9 +75,9 @@ export function ogImage(parts: { eyebrow?: string; title: string; subtitle?: str
 // que Google recorta, cerrando con llamada a la accion.
 export const HOME_META: Record<string, { title: string; description: string; tagline: string }> = {
   es: {
-    title: 'Dónde salir de fiesta en tu ciudad | Where We Go',
+    title: 'Dónde hay fiesta hoy en tu ciudad | Where We Go',
     description:
-      'Descubre las mejores discotecas, fiestas y DJs de tu ciudad. Agenda actualizada a diario con line-ups, horarios y entradas. Encuentra tu plan en segundos.',
+      '¿Dónde hay fiesta hoy? Descubre las mejores discotecas, fiestas y DJs de tu ciudad. Agenda actualizada a diario con line-ups, horarios y entradas.',
     tagline: 'La noche de tu ciudad, cada día',
   },
   en: {

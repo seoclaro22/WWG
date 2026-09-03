@@ -227,8 +227,8 @@ export function nearMeta(locale: string) {
     cta: string; locating: string; denied: string; noMatch: string; cities: string; events: string; eventsOne: string
   }> = {
     es: {
-      title: 'Salir de fiesta cerca de mí',
-      description: 'Encuentra dónde salir de fiesta cerca de ti: discotecas, fiestas y DJs de tu ciudad con horarios y entradas. Detectamos tu ciudad y te mostramos la agenda de hoy.',
+      title: 'Salir de fiesta cerca de mí hoy | Where We Go',
+      description: '¿No sabes dónde salir esta noche? Encuentra fiestas, discotecas y DJs cerca de ti en segundos: detectamos tu ciudad y te mostramos la agenda de hoy, actualizada a diario.',
       eyebrow: 'Cerca de mí',
       h1: 'Salir de fiesta cerca de mí',
       intro: 'Dinos dónde estás y te llevamos a la agenda de tu ciudad. O elige una de las ciudades con fiestas esta semana.',
@@ -281,25 +281,28 @@ export function nearMeta(locale: string) {
 // en vez de investigado por ciudad: esta pagina no es de una zona, es el hub
 // que las reune todas.
 export function nearGuideHeadings(locale: string) {
-  const copy: Record<string, { comoFunciona: string; porQueUsar: string }> = {
-    es: { comoFunciona: 'Cómo funciona', porQueUsar: 'Por qué usar Where We Go' },
-    en: { comoFunciona: 'How it works', porQueUsar: 'Why use Where We Go' },
-    de: { comoFunciona: 'So funktioniert es', porQueUsar: 'Warum Where We Go nutzen' },
+  const copy: Record<string, { queElegir: string; comoFunciona: string; porQueUsar: string }> = {
+    es: { queElegir: '¿No sabes dónde salir esta noche?', comoFunciona: 'Cómo funciona', porQueUsar: 'Por qué usar Where We Go' },
+    en: { queElegir: "Don't know where to go out tonight?", comoFunciona: 'How it works', porQueUsar: 'Why use Where We Go' },
+    de: { queElegir: 'Weißt du noch nicht, wohin heute Abend?', comoFunciona: 'So funktioniert es', porQueUsar: 'Warum Where We Go nutzen' },
   }
   return copy[locale] || copy[routing.defaultLocale]
 }
 
 export function nearGuide(locale: string) {
-  const copy: Record<string, { comoFunciona: string; porQueUsar: string }> = {
+  const copy: Record<string, { queElegir: string; comoFunciona: string; porQueUsar: string }> = {
     es: {
+      queElegir: 'Antes de elegir discoteca, cuatro cosas que marcan la noche: el ambiente (playa, centro de ciudad o barrio de terrazas no son la misma fiesta), el presupuesto (entrada y copas cambian mucho entre zonas), con quién vas (en grupo grande interesan los clubs grandes; en pareja o pocos amigos, las salas más pequeñas) y qué música buscas. La agenda de cada ciudad te deja filtrar por género y ver precio y horario antes de salir de casa.',
       comoFunciona: 'Where We Go detecta tu ubicación en el navegador, con tu permiso, y te lleva directo a la agenda de tu ciudad: discotecas, fiestas y DJs de hoy, de este finde o de toda la semana. Si prefieres no compartir tu ubicación, elige tu ciudad en la lista de abajo — el resultado es el mismo.',
       porQueUsar: 'En vez de buscar discoteca por discoteca, ves de un vistazo qué ciudades tienen agenda activa ahora mismo, con horarios, line-ups y el enlace directo para conseguir entradas. La agenda se actualiza a diario, así que lo que ves es lo que hay programado de verdad.',
     },
     en: {
+      queElegir: "Before picking a club, four things shape the night: the vibe (beachfront, city centre and rooftop bars are not the same party), the budget (entry and drinks vary a lot between areas), who you're going with (big groups suit big clubs; small groups suit smaller venues) and what music you're after. Each city's listings let you filter by genre and check price and time before you leave home.",
       comoFunciona: "Where We Go detects your location in the browser, with your permission, and takes you straight to your city's listings: clubs, parties and DJs for today, this weekend or the whole week. Prefer not to share your location? Pick your city from the list below — same result.",
       porQueUsar: 'Instead of searching club by club, you see at a glance which cities have an active agenda right now, with times, line-ups and a direct link to buy tickets. Listings are updated daily, so what you see is what is actually scheduled.',
     },
     de: {
+      queElegir: 'Vor der Clubwahl zählen vier Dinge: die Stimmung (Strandclub, Innenstadt und Dachterrasse sind nicht dieselbe Party), das Budget (Eintritt und Getränke unterscheiden sich stark je nach Gegend), mit wem du unterwegs bist (große Gruppen passen zu großen Clubs, kleinere Runden zu kleineren Locations) und welche Musik du hören willst. Im Programm jeder Stadt kannst du nach Musikrichtung filtern und Preis und Uhrzeit vorher checken.',
       comoFunciona: 'Where We Go erkennt mit deiner Erlaubnis deinen Standort im Browser und bringt dich direkt zum Programm deiner Stadt: Clubs, Partys und DJs für heute, dieses Wochenende oder die ganze Woche. Möchtest du deinen Standort nicht teilen? Wähle deine Stadt aus der Liste unten — gleiches Ergebnis.',
       porQueUsar: 'Statt Club für Club zu suchen, siehst du auf einen Blick, welche Städte gerade ein aktives Programm haben, mit Zeiten, Line-ups und direktem Link zum Ticketkauf. Das Programm wird täglich aktualisiert, du siehst also, was wirklich geplant ist.',
     },

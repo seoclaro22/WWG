@@ -114,6 +114,11 @@ export async function NearMePage({ locale, expected }: { locale: string; expecte
             un localizador con un listado, y le da a Google/IA algo que citar
             fuera de la agenda del dia. */}
         <div className="space-y-3 pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.queElegir}</h2>
+          <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.queElegir}</p>
+        </div>
+
+        <div className="space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.comoFunciona}</h2>
           <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.comoFunciona}</p>
         </div>
