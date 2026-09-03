@@ -389,7 +389,7 @@ export function EventMapContainer({ initialVenues, defaultZone = 'mallorca' }: E
 
         {/* 4. DRAWER GENERAL DE TODOS LOS LOCALES Y SUS EVENTOS (SI PULSA "VER LISTA") */}
         {showAllDrawer && (
-          <div className="absolute inset-y-0 left-0 w-full sm:w-[420px] z-[1000] bg-[#0B0F14] border-r border-white/10 p-4 flex flex-col gap-3 overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.95)] animate-in slide-in-from-left duration-300 isolate">
+          <div className="fixed inset-0 md:absolute md:inset-y-0 md:left-0 md:right-auto w-full sm:w-[420px] z-[1000] bg-[#0B0F14] border-r border-white/10 p-4 flex flex-col gap-3 overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.95)] animate-in slide-in-from-left duration-300 isolate">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <span className="text-xs font-extrabold uppercase tracking-widest text-[#d8af3a]">
                 Discotecas y Fiestas ({filteredVenues.length})
