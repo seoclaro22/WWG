@@ -45,7 +45,7 @@ export function VenueEventsDrawer({ venue, onClose, onSelectEvent, t }: VenueEve
       : '#'
 
   return (
-    <div className="fixed inset-0 md:absolute md:inset-auto md:top-3 md:bottom-3 md:left-auto md:right-3 md:w-[460px] z-[1000] flex flex-col h-[100dvh] md:h-auto md:max-h-none rounded-none md:rounded-3xl bg-[#0B0F14] border-0 md:border md:border-white/15 shadow-[0_16px_50px_rgba(0,0,0,0.95)] overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 isolate">
+    <div className="fixed inset-0 md:absolute md:inset-auto md:top-3 md:bottom-3 md:left-auto md:right-3 md:w-[460px] z-[1000] flex flex-col md:max-h-none rounded-none md:rounded-3xl bg-[#0B0F14] border-0 md:border md:border-white/15 shadow-[0_16px_50px_rgba(0,0,0,0.95)] overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 isolate">
       {/* 1. CABECERA DEL LOCAL */}
       <div className="p-4 sm:p-5 border-b border-white/10 bg-gradient-to-b from-[#151c28]/80 to-transparent shrink-0">
         <div className="flex items-start justify-between gap-3">
