@@ -77,7 +77,7 @@ export default async function MapPage({
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-aurora opacity-30" />
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-vignette" />
 
-      <div className="relative z-10 space-y-5">
+      <div className="relative z-30 space-y-5">
         <Breadcrumbs
           locale={locale}
           items={[
