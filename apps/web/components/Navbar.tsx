@@ -13,7 +13,6 @@ export function Navbar() {
         <div className="flex items-center gap-3 text-sm">
           <Link className="hover:text-gold" href="/discover?tab=events" prefetch={false}>{t('nav.home')}</Link>
           <Link className="flex items-center gap-1 text-gold hover:text-white px-2 py-0.5 rounded-lg border border-gold/30 hover:border-gold bg-gold/5 transition-all text-xs font-semibold" href="/map" prefetch={false}>
-            <span>🗺️</span>
             <span>{t('nav.map')}</span>
           </Link>
           <Link className="hover:text-gold" href="/promote" prefetch={false}>{t('nav.promote')}</Link>

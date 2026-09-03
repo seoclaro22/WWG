@@ -4,7 +4,7 @@ export type Dict = Record<string, string>
 export const dictionaries: Record<string, Dict> = {
   es: {
     'nav.home': 'Descubrir',
-    'nav.map': 'Mapa de Clubs',
+    'nav.map': 'Mapa',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promociona',
     'nav.signin': 'Entrar',
@@ -382,7 +382,7 @@ export const dictionaries: Record<string, Dict> = {
   },
   en: {
     'nav.home': 'Discover',
-    'nav.map': 'Club Map',
+    'nav.map': 'Map',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promote',
     'nav.signin': 'Sign in',
@@ -758,7 +758,7 @@ export const dictionaries: Record<string, Dict> = {
   },
   de: {
     'nav.home': 'Entdecken',
-    'nav.map': 'Clubkarte',
+    'nav.map': 'Karte',
     'nav.tickets': 'Tickets',
     'nav.promote': 'Promoten',
     'nav.signin': 'Anmelden',

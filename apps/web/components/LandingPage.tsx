@@ -572,7 +572,6 @@ export function LandingPage() {
               prefetch={false}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30 hover:border-gold hover:bg-gold/20 transition text-sm font-semibold text-gold shadow-[0_0_16px_rgba(216,175,58,0.2)]"
             >
-              <span>🗺️</span>
               <span>{t('nav.map')}</span>
             </Link>
 
