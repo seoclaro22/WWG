@@ -1,5 +1,5 @@
 import { getSupabaseClient } from '@/lib/supabase'
-import type { EventPublic } from '@/lib/types'
+import { fetchEvents } from '@/lib/db'
 
 export type MapEventItem = {
   id: string
@@ -227,27 +227,22 @@ function normalizeSlug(str: string): string {
 
 export async function fetchMapVenues(): Promise<MapVenue[]> {
   const sb = getSupabaseClient()
-  const now = new Date()
-  // Inicio del día en UTC para incluir todas las fiestas programadas para hoy
-  const todayStartIso = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString()
 
-  // 1. Obtener todos los locales oficiales aprobados y todas las fiestas desde hoy
-  const [clubsRes, eventsRes] = await Promise.all([
+  // 1. Obtener todos los locales oficiales aprobados y todas las fiestas
+  // vigentes. Las fiestas usan fetchEvents, la misma funcion que /descubrir:
+  // mismo filtro de vigencia (con margen tras el end_at) y mismo orden de
+  // visualizacion (los eventos de madrugada 00:00-05:59 se muestran al final
+  // de su propio dia en vez de al principio).
+  const [clubsRes, events] = await Promise.all([
     sb
       .from('clubs')
       .select('id,name,slug,address,zone,lat,lon,images,genres,status')
       .eq('status', 'approved')
       .limit(500),
-    sb
-      .from('events_public')
-      .select('*')
-      .or(`end_at.gte.${todayStartIso},and(end_at.is.null,start_at.gte.${todayStartIso})`)
-      .order('start_at', { ascending: true })
-      .limit(1000),
+    fetchEvents({ limit: 1000 }),
   ])
 
   const clubs = (clubsRes.data || []) as any[]
-  const events = (eventsRes.data || []) as EventPublic[]
 
   const venueMap = new Map<string, MapVenue>()
   const venueBySlug = new Map<string, MapVenue>()

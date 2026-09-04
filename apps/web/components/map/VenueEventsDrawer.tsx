@@ -14,10 +14,12 @@ function formatDate(iso: string): { label: string; isToday: boolean } {
   const date = new Date(iso)
   const now = new Date()
 
-  const isToday =
-    date.getUTCDate() === now.getUTCDate() &&
-    date.getUTCMonth() === now.getUTCMonth() &&
-    date.getUTCFullYear() === now.getUTCFullYear()
+  // Mismo criterio que /descubrir: rango real de hoy en hora local, no
+  // comparacion de campos UTC (que marcaba como "Hoy" fiestas de manana
+  // que caian en el mismo dia UTC por la diferencia horaria).
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+  const isToday = date.getTime() >= startOfToday.getTime() && date.getTime() <= endOfToday.getTime()
 
   const hours = date.getUTCHours().toString().padStart(2, '0')
   const mins = date.getUTCMinutes().toString().padStart(2, '0')
