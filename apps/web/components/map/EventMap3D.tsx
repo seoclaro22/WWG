@@ -223,11 +223,6 @@ export function EventMap3D({
     mapRef.current?.zoomOut(1)
   }
 
-  const handleResetNorth = () => {
-    const zone = KNOWN_ZONES[activeZoneKey] || KNOWN_ZONES.mallorca
-    mapRef.current?.flyTo([zone.center[1], zone.center[0]], zone.zoom, { animate: true, duration: 0.8 })
-  }
-
   return (
     <div className="relative w-full h-full min-h-[550px] overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-[#070a0e]">
       {/* Lienzo del Mapa que llena perfectamente el 100% sin cortes ni diagonales */}
@@ -247,18 +242,6 @@ export function EventMap3D({
           }`}
         >
           {is3D ? 'MAP' : 'SAT'}
-        </button>
-
-        {/* Botón Resetear Vista / Centrar */}
-        <button
-          onClick={handleResetNorth}
-          title={t('map.reset_north')}
-          aria-label="Reset View"
-          className="w-11 h-11 rounded-2xl flex items-center justify-center bg-[#0B0F14]/90 text-white/80 border border-white/15 backdrop-blur-md hover:text-[#00f0ff] hover:border-[#00f0ff]/50 hover:bg-[#0B0F14] transition-all shadow-xl active:scale-90"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M12 19V5m0 0l-4 4m4-4l4 4" />
-          </svg>
         </button>
 
         {/* Botón Geolocalización */}

@@ -38,18 +38,6 @@ export function Map3DControls({
         {is3D ? '3D' : '2D'}
       </button>
 
-      {/* Botón Orientación Norte */}
-      <button
-        onClick={onResetNorth}
-        title={t('map.reset_north')}
-        aria-label="Reset North"
-        className="w-11 h-11 rounded-2xl flex items-center justify-center bg-[#0B0F14]/80 text-white/80 border border-white/15 backdrop-blur-md hover:text-[#00f0ff] hover:border-[#00f0ff]/50 hover:bg-[#0B0F14] transition-all shadow-lg active:scale-95"
-      >
-        <svg className="w-5 h-5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19V5m0 0l-4 4m4-4l4 4" />
-        </svg>
-      </button>
-
       {/* Botón Geolocalización / Cerca de mí */}
       <button
         onClick={onLocateMe}
