@@ -1,19 +1,11 @@
 "use client"
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
 import { useRouter, Link } from '@/lib/navigation'
 import { useI18n } from '@/lib/i18n'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { fetchKnownZones, normalizeZoneKey } from '@/lib/zones-client'
 import { geocodeCandidates, haversineKm, reverseGeocode, suggestCities, type Coords } from '@/lib/geo-client'
 import { zoneCoords } from '@/lib/zone-coords'
-import { GradientBackground } from '@/components/ui/gradient-background'
-
-// Carga diferida y sin SSR: es WebGL puro (ogl), no tiene sentido renderizarlo
-// en el servidor, y así no entra en el bundle que bloquea el primer pintado.
-const Strands = dynamic(() => import('@/components/ui/Strands'), { ssr: false })
-
-const STRANDS_COLORS = ['#d8af3a', '#f5d98b', '#8a6a1e']
 
 // Mismo look que landing-gold-base/aurora (fondo casi negro con brillos ambar)
 // pero como gradientes solidos que el componente cruza con transicion suave.
@@ -84,7 +76,6 @@ export function LandingPage() {
   const [displayPlaceholder, setDisplayPlaceholder] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [hasSpeech, setHasSpeech] = useState(false)
-  const [showStrands, setShowStrands] = useState(false)
   // Ciudad que el usuario esta escribiendo (resuelta a nombre completo) y la
   // zona con agenda que le queda mas cerca. Se guarda junto al texto que lo
   // genero para no enseñarlo pegado a una busqueda que ya ha cambiado.
@@ -96,11 +87,6 @@ export function LandingPage() {
     setHasSpeech(typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window))
   }, [])
 
-  // El fondo animado (WebGL) no se monta si el usuario pide menos movimiento.
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    setShowStrands(!reduced)
-  }, [])
 
   // Animación de typing en el placeholder
   useEffect(() => {
@@ -401,32 +387,17 @@ export function LandingPage() {
           con overflow, y eso deja clavado cualquier hijo sticky. Sin particulas:
           el canvas de tsparticles penalizaba el Speed Index en PageSpeed. */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <GradientBackground
-          gradients={WWG_HERO_GRADIENTS}
-          animationDuration={10}
-          animationDelay={0.3}
-          className="absolute inset-0 min-h-0 pointer-events-none"
+        <div className="absolute inset-0" style={{ background: WWG_HERO_GRADIENTS[0] }} />
+        <video
+          className="absolute inset-0 w-full h-full object-cover opacity-20 md:opacity-25"
+          style={{ objectPosition: 'center 15%' }}
+          src="/images/hero-gorilla.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
         />
         <div className="absolute inset-0 pointer-events-none landing-gold-vignette" />
-        {showStrands && (
-          <div className="absolute inset-0">
-            <Strands
-              colors={STRANDS_COLORS}
-              count={3}
-              speed={0.4}
-              amplitude={1}
-              waviness={1}
-              thickness={0.5}
-              glow={1.4}
-              taper={3}
-              spread={1}
-              intensity={0.35}
-              saturation={1}
-              opacity={0.22}
-              scale={1.5}
-            />
-          </div>
-        )}
       </div>
 
       {/* Unica zona: identidad y buscador, sin nada mas que distraiga. */}

@@ -34,20 +34,33 @@ export function GradientBackground({
 	overlay = false,
 	overlayOpacity = 0.3,
 }: GradientBackgroundProps) {
+	// Antes esto animaba la propiedad CSS `background` por JS en cada frame,
+	// lo que fuerza repintar toda la capa constantemente (caro, y competia
+	// por GPU con el video de fondo del hero). Ahora son capas apiladas, una
+	// por gradiente, con solo su opacity animada: eso lo compone la GPU sin
+	// repintar.
+	const stepDuration = animationDuration / Math.max(gradients.length - 1, 1)
 	return (
 		<div className={cn('w-full relative min-h-screen overflow-hidden', className)}>
 			{/* Animated gradient background */}
-			<motion.div
-				className="absolute inset-0"
-				style={{ background: gradients[0] }}
-				animate={{ background: gradients }}
-				transition={{
-					delay: animationDelay,
-					duration: animationDuration,
-					repeat: Number.POSITIVE_INFINITY,
-					ease: 'easeInOut',
-				}}
-			/>
+			<div className="absolute inset-0" style={{ background: gradients[0] }} />
+			{gradients.slice(1).map((gradient, i) => (
+				<motion.div
+					key={i}
+					className="absolute inset-0"
+					style={{ background: gradient }}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: [0, 1, 1, 0] }}
+					transition={{
+						delay: animationDelay + i * stepDuration,
+						duration: stepDuration * 2,
+						times: [0, 0.1, 0.9, 1],
+						repeat: Number.POSITIVE_INFINITY,
+						repeatDelay: stepDuration * (gradients.length - 2),
+						ease: 'easeInOut',
+					}}
+				/>
+			))}
 
 			{/* Optional overlay */}
 			{overlay && (
