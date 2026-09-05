@@ -2,6 +2,19 @@ import { getSupabaseClient } from '@/lib/supabase'
 import type { EventPublic, Club } from './types'
 import { genreSlug } from '@/lib/hrefs'
 
+// Reintenta una consulta a Supabase cuando falla. La API de Supabase se ha
+// visto devolver un 522 de Cloudflare (gateway timeout) de forma puntual;
+// sin reintento eso tumbaba fetchDj/countUpcomingEvents/countClubs/countDjs
+// entera, dejando la pagina vacia o en 404 justo cuando Google la rastreaba.
+async function withRetry<T extends { error: any }>(run: () => PromiseLike<T>, attempts = 3, baseDelayMs = 250): Promise<T> {
+  let result = await run()
+  for (let i = 1; i < attempts && result.error; i++) {
+    await new Promise((r) => setTimeout(r, baseDelayMs * i))
+    result = await run()
+  }
+  return result
+}
+
 function normalizeEventFromDate(from?: string) {
   const now = new Date()
   if (!from) return now.toISOString()
@@ -121,13 +134,16 @@ export async function fetchEvents(params?: { q?: string; limit?: number; from?: 
 export async function countUpcomingEvents(params?: { zone?: string }) {
   const sb = getSupabaseClient()
   const nowIso = new Date().toISOString()
-  let q = applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso, GRACE_MS)
-  if (params?.zone) q = (q as any).eq('zone', params.zone)
-  q = (q as any).eq('status', 'published')
-  let { count, error } = await q
+  const buildQuery = () => {
+    let q = applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso, GRACE_MS)
+    if (params?.zone) q = (q as any).eq('zone', params.zone)
+    q = (q as any).eq('status', 'published')
+    return q
+  }
+  let { count, error } = await withRetry<{ count: number | null; error: any }>(buildQuery)
   if (error) {
     // Fallback si status/zone no existen en la vista
-    const retry = await applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso, GRACE_MS)
+    const retry = await withRetry<{ count: number | null; error: any }>(() => applyStillOnFilter(sb.from('events_public').select('id', { count: 'exact', head: true }) as any, nowIso, GRACE_MS))
     count = retry.count
     error = retry.error
   }
@@ -142,13 +158,15 @@ export async function countUpcomingEvents(params?: { zone?: string }) {
 // pestanas "Clubs" y "DJs" de /discover (antes solo la de eventos lo tenia).
 export async function countClubs(params?: { zone?: string }) {
   const sb = getSupabaseClient()
-  let q = sb.from('clubs').select('id', { count: 'exact', head: true }).eq('status', 'approved')
-  if (params?.zone) {
-    // Igual que fetchClubsPublic: un club sin zona asignada no debe
-    // desaparecer del conteo solo por no tener ese dato.
-    q = (q as any).or(`zone.eq.${params.zone},zone.is.null`)
-  }
-  const { count, error } = await q
+  const { count, error } = await withRetry<{ count: number | null; error: any }>(() => {
+    let q = sb.from('clubs').select('id', { count: 'exact', head: true }).eq('status', 'approved')
+    if (params?.zone) {
+      // Igual que fetchClubsPublic: un club sin zona asignada no debe
+      // desaparecer del conteo solo por no tener ese dato.
+      q = (q as any).or(`zone.eq.${params.zone},zone.is.null`)
+    }
+    return q as any
+  })
   if (error) { console.error('countClubs error', error); return 0 }
   return count || 0
 }
@@ -157,7 +175,7 @@ export async function countClubs(params?: { zone?: string }) {
 // aplicar: el total es el mismo se mire desde la ciudad que se mire.
 export async function countDjs() {
   const sb = getSupabaseClient()
-  const { count, error } = await sb.from('djs').select('id', { count: 'exact', head: true })
+  const { count, error } = await withRetry<{ count: number | null; error: any }>(() => sb.from('djs').select('id', { count: 'exact', head: true }))
   if (error) { console.error('countDjs error', error); return 0 }
   return count || 0
 }
@@ -507,11 +525,13 @@ export async function fetchClubEvents(clubId: string, limit = 10) {
 
 export async function fetchDj(idOrSlug: string) {
   const sb = getSupabaseClient()
-  const { data, error } = await sb
-    .from('djs')
-    .select('id,slug,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified,socials')
-    .eq(isUuid(idOrSlug) ? 'id' : 'slug', idOrSlug)
-    .maybeSingle()
+  const { data, error } = await withRetry(() =>
+    sb
+      .from('djs')
+      .select('id,slug,name,name_i18n,short_bio,short_bio_i18n,bio,bio_i18n,spotify_embed,genres,images,verified,socials')
+      .eq(isUuid(idOrSlug) ? 'id' : 'slug', idOrSlug)
+      .maybeSingle()
+  )
   if (error) { console.error('fetchDj error', error); return null }
   return data as any
 }
