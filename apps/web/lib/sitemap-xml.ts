@@ -40,8 +40,12 @@ ${urls.join('\n')}
 }
 
 export function sitemapIndexXml(locs: string[]) {
-  const now = new Date().toISOString()
-  const items = locs.map((loc) => `  <sitemap>\n    <loc>${esc(loc)}</loc>\n    <lastmod>${now}</lastmod>\n  </sitemap>`)
+  // Sin lastmod inventado: mismo motivo que en las entradas de cada bloque
+  // (ver lib/sitemap-data.ts). Ponerle "ahora" a los 6 sub-sitemaps en cada
+  // regeneracion horaria, aunque no haya cambiado nada dentro, es la fecha
+  // poco fiable que ese mismo comentario advierte que Google acaba
+  // ignorando. lastmod es opcional en el indice.
+  const items = locs.map((loc) => `  <sitemap>\n    <loc>${esc(loc)}</loc>\n  </sitemap>`)
   return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${items.join('\n')}
