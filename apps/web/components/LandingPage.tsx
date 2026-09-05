@@ -417,15 +417,15 @@ export function LandingPage() {
         </div>
         {/* Nombre — sube justo despues del icono */}
         <div className="anim-logo -mt-2 text-center">
-          <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-400 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
+          <div className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-b from-white to-gray-100 text-transparent bg-clip-text drop-shadow-[0_12px_45px_rgba(0,0,0,0.35)] wwg-gold-sheen">
             WWG
           </div>
-          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/80 wwg-neon">WHERE WE GO</div>
+          <div className="mt-3 text-lg md:text-xl font-medium tracking-[0.35em] text-white/95 wwg-neon">WHERE WE GO</div>
         </div>
         {/* Subtitulo, y unico h1 de la pagina. "WWG"/"WHERE WE GO" de arriba son
             el logotipo, no contenido: la portada no tenia ningun h1, y el
             titulo visual no describe de que trata el sitio. */}
-        <h1 className="anim-subtitle text-base md:text-lg font-normal text-white/55 max-w-sm -mt-2">
+        <h1 className="anim-subtitle text-base md:text-lg font-normal text-white/75 max-w-sm -mt-2">
           {t('landing.subtitle')}
         </h1>
         <form onSubmit={onSubmit} className="w-full max-w-lg space-y-2">
