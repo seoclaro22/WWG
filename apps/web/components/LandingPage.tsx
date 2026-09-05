@@ -389,7 +389,7 @@ export function LandingPage() {
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute inset-0" style={{ background: WWG_HERO_GRADIENTS[0] }} />
         <video
-          className="absolute inset-0 w-full h-full object-cover opacity-20 md:opacity-25"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 md:opacity-45"
           style={{ objectPosition: 'center 15%' }}
           src="/images/hero-gorilla.mp4"
           autoPlay
