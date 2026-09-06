@@ -164,6 +164,7 @@ export async function Footer({ locale }: { locale: string }) {
           <Link href="/privacy" className="hover:text-gold" prefetch={false}>{t('account.privacy')}</Link>
           <Link href="/cookies" className="hover:text-gold" prefetch={false}>{t('footer.cookiesPolicy')}</Link>
           <ResetConsentButton />
+          <a href="https://seoclaro.com" target="_blank" rel="noopener" className="hover:text-gold">Hecho por SeoClaro</a>
         </div>
       </div>
     </footer>
