@@ -42,7 +42,13 @@ export function EventCard({ event, showHeart = false }: Props) {
           <div className="text-xs text-white/60">{event.date}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <ReserveButton eventId={event.id} source="discover" className="w-full sm:w-auto">{t('action.reserve')}</ReserveButton>
-            <a className="text-sm px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/80 hover:bg-white/12 hover:border-[#d8af3a]/40 hover:text-white transition-colors w-full sm:w-auto flex items-center justify-center whitespace-nowrap" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>{t('action.directions')}</a>
+            <a className="text-sm px-3 py-1.5 rounded-full bg-white/8 border border-white/10 text-white/80 hover:bg-white/12 hover:border-[#d8af3a]/40 hover:text-white transition-colors w-full sm:w-auto flex items-center justify-center gap-1.5 whitespace-nowrap" target="_blank" href={`https://maps.google.com?q=${encodeURIComponent(event.club)}`}>
+              <svg className="w-3.5 h-3.5 text-[#d8af3a] shrink-0" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M7 16 C7 16 2 10 2 6 C2 3.24 4.24 1 7 1 C9.76 1 12 3.24 12 6 C12 10 7 16 7 16Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              </svg>
+              {t('action.directions')}
+            </a>
           </div>
         </div>
       </div>
