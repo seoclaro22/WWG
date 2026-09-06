@@ -1,8 +1,9 @@
 import { fetchDjsPublic } from '@/lib/db'
-import { DjCard2 } from '@/components/DjCard2'
+import { LoadMoreList } from '@/components/LoadMoreList'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta, ogImage } from '@/lib/seo'
 import { homeCrumb, vacios } from '@/lib/seo-pages'
+import { CATALOG_LIMIT, PAGE_SIZE, toDjItem } from '@/lib/list-items'
 
 // Listado indexable de DJs. Antes solo existia dentro de /discover?tab=djs,
 // que es noindex por ser navegacion facetada: la ficha de cada DJ no tenia
@@ -21,7 +22,9 @@ export function generateMetadata({ params }: { params: { locale: string } }) {
 }
 
 export default async function DjsIndex({ params }: { params: { locale: string } }) {
-  const djs = await fetchDjsPublic({ limit: 200 })
+  // Se pide el catalogo con el mismo tope que /api/list (CATALOG_LIMIT.djs)
+  // para caer en la misma entrada de cache; solo se pinta la primera tanda.
+  const djs = await fetchDjsPublic({ limit: CATALOG_LIMIT.djs })
   const { title, description } = listMeta('djs', params.locale)
 
   return (
@@ -32,30 +35,14 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
       ]} />
       <h1 className="text-2xl font-semibold">{title}</h1>
       <p className="text-sm text-white/60 max-w-xl">{description}</p>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {djs.map((dj: any) => {
-          const images: string[] = Array.isArray(dj.images) ? dj.images : []
-          return (
-            <DjCard2
-              key={dj.id}
-              dj={{
-                id: dj.id,
-                slug: dj.slug,
-                name: dj.name,
-                name_i18n: dj.name_i18n,
-                short_bio: dj.short_bio,
-                short_bio_i18n: dj.short_bio_i18n,
-                bio: dj.bio,
-                bio_i18n: dj.bio_i18n,
-                genres: dj.genres,
-                image: images[0],
-                verified: dj.verified,
-              }}
-            />
-          )
-        })}
-        {djs.length === 0 && <div className="muted">{vacios(params.locale).djs}</div>}
-      </div>
+      <LoadMoreList
+        kind="djs"
+        initialItems={djs.slice(0, PAGE_SIZE).map(toDjItem)}
+        initialDone={djs.length <= PAGE_SIZE}
+        params={{}}
+        emptyLabel={vacios(params.locale).djs}
+        gridClassName="grid gap-3 sm:grid-cols-2"
+      />
     </div>
   )
 }

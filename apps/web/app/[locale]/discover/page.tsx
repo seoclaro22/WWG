@@ -1,15 +1,14 @@
 import { SafeImage } from '@/components/SafeImage'
 import { Filters } from '@/components/Filters'
 import { QuickDateChips } from '@/components/QuickDateChips'
-import { EventCard } from '@/components/EventCard'
 import { countClubs, countDjs, countUpcomingEvents, fetchClubsPublic, fetchDjsPublic, fetchEvents } from '@/lib/db'
 import { T } from '@/components/T'
-import { ClubCard } from '@/components/ClubCard'
-import { DjCard2 } from '@/components/DjCard2'
+import { LoadMoreList } from '@/components/LoadMoreList'
 import { buildAlternates, localePath, listMeta } from '@/lib/seo'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 import { clubPath, djPath } from '@/lib/hrefs'
-import { formatEventDate, vacios } from '@/lib/seo-pages'
+import { vacios } from '@/lib/seo-pages'
+import { CATALOG_LIMIT, PAGE_SIZE, rangeFromDateParam, toClubItem, toDjItem, toEventItem } from '@/lib/list-items'
 
 // Los filtros (q, date, genre, zone, tab) son navegacion facetada: cada
 // combinacion es una URL distinta con el mismo inventario reordenado. Sin
@@ -38,43 +37,9 @@ export function generateMetadata({
   }
 }
 
-function rangeFromDateParam(dateParam?: string) {
-  if (!dateParam) return {}
-  const now = new Date()
-  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59)
-  let from: Date | undefined
-  let to: Date | undefined
-  switch (dateParam) {
-    case 'today':
-      from = startOfDay(now); to = endOfDay(now); break
-    case 'tomorrow': {
-      const t = new Date(now); t.setDate(t.getDate() + 1); from = startOfDay(t); to = endOfDay(t); break
-    }
-    case 'weekend': {
-      const t = new Date(now)
-      const day = t.getDay()
-      const diffToFri = (5 - day + 7) % 7
-      const fri = new Date(t); fri.setDate(t.getDate() + diffToFri)
-      const sun = new Date(fri); sun.setDate(fri.getDate() + 2)
-      from = startOfDay(fri); to = endOfDay(sun); break
-    }
-    case 'week': {
-      from = startOfDay(now); const toD = new Date(now); toD.setDate(now.getDate() + 7); to = endOfDay(toD); break
-    }
-    case 'month': {
-      from = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
-      to = endOfDay(new Date(now.getFullYear(), now.getMonth() + 1, 0))
-      break
-    }
-    default: {
-      const parsed = new Date(dateParam)
-      if (!isNaN(parsed.getTime())) { from = startOfDay(parsed); to = endOfDay(parsed) }
-    }
-  }
-  const fmt = (d?: Date) => (d ? d.toISOString() : undefined)
-  return { from: fmt(from), to: fmt(to) }
-}
+// rangeFromDateParam vive en lib/list-items.ts: /api/list la necesita
+// exactamente igual para que la tanda que trae "Cargar mas" caiga en la misma
+// ventana temporal que la primera pintada aqui.
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -91,10 +56,13 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
   const tab = (searchParams?.tab || 'events') as 'events' | 'clubs' | 'djs'
   const zone = searchParams?.zone
   const { from, to } = rangeFromDateParam(searchParams?.date)
+  // Mismo tope que /api/list (CATALOG_LIMIT) para caer en la misma entrada de
+  // cache: solo se pinta la primera tanda (PAGE_SIZE), "Cargar mas" trae el
+  // resto de este mismo array ya cacheado, no una consulta nueva.
   const [events, clubs, djs, featuredClubs, featuredDjs, upcomingCount, clubsCount, djsCount] = await Promise.all([
-    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: 600, sponsoredFirst: true, grace: searchParams?.date === 'today' ? true : undefined }) : Promise.resolve([] as any[]),
-    tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: 300 }) : Promise.resolve([] as any[]),
-    tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: 900 }) : Promise.resolve([] as any[]),
+    tab === 'events' ? fetchEvents({ q: searchParams?.q ?? undefined, from, to, genre: searchParams?.genre ?? undefined, zone: zone ?? undefined, limit: CATALOG_LIMIT.events, sponsoredFirst: true, grace: searchParams?.date === 'today' ? true : undefined }) : Promise.resolve([] as any[]),
+    tab === 'clubs' ? fetchClubsPublic({ q: searchParams?.q ?? undefined, zone: zone ?? undefined, genre: searchParams?.genre ?? undefined, limit: CATALOG_LIMIT.clubs }) : Promise.resolve([] as any[]),
+    tab === 'djs' ? fetchDjsPublic({ q: searchParams?.q ?? undefined, genre: searchParams?.genre ?? undefined, limit: CATALOG_LIMIT.djs }) : Promise.resolve([] as any[]),
     fetchClubsPublic({ zone: zone ?? undefined, limit: 24 }),
     fetchDjsPublic({ limit: 24 }),
     countUpcomingEvents({ zone: zone ?? undefined }),
@@ -202,68 +170,39 @@ export default async function DiscoverPage({ params, searchParams }: { params: {
         )}
         <Filters />
         {tab === 'events' && <QuickDateChips />}
+        {/* Cada pestana renderiza solo las primeras PAGE_SIZE tarjetas; el
+            resto del array ya traido (hasta CATALOG_LIMIT) se sirve bajo
+            demanda con "Cargar mas" via /api/list, que replica estos mismos
+            filtros para que la tanda siguiente encaje con la que ya se ve. */}
         {tab === 'events' && (
-          <div className="grid gap-3">
-            {events.map((e: any) => {
-              const imgs: string[] = Array.isArray(e.images) ? e.images : []
-              const image = imgs.length ? imgs[0] : undefined
-              return (
-                <EventCard
-                  key={e.id}
-                  event={{
-                    id: e.id,
-                    slug: (e as any).slug,
-                    title: e.name,
-                    title_i18n: (e as any).name_i18n || undefined,
-                    date: formatEventDate(e.start_at, params.locale),
-                    club: e.club_name || '-',
-                    image,
-                    sponsored: (e as any).sponsored || false,
-                  }}
-                />
-              )
-            })}
-            {events.length === 0 && <div className="muted">{vacio.eventosFiltro}</div>}
-          </div>
+          <LoadMoreList
+            key={`events-${searchParams?.q || ''}-${searchParams?.zone || ''}-${searchParams?.genre || ''}-${searchParams?.date || ''}`}
+            kind="events"
+            initialItems={events.slice(0, PAGE_SIZE).map((e) => toEventItem(e, params.locale))}
+            initialDone={events.length <= PAGE_SIZE}
+            params={{ q: searchParams?.q, zone, genre: searchParams?.genre, date: searchParams?.date }}
+            emptyLabel={vacio.eventosFiltro}
+          />
         )}
         {tab === 'clubs' && (
-          <div className="grid gap-3">
-            {clubs.map((c: any) => {
-              const imgs: string[] = Array.isArray(c.images) ? c.images : []
-              const image = imgs[0] || (c.logo_url || null)
-              return (
-                <ClubCard key={c.id} club={{ id: c.id, slug: c.slug, name: c.name, address: c.address, zone: c.zone, image, verified: c.verified }} />
-              )
-            })}
-            {clubs.length === 0 && <div className="muted">{vacio.clubsZona}</div>}
-          </div>
+          <LoadMoreList
+            key={`clubs-${searchParams?.q || ''}-${zone || ''}-${searchParams?.genre || ''}`}
+            kind="clubs"
+            initialItems={clubs.slice(0, PAGE_SIZE).map(toClubItem)}
+            initialDone={clubs.length <= PAGE_SIZE}
+            params={{ q: searchParams?.q, zone, genre: searchParams?.genre }}
+            emptyLabel={vacio.clubsZona}
+          />
         )}
         {tab === 'djs' && (
-          <div className="grid gap-3">
-            {djs.map((dj: any) => {
-              const imgs: string[] = Array.isArray(dj.images) ? dj.images : []
-              const image = imgs[0] || null
-              return (
-                <DjCard2
-                  key={dj.id}
-                  dj={{
-                    id: dj.id,
-                    slug: dj.slug,
-                    name: dj.name,
-                    name_i18n: dj.name_i18n,
-                    short_bio: dj.short_bio,
-                    short_bio_i18n: dj.short_bio_i18n,
-                    bio: dj.bio,
-                    bio_i18n: dj.bio_i18n,
-                    genres: dj.genres,
-                    image,
-                    verified: dj.verified,
-                  }}
-                />
-              )
-            })}
-            {djs.length === 0 && <div className="muted">{vacio.djsBusqueda}</div>}
-          </div>
+          <LoadMoreList
+            key={`djs-${searchParams?.q || ''}-${searchParams?.genre || ''}`}
+            kind="djs"
+            initialItems={djs.slice(0, PAGE_SIZE).map(toDjItem)}
+            initialDone={djs.length <= PAGE_SIZE}
+            params={{ q: searchParams?.q, genre: searchParams?.genre }}
+            emptyLabel={vacio.djsBusqueda}
+          />
         )}
       </div>
     </div>
