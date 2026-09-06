@@ -1,14 +1,14 @@
-# Runner de sesiones de código de Selina — VARIANTE DRAFT OBLIGATORIO.
+# Runner de sesiones de código de Selina — repos fuera de SELINA-AI.
 #
-# Diferencia con el de SELINA-AI (.github/workflows/selina-coding-session.yml):
-# aquí NO hay auto-merge. El PR se abre en draft y se queda en draft pase lo
-# que pase. Estos repos son webs de agencia y proyectos de cliente: un merge
-# automático a main dispara despliegue a producción sin que nadie haya leído
-# el diff, y eso solo es aceptable en el repo de la propia Selina.
-#
-# El gate de build/typecheck sigue corriendo, pero aquí es solo informativo:
-# su resultado se escribe en el cuerpo del PR para orientar la revisión, no
-# decide nada. Por eso puede fallar o saltarse sin bloquear el flujo.
+# 2026-09-06: tenía draft obligatorio (sin auto-merge) para no desplegar a
+# producción sin revisión humana. A petición explícita del propietario se
+# quitó: la aprobación en el chat de Selina ya es esa confirmación, y pedir
+# una segunda al marcar el PR como ready en GitHub era fricción sin valor
+# real. Ahora se comporta como el de SELINA-AI: se mergea solo salvo que el
+# gate de build/typecheck haya corrido y fallado de verdad (ver paso
+# "Auto-mergear si el gate no bloqueó"). En los repos sin build ni typecheck
+# (kitaypon, WWG, cafeteria-levi, extractorfile) no hay ninguna red: lo que
+# Claude Code escriba entra a producción sin que nadie lo mire antes.
 #
 # Este fichero lo instala Cristian a mano. Selina no tiene permiso para tocar
 # rutas dentro de .github/ (ver api/_github-policy.ts en el repo de Selina),
@@ -201,12 +201,30 @@ jobs:
           fi
           PR_URL=$(gh pr create --draft --base "$BASE" --head "${{ github.event.inputs.branch }}" \
             --title "Selina: sesión de código automática" \
-            --body "$(printf '%bGenerado automáticamente por una sesión de Claude Code disparada desde Selina.\n\n%s\n\n**Este PR NO se mergea solo.** Queda en draft hasta que lo revises y lo marques listo tú.' "$LARGE_NOTE" "$BUILD_NOTE")")
+            --body "$(printf '%bGenerado automáticamente por una sesión de Claude Code disparada desde Selina.\n\n%s' "$LARGE_NOTE" "$BUILD_NOTE")")
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
 
-      # Deliberadamente NO existe un paso de auto-merge en esta variante.
-      # Si algún día se añade, deja de ser draft obligatorio: revisa primero
-      # por qué se decidió que estos repos no lo tuvieran.
+      # A petición explícita del propietario (2026-09-06): la aprobación en el
+      # chat de Selina ya es la confirmación humana. Pedir una segunda en
+      # GitHub (marcar ready + mergear) era fricción redundante, no una
+      # revisión real. Se mergea solo salvo que el gate haya corrido de
+      # verdad y haya fallado — en los repos sin build/typecheck (ran=false)
+      # no hay ninguna red antes de producción, igual que si Cristian hubiera
+      # mergeado el cambio a mano sin mirarlo.
+      - name: Auto-mergear si el gate no bloqueó
+        id: automerge
+        if: steps.commit.outputs.has_changes == 'true' && steps.pr.outputs.pr_url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.gate.outputs.ran }}" == "true" ] && [ "${{ steps.gate.outputs.build_ok }}" != "0" ]; then
+            echo "Build o typecheck fallaron: el PR se queda en draft para revisión manual."
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+          else
+            gh pr ready "${{ steps.pr.outputs.pr_url }}"
+            gh pr merge "${{ steps.pr.outputs.pr_url }}" --squash --delete-branch
+            echo "merged=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Reportar resultado a Selina
         if: always()
