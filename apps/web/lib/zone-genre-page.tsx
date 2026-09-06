@@ -15,7 +15,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
 import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
-import { genreZoneGuide, genreZoneGuideHeadings, MIN_EVENTS_TO_INDEX, formatEventDate, zoneGenreMeta } from '@/lib/seo-pages'
+import { genreZoneGuide, genreZoneGuideHeadings, genreZoneSummary, MIN_EVENTS_TO_INDEX, formatEventDate, formatShortDate, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 type Params = { locale: string; zone: string; name: string }
@@ -104,6 +104,18 @@ export async function renderZoneGenrePage(params: Params, expectedSegment: strin
 
   const dict = dictionaries[params.locale] || dictionaries[routing.defaultLocale]
 
+  // Relleno para los cruces sin guia evergreen (ver genreZoneSummary): datos
+  // reales que ya estan en memoria, no hace falta pedir nada mas a Supabase.
+  const summary = guide ? '' : (() => {
+    const clubNames = Array.from(new Set(clubs.map((c: any) => c.name).filter(Boolean)))
+    const sorted = [...events].sort((a: any, b: any) => a.start_at.localeCompare(b.start_at))
+    const soonest = sorted[0]
+    const next = soonest
+      ? { title: soonest.name, club: soonest.club_name || zoneName, date: formatShortDate(soonest.start_at, params.locale) }
+      : undefined
+    return genreZoneSummary(zoneName, genre, params.locale, events.length, clubNames, next)
+  })()
+
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">
       <div className="absolute inset-0 pointer-events-none rounded-[28px] landing-gold-base opacity-50" />
@@ -123,6 +135,13 @@ export async function renderZoneGenrePage(params: Params, expectedSegment: strin
           <h1 className="text-3xl font-bold text-white">{title}</h1>
           <p className="text-sm text-white/60 mt-2 max-w-xl">{intro}</p>
         </div>
+
+        {/* Sin guia evergreen para este cruce: en vez de dejar la pagina en
+            cuatro lineas, un parrafo con datos reales ya cargados (numero de
+            eventos, salas, proxima fecha). Ver genreZoneSummary. */}
+        {summary && (
+          <p className="text-sm text-white/60 leading-relaxed max-w-2xl">{summary}</p>
+        )}
 
         {/* Guia evergreen: texto fijo e investigado, no depende de la agenda.
             Ver la nota de genreZoneGuide en seo-pages.ts. Solo existe para el

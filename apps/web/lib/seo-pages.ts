@@ -201,6 +201,44 @@ export function zoneGenreMeta(genre: string, zone: string, locale: string): Page
   return copy[locale] || copy[routing.defaultLocale]
 }
 
+// Parrafo de relleno para los cruces zona x genero que no tienen guia
+// evergreen escrita a mano (ver GENRE_ZONE_GUIDES): en vez de inventar
+// nombres de salas o precios que no se han investigado, tira de datos reales
+// que la propia pagina ya trae (numero de eventos, clubs con agenda, proxima
+// fecha) para que la pagina no se quede en cuatro lineas.
+export function genreZoneSummary(
+  zone: string,
+  genre: string,
+  locale: string,
+  eventCount: number,
+  clubNames: string[],
+  next?: { title: string; club: string; date: string },
+): string {
+  if (eventCount === 0) return ''
+  const clubs = clubNames.slice(0, 4)
+  const clubList = clubs.length ? clubs.join(', ') : ''
+  const more = clubNames.length > clubs.length ? clubNames.length - clubs.length : 0
+
+  const copy: Record<string, string> = {
+    es: [
+      `Ahora mismo hay ${eventCount} ${eventCount === 1 ? 'sesion' : 'sesiones'} de ${genre} en la agenda de ${zone}`,
+      clubList ? `, repartidas en salas como ${clubList}${more ? ` y ${more} mas` : ''}.` : '.',
+      next ? ` La proxima es ${next.title} en ${next.club}, el ${next.date}.` : '',
+    ].join(''),
+    en: [
+      `Right now there ${eventCount === 1 ? 'is' : 'are'} ${eventCount} ${genre} ${eventCount === 1 ? 'session' : 'sessions'} on the calendar in ${zone}`,
+      clubList ? `, across venues like ${clubList}${more ? ` and ${more} more` : ''}.` : '.',
+      next ? ` The next one is ${next.title} at ${next.club}, on ${next.date}.` : '',
+    ].join(''),
+    de: [
+      `Aktuell stehen ${eventCount} ${genre}-${eventCount === 1 ? 'Termin' : 'Termine'} in der Agenda von ${zone}`,
+      clubList ? `, unter anderem in ${clubList}${more ? ` und ${more} weiteren` : ''}.` : '.',
+      next ? ` Der naechste ist ${next.title} im ${next.club}, am ${next.date}.` : '',
+    ].join(''),
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
 // Pagina "cerca de mi".
 //
 // "salir de fiesta cerca de mi" es la segunda consulta con mas volumen del

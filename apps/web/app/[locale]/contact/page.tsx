@@ -1,5 +1,6 @@
 import { submitContact } from './actions'
 import { T } from '@/components/T'
+import { Link } from '@/lib/navigation'
 import { InputField, TextAreaField } from '@/components/forms/LocalizedField'
 import { buildAlternates } from '@/lib/seo'
 
@@ -24,6 +25,21 @@ export default function ContactPage({ searchParams }: { searchParams?: { ok?: st
         <div className="text-center space-y-3 pt-2">
           <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight"><T k="contact.title" /></h1>
           <p className="text-white/60 text-base leading-relaxed"><T k="contact.subtitle" /></p>
+          <p className="text-white/50 text-sm leading-relaxed">
+            <T k="contact.intro" />{' '}
+            <Link href="/promote" className="text-[#d8af3a] hover:text-[#e8c85a] underline"><T k="contact.promote_cta" /></Link>
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+            <p className="text-sm font-medium text-white"><T k="contact.faq_1_q" /></p>
+            <p className="text-sm text-white/60 mt-1 leading-relaxed"><T k="contact.faq_1_a" /></p>
+          </div>
+          <div className="rounded-2xl bg-white/4 border border-white/10 p-4">
+            <p className="text-sm font-medium text-white"><T k="contact.faq_2_q" /></p>
+            <p className="text-sm text-white/60 mt-1 leading-relaxed"><T k="contact.faq_2_a" /></p>
+          </div>
         </div>
 
         {failed && (
