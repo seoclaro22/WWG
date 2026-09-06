@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase-server'
 import { eventUrls, pingIndexNow } from '@/lib/indexnow'
-import { normalizeZoneKey } from '@/lib/zones-client'
+// Desde zone-key y no desde zones-client: ese modulo es "use client", y lo que
+// el servidor importa de un modulo de cliente no es la funcion sino una
+// referencia que, al llamarla aqui, revienta con "TypeError: h is not a
+// function". Es lo que pasaba en produccion desde el 23 de agosto: cada aviso a
+// IndexNow al publicar un evento respondia 500, asi que a Bing y Yandex no les
+// llegaba ninguna URL nueva.
+import { normalizeZoneKey } from '@/lib/zone-key'
 
 export const runtime = 'nodejs'
 
