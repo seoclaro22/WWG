@@ -56,6 +56,9 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // caduca una fecha. En la descripcion va pegada a "N sesiones anunciadas",
   // que es lo que le da el sentido correcto.
   const nextZone = (upcoming[0] as any)?.zone as string | undefined
+  // Igual que en la ficha de club: sin el _i18n, /en/dj/x y /de/dj/x servian
+  // el short_bio/bio en castellano fijo.
+  const bioLocal = (dj as any).short_bio_i18n?.[params.locale] || (dj as any).bio_i18n?.[params.locale] || dj.short_bio || dj.bio
   // Igual que en los locales: las fechas primero, la biografia de respaldo.
   const description = djMetaDescription(
     {
@@ -65,7 +68,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       proxima: upcoming[0] ? formatShortDate((upcoming[0] as any).start_at, params.locale) : null,
     },
     params.locale,
-    dj.short_bio || dj.bio || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`,
+    bioLocal || `${dj.name}${genres ? ` (${genres})` : ''}: proximas sesiones, musica y perfil en Where We Go.`,
   )
   return {
     title: tituloDj(dj.name, Array.isArray(dj.genres) ? dj.genres : [], params.locale),

@@ -1386,6 +1386,57 @@ export function resumenEvento(p: {
   return f(p)
 }
 
+// Respaldo cuando el evento no tiene description ni description_i18n: mismo
+// motivo que descripcionLocal en la ficha de club (ver su comentario) pero
+// aqui faltaba del todo, asi que /en/event/x y /de/event/x servian
+// "Reserva tus entradas en Where We Go" en castellano fijo.
+const EVENT_DESC_FALLBACK: Record<string, (nombre: string, venue: string, fecha: string) => string> = {
+  es: (n, v, f) => `${n}${v ? ` en ${v}` : ''}, ${f}. Reserva tus entradas en Where We Go.`,
+  en: (n, v, f) => `${n}${v ? ` at ${v}` : ''}, ${f}. Book your tickets on Where We Go.`,
+  de: (n, v, f) => `${n}${v ? ` im ${v}` : ''}, ${f}. Tickets sichern auf Where We Go.`,
+}
+
+export function eventMetaDescription(nombre: string, venue: string, fecha: string, locale: string) {
+  const f = EVENT_DESC_FALLBACK[locale] || EVENT_DESC_FALLBACK[routing.defaultLocale]
+  return f(nombre, venue, fecha)
+}
+
+// Parrafo de relleno cuando el evento no tiene description propia (la mayoria
+// no la tiene todavia): sin esto la ficha se queda en el resumen de una frase
+// de resumenEvento, sin texto real que la distinga de las otras 600 fichas
+// iguales. Igual que genreZoneSummary, usa solo datos reales que la pagina ya
+// trae (genero, club, zona, line-up), nunca precios ni horarios inventados.
+const EVENT_CONTENT_SUMMARY: Record<string, (p: {
+  genero: string | null; club: string | null; zona: string | null; djs: string[]
+}) => string> = {
+  es: (p) => {
+    const genero = p.genero ? `Sesión de ${p.genero}` : 'Esta sesión'
+    const lugar = p.club ? ` en ${p.club}` : (p.zona ? ` en ${p.zona}` : '')
+    const cabina = p.djs.length ? ` con ${p.djs.join(', ')} en cabina` : ''
+    return `${genero}${lugar}${cabina}.`
+  },
+  en: (p) => {
+    const genero = p.genero ? `A ${p.genero} session` : 'This session'
+    const lugar = p.club ? ` at ${p.club}` : (p.zona ? ` in ${p.zona}` : '')
+    const cabina = p.djs.length ? ` with ${p.djs.join(', ')} on the decks` : ''
+    return `${genero}${lugar}${cabina}.`
+  },
+  de: (p) => {
+    const genero = p.genero ? `Ein ${p.genero}-Abend` : 'Dieser Abend'
+    const lugar = p.club ? ` im ${p.club}` : (p.zona ? ` in ${p.zona}` : '')
+    const cabina = p.djs.length ? ` mit ${p.djs.join(', ')} am Pult` : ''
+    return `${genero}${lugar}${cabina}.`
+  },
+}
+
+export function eventContentSummary(p: {
+  genero: string | null; club: string | null; zona: string | null; djs: string[]
+}, locale: string): string {
+  if (!p.club && !p.zona && !p.djs.length && !p.genero) return ''
+  const f = EVENT_CONTENT_SUMMARY[locale] || EVENT_CONTENT_SUMMARY[routing.defaultLocale]
+  return f(p)
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Titulos de las fichas
 //

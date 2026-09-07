@@ -13,7 +13,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, noEncontrado, alts } from '@/lib/seo-pages'
+import { homeCrumb, dateTag, formatShortDate, formatEventDate, secciones, resumenEvento, eventMetaDescription, eventContentSummary, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 import { QuickEdit } from '@/components/admin/QuickEdit'
 
@@ -78,7 +78,10 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // El sitio ya no es solo Mallorca: si falta el club se usa la zona real y,
   // si tampoco la hay, se omite en vez de inventarla.
   const venue = e.club_name || e.zone || ''
-  const description = (e.description || '').slice(0, 155) || `${e.name}${venue ? ` en ${venue}` : ''}, ${date}. Reserva tus entradas en Where We Go.`
+  // Igual que en la ficha de club: sin esto, /en/event/x y /de/event/x
+  // servian la description en castellano fijo (o el respaldo, tambien fijo).
+  const descripcionLocal = e.description_i18n?.[params.locale] || e.description
+  const description = (descripcionLocal || '').slice(0, 155) || eventMetaDescription(e.name, venue, date, params.locale)
 
   // Un evento terminado ya no le sirve a quien llega desde Google, pero la URL
   // debe seguir resolviendo para quien la tenga guardada o compartida. El cron
@@ -168,6 +171,18 @@ export default async function EventDetail({ params }: { params: { locale: string
     lineup: lineup.map((d: any) => d.name),
     reserva: Boolean((e as any).url_referral),
   }, params.locale)
+
+  // Relleno para eventos sin description propia (ver eventContentSummary):
+  // datos reales ya cargados en esta misma peticion, ninguno inventado.
+  const contentSummary = description ? '' : eventContentSummary({
+    genero: Array.isArray((e as any).genres) && (e as any).genres.length ? (e as any).genres[0] : null,
+    club: (e as any).club_name || null,
+    zona: (e as any).zone || null,
+    djs: lineup.map((d: any) => (d.name_i18n && d.name_i18n[params.locale]) || d.name),
+  }, params.locale)
+  const clubDescLocal = !description && club
+    ? ((club as any).description_i18n?.[params.locale] || (club as any).description || '')
+    : ''
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -330,6 +345,16 @@ export default async function EventDetail({ params }: { params: { locale: string
         {/* Descripcion */}
         {description && (
           <ClubDescriptionExpand text={description} i18n={descriptionI18n} />
+        )}
+
+        {/* Sin description propia: parrafo con datos reales (genero, club,
+            line-up) en vez de dejar la ficha en la frase de AnswerBlock. Ver
+            eventContentSummary. La descripcion del club, si existe, se suma
+            porque ya es texto real y da mas contexto que repetir la agenda. */}
+        {!description && (contentSummary || clubDescLocal) && (
+          <p className="text-sm text-white/60 leading-relaxed">
+            {contentSummary}{contentSummary && clubDescLocal ? ' ' : ''}{clubDescLocal}
+          </p>
         )}
 
         {/* Respuesta corta: debajo de la descripcion, no antes. Ver la nota
