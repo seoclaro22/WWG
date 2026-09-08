@@ -76,7 +76,28 @@ const nextConfig = {
   // le ahorra trabajo a quien busca objetivos por version conocida.
   poweredByHeader: false,
   async headers() {
-    return [{ source: '/:path*', headers: SECURITY_HEADERS }]
+    return [
+      { source: '/:path*', headers: SECURITY_HEADERS },
+      // Vercel sirve el mismo despliegue en varios hosts. Los de rama y los
+      // del proyecto van tras el SSO, pero el alias corto
+      // (wwg-gules.vercel.app) responde 200 a cualquiera y con robots.txt en
+      // Allow: /, o sea el sitio entero duplicado y rastreable en un segundo
+      // dominio. Las canonical apuntan al bueno, pero eso es una pista, no una
+      // orden: Google puede indexarlo igual.
+      //
+      // noindex por cabecera y no por robots.txt porque son cosas distintas:
+      // Disallow impide el rastreo pero no saca del indice lo que ya entro (y
+      // ademas impide leer el propio noindex). La cabecera si desindexa.
+      //
+      // El matcher es por ausencia de host: cualquier host que no sea el de
+      // produccion queda fuera del indice, asi que los alias que Vercel cree
+      // en el futuro entran ya tapados sin tener que acordarse.
+      {
+        source: '/:path*',
+        missing: [{ type: 'host', value: 'wherewego.site' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+      },
+    ]
   },
   images: {
     // Redimensionado en Supabase y no en el optimizador de Vercel: ese tiene
