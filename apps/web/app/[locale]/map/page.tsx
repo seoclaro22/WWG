@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import { fetchMapVenues } from '@/lib/map-data'
 import { EventMapContainer } from '@/components/map/EventMapContainer'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { siteMeta } from '@/lib/seo'
+import { buildAlternates, localizedUrl, siteMeta } from '@/lib/seo'
 
 export const revalidate = 60 // Revalida cada minuto para datos frescos de eventos
 
@@ -28,14 +28,24 @@ export function generateMetadata({ params: { locale } }: { params: { locale: str
   const title = titles[locale] || titles.es
   const description = descriptions[locale] || descriptions.es
 
+  // Unica pagina del sitio que no declaraba alternates, asi que salia sin
+  // canonical y sin hreflang mientras el resto de plantillas si los llevan.
+  // No esta en el sitemap, pero se enlaza desde el navbar en los tres
+  // idiomas, o sea que Google llega igual y encontraba tres versiones sin
+  // nada que las relacionara.
+  //
+  // El og:url iba con el prefijo de idioma a pelo, y en castellano eso da
+  // /es/map, que responde 307 hacia /map: el unico idioma sin prefijo es el
+  // por defecto, que es justo lo que resuelve localizedUrl.
   return {
     title,
     description,
+    alternates: buildAlternates('/map', locale),
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `/${locale}/map`,
+      url: localizedUrl('/map', locale),
     },
     twitter: {
       card: 'summary_large_image',
