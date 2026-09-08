@@ -64,7 +64,11 @@ export async function staticEntries(): Promise<Entry[]> {
   ]
 }
 
-export async function eventEntries(): Promise<Entry[]> {
+// Las filas de cada bloque se sacan aparte de las entradas que producen
+// porque el sitemap de redirecciones necesita exactamente el mismo conjunto:
+// si los criterios de indexabilidad vivieran duplicados en los dos sitios,
+// cambiar uno dejaria al otro apuntando a fichas distintas.
+async function upcomingEventRows() {
   const sb = getSupabaseClient()
   const { data } = await sb
     .from('events_public')
@@ -72,7 +76,30 @@ export async function eventEntries(): Promise<Entry[]> {
     .gte('start_at', new Date().toISOString())
     .eq('status', 'published')
     .limit(1000)
-  return (data || []).flatMap((e: any) =>
+  return data || []
+}
+
+async function indexableClubRows() {
+  const sb = getSupabaseClient()
+  const [{ data }, withEvents] = await Promise.all([
+    sb.from('clubs').select('id,slug,created_at,description,images,logo_url').eq('status', 'approved').limit(1000),
+    fetchClubIdsWithUpcomingEvents(),
+  ])
+  return (data || []).filter((c: any) => clubIsIndexable(c, withEvents.has(c.id) ? 1 : 0))
+}
+
+async function indexableDjRows() {
+  const sb = getSupabaseClient()
+  const [{ data }, withEvents] = await Promise.all([
+    sb.from('djs').select('id,slug,created_at,bio,short_bio').limit(1000),
+    fetchDjIdsWithUpcomingEvents(),
+  ])
+  return (data || []).filter((d: any) => djIsIndexable(d, withEvents.has(d.id) ? 1 : 0))
+}
+
+export async function eventEntries(): Promise<Entry[]> {
+  const rows = await upcomingEventRows()
+  return rows.flatMap((e: any) =>
     entries(eventPath(e), { changeFrequency: 'daily', priority: 0.8, lastModified: lastMod(e.created_at) }),
   )
 }
@@ -81,31 +108,19 @@ export async function eventEntries(): Promise<Entry[]> {
 // existiendo y enlazada desde /clubs y desde su zona, pero no se ofrece a
 // indexar: ver clubIsIndexable en seo-pages.ts.
 export async function clubEntries(): Promise<Entry[]> {
-  const sb = getSupabaseClient()
-  const [{ data }, withEvents] = await Promise.all([
-    sb.from('clubs').select('id,slug,created_at,description,images,logo_url').eq('status', 'approved').limit(1000),
-    fetchClubIdsWithUpcomingEvents(),
-  ])
-  return (data || [])
-    .filter((c: any) => clubIsIndexable(c, withEvents.has(c.id) ? 1 : 0))
-    .flatMap((c: any) =>
-      entries(clubPath(c), { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
-    )
+  const rows = await indexableClubRows()
+  return rows.flatMap((c: any) =>
+    entries(clubPath(c), { changeFrequency: 'weekly', priority: 0.7, lastModified: lastMod(c.created_at) }),
+  )
 }
 
 // Solo los DJ con contenido propio. El resto sigue existiendo y enlazado
 // desde /djs y desde los line-ups, pero no se ofrece a indexar.
 export async function djEntries(): Promise<Entry[]> {
-  const sb = getSupabaseClient()
-  const [{ data }, withEvents] = await Promise.all([
-    sb.from('djs').select('id,slug,created_at,bio,short_bio').limit(1000),
-    fetchDjIdsWithUpcomingEvents(),
-  ])
-  return (data || [])
-    .filter((d: any) => djIsIndexable(d, withEvents.has(d.id) ? 1 : 0))
-    .flatMap((d: any) =>
-      entries(djPath(d), { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
-    )
+  const rows = await indexableDjRows()
+  return rows.flatMap((d: any) =>
+    entries(djPath(d), { changeFrequency: 'weekly', priority: 0.6, lastModified: lastMod(d.created_at) }),
+  )
 }
 
 export async function genreEntries(): Promise<Entry[]> {
@@ -171,6 +186,45 @@ export async function zoneEntries(): Promise<Entry[]> {
   return [...zones, ...generated]
 }
 
+// Bloque temporal. Las fichas se publicaron primero por UUID (/club/<uuid>) y
+// desde julio responden con un 308 al slug, pero Google solo se entera de un
+// redirect si vuelve a pedir la URL antigua, y ya no esta enlazada desde
+// ningun sitio: en Search Console siguen ~640 URLs con UUID llevandose el 26%
+// de las impresiones y compitiendo con su gemela en slug. Ofrecerlas aqui es
+// la via documentada para que las recorra y traslade la autoridad.
+//
+// Se borra cuando Search Console deje de reportar UUIDs con impresiones.
+//
+// Tres diferencias con el resto de bloques, todas por ser redirecciones y no
+// destinos: sin hreflang (la anotacion pertenece a la URL final), sin
+// priority ni changefreq (no compiten por rastreo con las paginas reales) y
+// con lastmod de ahora. Ese lastmod es la excepcion al criterio de lastMod():
+// no es una fecha inventada, la URL si cambio de verdad el dia que paso a
+// redirigir, y es la senal que hace que Google la vuelva a pedir.
+export async function legacyEntries(): Promise<Entry[]> {
+  const [events, clubs, djs] = await Promise.all([
+    upcomingEventRows(),
+    indexableClubRows(),
+    indexableDjRows(),
+  ])
+  const lastModified = new Date()
+
+  // Sin slug la ficha se sirve por UUID (ver hrefs.ts), asi que esa URL no
+  // redirige a ningun lado: publicarla aqui seria anunciar como redireccion
+  // una pagina que responde 200.
+  const withSlug = (row: any) => Boolean(row.slug) && row.slug !== row.id
+
+  const paths = [
+    ...events.filter(withSlug).map((e: any) => `/event/${e.id}`),
+    ...clubs.filter(withSlug).map((c: any) => `/club/${c.id}`),
+    ...djs.filter(withSlug).map((d: any) => `/dj/${d.id}`),
+  ]
+
+  return paths.flatMap((path) =>
+    routing.locales.map((locale) => ({ url: localizedUrl(path, locale), lastModified })),
+  )
+}
+
 // Los bloques en los que se parte el sitemap. El orden es el del indice.
 export const SITEMAP_SEGMENTS = {
   paginas: staticEntries,
@@ -179,6 +233,7 @@ export const SITEMAP_SEGMENTS = {
   clubs: clubEntries,
   djs: djEntries,
   generos: genreEntries,
+  redirecciones: legacyEntries,
 } as const
 
 export type SegmentName = keyof typeof SITEMAP_SEGMENTS
