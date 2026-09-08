@@ -22,6 +22,12 @@ function getSpotifyEmbed(input?: string | null) {
   if (!raw) return null
   const iframeMatch = raw.match(/src=["']([^"']+)["']/i)
   const heightMatch = raw.match(/height=["']?(\d{2,4})["']?/i)
+  // No se acepta un ID de 22 caracteres suelto (sin src/host) aunque
+  // Spotify use ese formato: cientos de fichas tienen guardado ahi un ID
+  // que nunca se verifico contra Spotify (import antiguo), y renderizarlo
+  // a ciegas mostraria el reproductor de otro artista o un embed roto. El
+  // campo solo pinta reproductor con el iframe completo, que es el que se
+  // valida a mano antes de guardarlo.
   const url = iframeMatch ? iframeMatch[1] : raw
   try {
     const u = new URL(url)
