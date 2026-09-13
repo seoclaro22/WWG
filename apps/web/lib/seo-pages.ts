@@ -1,5 +1,6 @@
 import { routing } from '@/i18n/routing'
 import { dictionaries } from '@/lib/dictionaries'
+import { CLUB_ZERO_CLICK_IDS, DJ_ZERO_CLICK_IDS } from '@/lib/gsc-underperformers'
 
 // Primera miga de pan. Estaba escrita como "Inicio" en duro en las fichas de
 // club, DJ, evento y genero, tambien en /en y /de.
@@ -27,10 +28,14 @@ export const MIN_EVENTS_TO_INDEX = 3
 export const MIN_DJ_BIO_TO_INDEX = 160
 
 export function djIsIndexable(
-  dj: { bio?: string | null; short_bio?: string | null } | null | undefined,
+  dj: { id?: string | null; slug?: string | null; bio?: string | null; short_bio?: string | null } | null | undefined,
   upcomingEvents: number,
 ) {
   if (!dj) return false
+  // Google ya la mostro en el pico de indexacion de agosto y no consiguio ni
+  // un clic: repetir la misma ficha no va a dar un resultado distinto. Ver
+  // gsc-underperformers.ts.
+  if ((dj.id && DJ_ZERO_CLICK_IDS.has(dj.id)) || (dj.slug && DJ_ZERO_CLICK_IDS.has(dj.slug))) return false
   if (upcomingEvents > 0) return true
   return (dj.short_bio || dj.bio || '').trim().length >= MIN_DJ_BIO_TO_INDEX
 }
@@ -47,10 +52,13 @@ export function djIsIndexable(
 export const MIN_CLUB_DESC_TO_INDEX = 160
 
 export function clubIsIndexable(
-  club: { description?: string | null; images?: unknown; logo_url?: string | null } | null | undefined,
+  club: { id?: string | null; slug?: string | null; description?: string | null; images?: unknown; logo_url?: string | null } | null | undefined,
   upcomingEvents: number,
 ) {
   if (!club) return false
+  // Mismo criterio que djIsIndexable: expuesta en agosto, cero clics. Ver
+  // gsc-underperformers.ts.
+  if ((club.id && CLUB_ZERO_CLICK_IDS.has(club.id)) || (club.slug && CLUB_ZERO_CLICK_IDS.has(club.slug))) return false
   // Con agenda propia la ficha ya aporta lo que no tiene ninguna otra fuente.
   if (upcomingEvents > 0) return true
   const hasImage = (Array.isArray(club.images) && club.images.length > 0) || !!club.logo_url

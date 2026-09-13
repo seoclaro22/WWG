@@ -3,6 +3,7 @@ import { getSupabaseClient } from '@/lib/supabase'
 import { countUpcomingEvents, fetchClubIdsWithUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
 import { localizedUrl, hreflangMap } from '@/lib/seo'
 import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, clubIsIndexable, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
+import { zoneGenreIsZeroClick } from '@/lib/gsc-underperformers'
 import { routing } from '@/i18n/routing'
 import { clubPath, djPath, eventPath, genrePath, zoneGenrePath } from '@/lib/hrefs'
 
@@ -176,6 +177,9 @@ export async function zoneEntries(): Promise<Entry[]> {
       const counts = await fetchZoneGenreCounts(zoneName)
       for (const [genre, n] of counts) {
         if (n < MIN_EVENTS_TO_INDEX) continue
+        // Ya se mostro en agosto y no consiguio ni un clic. Ver
+        // gsc-underperformers.ts.
+        if (zoneGenreIsZeroClick(slug, genre)) continue
         out.push(...localizedEntries((locale) => zoneGenrePath(slug, genre, locale), { changeFrequency: 'daily', priority: 0.7 }))
       }
 
