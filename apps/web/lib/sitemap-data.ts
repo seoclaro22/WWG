@@ -3,7 +3,6 @@ import { getSupabaseClient } from '@/lib/supabase'
 import { countUpcomingEvents, fetchClubIdsWithUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
 import { localizedUrl, hreflangMap } from '@/lib/seo'
 import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, clubIsIndexable, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
-import { zoneGenreIsZeroClick } from '@/lib/gsc-underperformers'
 import { routing } from '@/i18n/routing'
 import { clubPath, djPath, eventPath, genrePath, zoneGenrePath } from '@/lib/hrefs'
 
@@ -100,8 +99,14 @@ async function indexableDjRows() {
 
 export async function eventEntries(): Promise<Entry[]> {
   const rows = await upcomingEventRows()
+  // Solo se ofrece la URL en castellano, con su bloque hreflang completo hacia
+  // /en y /de: la ficha caduca en dias y triplicar la peticion de rastreo por
+  // idioma competia por el mismo presupuesto de crawl que ya esta reducido
+  // (ver gsc-underperformers.ts). Las paginas /en y /de del evento siguen
+  // existiendo y enlazadas, solo dejan de ir en el sitemap.
   return rows.flatMap((e: any) =>
-    entries(eventPath(e), { changeFrequency: 'daily', priority: 0.8, lastModified: lastMod(e.created_at) }),
+    entries(eventPath(e), { changeFrequency: 'daily', priority: 0.8, lastModified: lastMod(e.created_at) })
+      .filter((entry) => entry.url === localizedUrl(eventPath(e), routing.defaultLocale)),
   )
 }
 
@@ -177,9 +182,6 @@ export async function zoneEntries(): Promise<Entry[]> {
       const counts = await fetchZoneGenreCounts(zoneName)
       for (const [genre, n] of counts) {
         if (n < MIN_EVENTS_TO_INDEX) continue
-        // Ya se mostro en agosto y no consiguio ni un clic. Ver
-        // gsc-underperformers.ts.
-        if (zoneGenreIsZeroClick(slug, genre)) continue
         out.push(...localizedEntries((locale) => zoneGenrePath(slug, genre, locale), { changeFrequency: 'daily', priority: 0.7 }))
       }
 
@@ -206,10 +208,26 @@ export async function zoneEntries(): Promise<Entry[]> {
 // no es una fecha inventada, la URL si cambio de verdad el dia que paso a
 // redirigir, y es la senal que hace que Google la vuelva a pedir.
 export async function legacyEntries(): Promise<Entry[]> {
+  const fetchAll = async (table: string, select: string, approvedOnly = false) => {
+    const sb = getSupabaseClient()
+    const rows: any[] = []
+    const pageSize = 1000
+
+    for (let from = 0; ; from += pageSize) {
+      let query = sb.from(table).select(select).range(from, from + pageSize - 1)
+      if (approvedOnly) query = query.eq('status', 'approved')
+      const { data } = await query
+      rows.push(...(data || []))
+      if (!data || data.length < pageSize) break
+    }
+
+    return rows
+  }
+
   const [events, clubs, djs] = await Promise.all([
-    upcomingEventRows(),
-    indexableClubRows(),
-    indexableDjRows(),
+    fetchAll('events_public', 'id,slug'),
+    fetchAll('clubs', 'id,slug', true),
+    fetchAll('djs', 'id,slug'),
   ])
   const lastModified = new Date()
 
