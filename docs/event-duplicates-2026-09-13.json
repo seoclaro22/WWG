@@ -1,0 +1,847 @@
+{
+  "total": 978,
+  "groups": 42,
+  "extraRows": 42,
+  "duplicates": [
+    [
+      {
+        "id": "00f9cfb2-f1b0-444a-b013-468afc54b097",
+        "name": "HARVY VALENCIA x FITZ",
+        "slug": "harvy-valencia-x-fitz-fitz-madrid-2026-09-19",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-19T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/fitz-madrid/events/BLG6",
+        "status": "published"
+      },
+      {
+        "id": "9f7c39fb-d6ee-486b-a6c2-a15ed07ebace",
+        "name": "Sábado Fitz",
+        "slug": "sabado-fitz-fitz-madrid-2026-09-19",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-19T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/BLG6",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "02b8c0af-42e4-4b57-b811-bffe5f675cf0",
+        "name": "SHARK™🦈 x MENTIROSO 🧸(Noche) **",
+        "slug": "shark-x-mentiroso-noche-amok-2026-09-08",
+        "club_id": null,
+        "start_at": "2026-09-08T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/VD7E",
+        "status": "published"
+      },
+      {
+        "id": "83adfe0d-5422-4608-87cd-2d308d1abd7e",
+        "name": "SHARK™🦈 x MENTIROSO 🧸(Noche) **",
+        "slug": "shark-x-mentiroso-noche-amok-2026-09-08-83adfe",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-08T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/VD7E",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "02db4b22-4a0c-466f-9319-b06f768b6c9b",
+        "name": "WALLY LOPEZ **",
+        "slug": "wally-lopez-amok-2026-09-12",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-12T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/VFFR",
+        "status": "published"
+      },
+      {
+        "id": "e8d8ecda-7eee-4fa1-bd4e-e1d5a951b1d2",
+        "name": "WALLY LOPEZ **",
+        "slug": "wally-lopez-amok-2026-09-12-e8d8ec",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-12T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/VFFR",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "0347c836-9e57-4eeb-a6fd-640c4e94a86a",
+        "name": "Parapaila",
+        "slug": "parapaila-amok-mallorca-2026-09-10",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-10T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/UPV2",
+        "status": "published"
+      },
+      {
+        "id": "3369a75e-3f4d-4e81-a18c-78c5d1a11599",
+        "name": "Parapaïla • Closing Party",
+        "slug": "parapaila-closing-party-amok-2026-09-10",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-10T19:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/UPV2",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "037493fb-7147-4761-9fd4-79e247c6d963",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-mallorca-2026-09-13",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-13T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/SG6Z",
+        "status": "published"
+      },
+      {
+        "id": "4b4a8cb8-abfd-4181-ae71-e084476aa9ba",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-09-13",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-13T19:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/SG6Z",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "05049144-241e-408d-9b32-3ff9f9e98515",
+        "name": "VIERNES RUBICON",
+        "slug": "viernes-rubicon-rubicon-2026-09-11",
+        "club_id": "b19fbb19-abcc-44f3-a116-956db63dbc69",
+        "start_at": "2026-09-11T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/NX21",
+        "status": "published"
+      },
+      {
+        "id": "59a4c753-5625-401d-a33a-e3d5a5e49274",
+        "name": "VIERNES RUBICON X DJ LUIAN",
+        "slug": "viernes-rubicon-x-dj-luian-rubicon-2026-09-11",
+        "club_id": "b19fbb19-abcc-44f3-a116-956db63dbc69",
+        "start_at": "2026-09-11T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/511-events/events/NX21",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "06ca8dd5-0ed1-425f-a18e-75c070f39b0c",
+        "name": "SAMBA DA INDEPENDÊNCIA | TARDEO DOMINGO",
+        "slug": "samba-da-independencia-tardeo-domingo-brokers-bank-club-2026-09-06",
+        "club_id": "fb8e71a4-fdb4-4337-8638-4db567675f5e",
+        "start_at": "2026-09-06T18:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/brokers/events/USMA",
+        "status": "published"
+      },
+      {
+        "id": "6147e503-f3f8-4670-a333-c027e1cd27a3",
+        "name": "SAMBA DA INDEPENDÊNCIA | TARDEO DOMINGO",
+        "slug": "samba-da-independencia-tardeo-domingo-brokers-2026-09-06",
+        "club_id": null,
+        "start_at": "2026-09-06T18:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/USMA",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "089a0296-0ac1-4451-9e76-9607faede646",
+        "name": "SHARK™🦈 x MENTIROSO 🧸(Tarde)",
+        "slug": "shark-x-mentiroso-tarde-amok-2026-09-08",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-08T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/1T88",
+        "status": "published"
+      },
+      {
+        "id": "cbe392c2-e748-4118-adb0-f866253a6230",
+        "name": "MENTIROSO - ARTISTA POR CONFIRMAR",
+        "slug": "mentiroso-artista-por-confirmar-amok-mallorca-2026-09-08",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-08T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/1T88",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "0a9e188d-7543-4433-95f0-49b8c543aba5",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-23-0a9e18",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-23T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/Z1BP",
+        "status": "published"
+      },
+      {
+        "id": "60dee559-e623-467c-8aba-0c7dbed1b1fc",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-23",
+        "club_id": null,
+        "start_at": "2026-10-23T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/Z1BP",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "0b84f734-de19-4916-8c03-84c714173d0e",
+        "name": "GENTE DE ZONA x FITZ",
+        "slug": "gente-de-zona-x-fitz-fitz-madrid-2026-09-10",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-10T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/fitz-madrid/events/A4JL",
+        "status": "published"
+      },
+      {
+        "id": "e843b438-2577-41af-b3bc-e09986ab970b",
+        "name": "Jueves FITZ",
+        "slug": "jueves-fitz-fitz-madrid-2026-09-10",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-10T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/A4JL",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "11aecff5-af15-4d16-a23b-f237046bc9d5",
+        "name": "JUEVES FENOMENO",
+        "slug": "jueves-fenomeno-madrid-no-descansa-2026-09-10",
+        "club_id": null,
+        "start_at": "2026-09-10T20:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/QORY",
+        "status": "published"
+      },
+      {
+        "id": "b752d022-05a1-4ceb-8408-1b4d596b085c",
+        "name": "JUEVES FENOMENO",
+        "slug": "jueves-fenomeno-madrid-no-descansa-2026-09-10-b752d0",
+        "club_id": "4765cef8-8527-4ebb-b945-8cd14e8790ad",
+        "start_at": "2026-09-10T20:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/511-events/events/QORY",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "16c3dce2-c82a-4473-a354-40c6c151d16a",
+        "name": "ROBIN SCHULZ",
+        "slug": "robin-schulz-amok-2026-09-17-16c3dc",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-17T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/VVH8",
+        "status": "published"
+      },
+      {
+        "id": "b97196b1-01a5-470d-8f66-582b7300b64d",
+        "name": "ROBIN SCHULZ **",
+        "slug": "robin-schulz-amok-2026-09-17",
+        "club_id": null,
+        "start_at": "2026-09-17T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/VVH8",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "1802bd30-67ee-435a-9341-f1f2119e6abd",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-10-11",
+        "club_id": null,
+        "start_at": "2026-10-11T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/1XVL",
+        "status": "published"
+      },
+      {
+        "id": "68d73ca4-8249-4192-bcbe-a891b95c93a6",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-10-11-68d73c",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-11T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/1XVL",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "1c85cf11-79b2-4a70-998b-c9f2ae44d502",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-09",
+        "club_id": null,
+        "start_at": "2026-10-09T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/4EXZ",
+        "status": "published"
+      },
+      {
+        "id": "40c96f9e-b8e1-44ee-8184-8b181cca585a",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-09-40c96f",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-09T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/4EXZ",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "200dfaf4-cf39-4893-bb42-3b5efc1c4388",
+        "name": "Miércoles Fitz x UEM NIght",
+        "slug": "miercoles-fitz-x-uem-night-fitz-madrid-2026-09-09",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-09T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/fitz-madrid/events/K14X",
+        "status": "published"
+      },
+      {
+        "id": "d3c72245-b498-4b7c-9503-648b5005ee5a",
+        "name": "Miércoles Fitz",
+        "slug": "miercoles-fitz-fitz-madrid-2026-09-09",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-09T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/K14X",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "2339a5db-a42c-484b-a39e-428ccacaffbc",
+        "name": "BLVD FRIDAYS",
+        "slug": "blvd-fridays-blvd-club-2026-09-11",
+        "club_id": null,
+        "start_at": "2026-09-11T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/S22N",
+        "status": "published"
+      },
+      {
+        "id": "eba15ed4-5c09-44e2-94ab-e8f2e5c16711",
+        "name": "BLVD FRIDAYS",
+        "slug": "blvd-fridays-blvd-maritimo-club-2026-09-11",
+        "club_id": "532dc552-3882-47ea-9b91-8feb68225d12",
+        "start_at": "2026-09-11T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/blvd-maritimo-club/events/S22N",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "248ebecd-3b5a-4e7d-9583-998de67c8b7a",
+        "name": "WISIN x FITZ",
+        "slug": "wisin-x-fitz-fitz-madrid-2026-09-06",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-06T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/fitz-madrid/events/4B68",
+        "status": "published"
+      },
+      {
+        "id": "273d359a-dcfc-414c-baaf-fd4b51ab1e18",
+        "name": "UNIVERSIDAD DEL PERREO x FITZ",
+        "slug": "universidad-del-perreo-x-fitz-fitz-madrid-2026-09-06",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-06T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/4B68",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "2d73e078-06a7-4b38-aba9-871eb59926fe",
+        "name": "Alle Farben presents: from Disco to Disco",
+        "slug": "alle-farben-presents-from-disco-to-disco-amok-mallorca-2026-09-10",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-10T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/L14H",
+        "status": "published"
+      },
+      {
+        "id": "54ebd3d7-4cd8-4b5a-a897-4f1ac0b383c9",
+        "name": "Alle Farben presents: from Disco to Disco **",
+        "slug": "alle-farben-presents-from-disco-to-disco-amok-2026-09-10",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-10T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/L14H",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "3798ab66-b9f4-4ec7-aed7-5d9cf77afcd3",
+        "name": "VIERNES",
+        "slug": "viernes-nazca-events-club-2026-09-11",
+        "club_id": null,
+        "start_at": "2026-09-11T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/GQBG",
+        "status": "published"
+      },
+      {
+        "id": "9e792e56-4ba5-4e2e-8c92-7579b369125f",
+        "name": "VIERNES",
+        "slug": "viernes-nazca-club-2026-09-11",
+        "club_id": "3305cfc1-d1ce-4c22-bb6e-4043da6c370d",
+        "start_at": "2026-09-11T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/nazca-club/events/GQBG",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "3a019bb0-6630-4d68-bc0a-cd6628a834ee",
+        "name": "EVENTO KIZOMBA | SÁBADO TARDEO",
+        "slug": "evento-kizomba-sabado-tardeo-brokers-2026-09-12",
+        "club_id": null,
+        "start_at": "2026-09-12T17:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/BNRP",
+        "status": "published"
+      },
+      {
+        "id": "e79138b0-8120-4178-951e-89e90248dcab",
+        "name": "EVENTO KIZOMBA | SÁBADO TARDEO",
+        "slug": "evento-kizomba-sabado-tardeo-brokers-2026-09-12-e79138",
+        "club_id": "84638c41-febf-4b57-9d1a-7411dcf66e5a",
+        "start_at": "2026-09-12T17:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/brokers/events/BNRP",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "3c82c4f2-aa3a-4999-b981-8ca9737e4484",
+        "name": "Lunnas Sunset Takeover",
+        "slug": "lunnas-sunset-takeover-amok-2026-09-11",
+        "club_id": null,
+        "start_at": "2026-09-11T19:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/WIW2",
+        "status": "published"
+      },
+      {
+        "id": "6b9c32bd-aa4f-4aaa-8040-8413de10b9a2",
+        "name": "Lunnas Sunset Takeover",
+        "slug": "lunnas-sunset-takeover-amok-2026-09-11-6b9c32",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-11T19:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/WIW2",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "45578ff9-b3d0-41aa-8092-e2590bfa3e86",
+        "name": "122 - AMOK x Bootshaus",
+        "slug": "122-amok-x-bootshaus-amok-mallorca-2026-09-07",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-07T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/H31U",
+        "status": "published"
+      },
+      {
+        "id": "5a27a2f7-54cc-4b08-9662-eb6d2b5ca28f",
+        "name": "122 - AMOK x Bootshaus Marten Lou **",
+        "slug": "122-amok-x-bootshaus-marten-lou-amok-2026-09-07",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-07T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/H31U",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "4653423d-badb-4933-9fc1-28e05aba2cad",
+        "name": "Crush | One Night. One Vibe. One Crush**",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-mallorca-2026-09-30",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-30T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/UHWN",
+        "status": "published"
+      },
+      {
+        "id": "754165c4-a7de-40b2-939b-dc3f77eacad0",
+        "name": "Crush | One Night. One Vibe. One Crush",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-2026-09-30",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-30T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/UHWN",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "4818fac2-7d96-4312-9383-71ad49e5ce4e",
+        "name": "September 18th - GARABATTO - BCM Mallorca",
+        "slug": "september-18th-garabatto-bcm-mallorca-bcm-mallorca-2026-09-18",
+        "club_id": "fcf46833-c369-4809-8cf9-6b3d6f3f5540",
+        "start_at": "2026-09-18T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/bcm-mallorca/events/9SMJ",
+        "status": "published"
+      },
+      {
+        "id": "66811166-7375-492c-97cf-26b0cbcb95a4",
+        "name": "September 18th - FRIDAY - BCM Mallorca",
+        "slug": "september-18th-friday-bcm-mallorca-bcm-mallorca-2026-09-18",
+        "club_id": "fcf46833-c369-4809-8cf9-6b3d6f3f5540",
+        "start_at": "2026-09-18T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/9SMJ",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "51693be1-9360-494e-a0e1-6079df67ce8c",
+        "name": "Crush | One Night. One Vibe. One Crush",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-2026-09-16",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-16T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/72P0",
+        "status": "published"
+      },
+      {
+        "id": "88dcb1d1-f856-41d0-90ee-bc416981861f",
+        "name": "Crush | One Night. One Vibe. One Crush**",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-mallorca-2026-09-16",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-16T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/72P0",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "52bb48e5-a139-4953-bc38-7c007030ce87",
+        "name": "SALA DE DESPECHO by Madrid No Descansa",
+        "slug": "sala-de-despecho-by-madrid-no-descansa-sala-de-despecho-2026-09-07",
+        "club_id": "a8304cd8-d56d-427c-aa8e-0c9ef1c057b4",
+        "start_at": "2026-09-07T20:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/511-events/events/QT5R",
+        "status": "published"
+      },
+      {
+        "id": "57580569-73eb-453e-a5c7-87b46d9e9f12",
+        "name": "SALA DE DESPECHO by Madrid No Descansa ",
+        "slug": "sala-de-despecho-by-madrid-no-descansa-madrid-no-descansa-2026-09-07",
+        "club_id": null,
+        "start_at": "2026-09-07T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/QT5R",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "52f1e689-bfa3-467f-89c9-bd21dcd4aca6",
+        "name": "Viernes /Friday",
+        "slug": "viernes-friday-panama-jack-magaluf-2026-09-11",
+        "club_id": "d565474b-004e-4485-a8b9-0221b56521b8",
+        "start_at": "2026-09-11T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/V3GE",
+        "status": "published"
+      },
+      {
+        "id": "baf9fcd1-10ce-4ad1-ab1b-930162062e7e",
+        "name": "Traffic Light Party",
+        "slug": "traffic-light-party-panama-jack-magaluf-2026-09-11",
+        "club_id": "d565474b-004e-4485-a8b9-0221b56521b8",
+        "start_at": "2026-09-11T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/panama-jack-magaluf/events/V3GE",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "55a13732-1a41-420b-a9f4-f512e08909a7",
+        "name": "Bonitx **",
+        "slug": "bonitx-amok-2026-09-11",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-11T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/ZFG2",
+        "status": "published"
+      },
+      {
+        "id": "9a4000c7-24ce-4055-ba0a-2a35f38d5d13",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-mallorca-2026-09-11",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-11T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/ZFG2",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "59c1a89c-d3d5-4248-b677-9f33054dc391",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-16-59c1a8",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-16T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/2FYD",
+        "status": "published"
+      },
+      {
+        "id": "65085404-c195-42bb-91da-ef8985fa4882",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-16",
+        "club_id": null,
+        "start_at": "2026-10-16T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/2FYD",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "5a1f3a69-67ac-4d58-9867-7ca6dc671434",
+        "name": "Crush | One Night. One Vibe. One Crush**",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-mallorca-2026-09-09",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-09T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/Z9BI",
+        "status": "published"
+      },
+      {
+        "id": "64d43b5d-6eff-49fc-a61a-9536c963bf6e",
+        "name": "Crush | One Night. One Vibe. One Crush",
+        "slug": "crush-one-night-one-vibe-one-crush-amok-2026-09-09",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-09T21:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/Z9BI",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "5df87029-abe4-44ff-a093-b043ac29ebf9",
+        "name": "CALLE 365 by MADRID  NO DESCANSA",
+        "slug": "calle-365-by-madrid-no-descansa-madrid-no-descansa-2026-09-06",
+        "club_id": null,
+        "start_at": "2026-09-06T18:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/F3OU",
+        "status": "published"
+      },
+      {
+        "id": "89e7e94d-bd18-4794-bc76-4d69eb72243f",
+        "name": "CALLE 365 by MADRID  NO DESCANSA",
+        "slug": "calle-365-by-madrid-no-descansa-calle-365-2026-09-06",
+        "club_id": "45d59e89-4aec-4ab0-9b3a-68e16ad89972",
+        "start_at": "2026-09-06T18:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/511-events/events/F3OU",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "5e8d276b-983e-44e6-8f24-bd7f3d41e9a1",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-10-04",
+        "club_id": null,
+        "start_at": "2026-10-04T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/4T1W",
+        "status": "published"
+      },
+      {
+        "id": "79e577d5-64db-4959-9616-e3a895d84522",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-10-04-79e577",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-04T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/4T1W",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "67aca65a-142a-476c-b6d4-ac4063cebdb7",
+        "name": "Monday x Freshers Week at Los Amantes",
+        "slug": "monday-x-freshers-week-at-los-amantes-madrid-no-descansa-2026-09-07",
+        "club_id": null,
+        "start_at": "2026-09-07T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/46QQ",
+        "status": "published"
+      },
+      {
+        "id": "98cb17cb-5742-42be-ad39-11bfd835fce6",
+        "name": "Monday x Freshers Week at Los Amantes",
+        "slug": "monday-x-freshers-week-at-los-amantes-los-amantes-2026-09-07",
+        "club_id": "423ce112-fee9-47f3-b5c9-b9ca7aa63f2a",
+        "start_at": "2026-09-07T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/511-events/events/46QQ",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "6b08aff5-e227-4e33-a051-cf3455f5dd32",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-02",
+        "club_id": null,
+        "start_at": "2026-10-02T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/8MUU",
+        "status": "published"
+      },
+      {
+        "id": "daf10d7f-3ad9-4fc4-9758-58dc4b887ed8",
+        "name": "Bonitx",
+        "slug": "bonitx-amok-2026-10-02-daf10d",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-02T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/8MUU",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "89f07022-6191-45b3-aee9-b4cc4b78a45b",
+        "name": "AMOK presents: JUNO **",
+        "slug": "amok-presents-juno-amok-2026-10-03-89f070",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-10-03T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/URYK",
+        "status": "published"
+      },
+      {
+        "id": "ebec83b7-4c88-4884-ab0c-8865812d0122",
+        "name": "AMOK presents: JUNO **",
+        "slug": "amok-presents-juno-amok-2026-10-03",
+        "club_id": null,
+        "start_at": "2026-10-03T23:45:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/URYK",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "9534bcad-1014-4b81-92b6-b80b03d08c6e",
+        "name": "I love Reggaeton",
+        "slug": "i-love-reggaeton-panama-jack-magaluf-2026-09-07",
+        "club_id": "d565474b-004e-4485-a8b9-0221b56521b8",
+        "start_at": "2026-09-07T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/XDWK",
+        "status": "published"
+      },
+      {
+        "id": "d03f8f56-4f7f-4d27-bf46-d7dee74ce566",
+        "name": "Lunes /Monday",
+        "slug": "lunes-monday-panama-jack-magaluf-2026-09-07",
+        "club_id": "d565474b-004e-4485-a8b9-0221b56521b8",
+        "start_at": "2026-09-07T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/panama-jack-magaluf/events/XDWK",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "9853a39f-34c1-4902-818d-dd659d4aac3e",
+        "name": "TODOS SANTOS X DJ LUIAN",
+        "slug": "todos-santos-x-dj-luian-todos-santos-2026-09-10",
+        "club_id": "25e0a5bd-eb51-4f96-9368-098879681388",
+        "start_at": "2026-09-10T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/todos-santos/events/3DVH",
+        "status": "published"
+      },
+      {
+        "id": "bddb72c1-826b-4e84-b5ec-35b22b96a87c",
+        "name": "JUEVES TODOS SANTOS",
+        "slug": "jueves-todos-santos-todos-santos-2026-09-10",
+        "club_id": "25e0a5bd-eb51-4f96-9368-098879681388",
+        "start_at": "2026-09-10T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/3DVH",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "987a498c-7193-4b7a-a7b8-a1651d0a6318",
+        "name": "SÁBADO NOCHE | BROKERS",
+        "slug": "sabado-noche-brokers-brokers-2026-09-12",
+        "club_id": null,
+        "start_at": "2026-09-12T23:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/AI14",
+        "status": "published"
+      },
+      {
+        "id": "e3e5fd35-4696-4981-b25b-d0bc3f4678e9",
+        "name": "CASERIO CLUB | SÁBADO NOCHE",
+        "slug": "caserio-club-sabado-noche-brokers-2026-09-12",
+        "club_id": "84638c41-febf-4b57-9d1a-7411dcf66e5a",
+        "start_at": "2026-09-12T23:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/brokers/events/AI14",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "9cca7dae-b0e8-4006-94ac-d900a306e87f",
+        "name": "September 11th - SAYF - DJ SET - BCM Mallorca",
+        "slug": "september-11th-sayf-dj-set-bcm-mallorca-bcm-mallorca-2026-09-11",
+        "club_id": "fcf46833-c369-4809-8cf9-6b3d6f3f5540",
+        "start_at": "2026-09-11T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/bcm-mallorca/events/Y52I",
+        "status": "published"
+      },
+      {
+        "id": "e816016b-e68b-4da4-a6e0-e18db7acc409",
+        "name": "September 11th - BCM Mallorca",
+        "slug": "september-11th-bcm-mallorca-bcm-mallorca-2026-09-11",
+        "club_id": "fcf46833-c369-4809-8cf9-6b3d6f3f5540",
+        "start_at": "2026-09-11T22:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/Y52I",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "a785bfcc-1d49-44ff-b674-e656798a7b1b",
+        "name": "DALE FUNK ESPECIAL MC LIVINHO | SALA 1",
+        "slug": "dale-funk-especial-mc-livinho-sala-1-tulum-2026-09-11",
+        "club_id": "eef57811-868d-4be0-a8d5-81854b90940c",
+        "start_at": "2026-09-11T00:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/tulum-valencia/events/5BF3",
+        "status": "published"
+      },
+      {
+        "id": "eccb7bcb-08e4-4633-a986-0832cd485269",
+        "name": "DALE FUNK | SALA 1",
+        "slug": "dale-funk-sala-1-tulum-2026-09-11",
+        "club_id": "eef57811-868d-4be0-a8d5-81854b90940c",
+        "start_at": "2026-09-11T00:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/5BF3",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "be4d5b26-353a-4d3d-9484-6d65b90798b0",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-2026-09-06",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-06T19:30:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/amok/events/OFHK",
+        "status": "published"
+      },
+      {
+        "id": "c20c1ea4-f733-4a22-80a3-c0d10dce6512",
+        "name": "Tribu Sunset Party",
+        "slug": "tribu-sunset-party-amok-mallorca-2026-09-06",
+        "club_id": "cf12eb76-83d5-4020-baa7-4e1e4834f5f1",
+        "start_at": "2026-09-06T19:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/OFHK",
+        "status": "published"
+      }
+    ],
+    [
+      {
+        "id": "e0e032ce-dd08-4f43-8053-370929c226a4",
+        "name": "Domingo FITZ",
+        "slug": "domingo-fitz-fitz-madrid-2026-09-20",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-20T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/wwg/events/K1WP",
+        "status": "published"
+      },
+      {
+        "id": "f9e3a9c1-df57-4482-bece-66aca131622e",
+        "name": "ZSONGO x FITZ",
+        "slug": "zsongo-x-fitz-fitz-madrid-2026-09-20",
+        "club_id": "0684424f-4288-4a81-b4ef-83a4f88f2096",
+        "start_at": "2026-09-20T00:00:00+00:00",
+        "url_referral": "https://web.fourvenues.com/es/fitz-madrid/events/K1WP",
+        "status": "published"
+      }
+    ]
+  ]
+}

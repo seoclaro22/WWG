@@ -40,8 +40,9 @@ export async function saveEvent(
 
   let eventId = ev.id
   if (ev.id) {
-    const { error } = await s.from('events').update(ev).eq('id', ev.id)
+    const { data, error } = await s.from('events').update(ev).eq('id', ev.id).select('id').single()
     if (error) return 'No se pudo guardar el evento: ' + error.message
+    if (!data) return 'No se encontró el evento para actualizarlo.'
   } else {
     const { data, error } = await s.from('events').insert({ ...ev, status: ev.status || 'published' }).select('id').single()
     if (error) return 'No se pudo crear el evento: ' + error.message
@@ -49,7 +50,8 @@ export async function saveEvent(
   }
 
   if (eventId) {
-    await s.from('event_djs').delete().eq('event_id', eventId)
+    const { error: deleteError } = await s.from('event_djs').delete().eq('event_id', eventId)
+    if (deleteError) return 'No se pudo actualizar el line-up: ' + deleteError.message
     if (lineup.length) {
       const rows = lineup.map((dj_id, idx) => ({ event_id: eventId, dj_id, position: idx }))
       const { error } = await s.from('event_djs').insert(rows)

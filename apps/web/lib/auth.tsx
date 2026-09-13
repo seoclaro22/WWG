@@ -21,15 +21,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
+    function welcome(sess: Session | null) {
+      if (!sess?.user.email_confirmed_at || !sess.user.user_metadata?.wwg_welcome_requested || sess.user.app_metadata?.wwg_welcome_sent_at) return
+      fetch('/api/welcome', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${sess.access_token}` },
+      }).then(response => {
+        if (!response.ok) console.error('No se pudo enviar el correo de bienvenida')
+      }).catch(() => console.error('No se pudo conectar con el servicio de bienvenida'))
+    }
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session ?? null)
       setUser(data.session?.user ?? null)
       if (data.session?.user) ensureUserRow()
+      welcome(data.session)
     })
     const { data: sub } = supabase.auth.onAuthStateChange((_e, sess) => {
       setSession(sess)
       setUser(sess?.user ?? null)
       if (sess?.user) ensureUserRow()
+      if (_e === 'SIGNED_IN') welcome(sess)
     })
     return () => { sub.subscription.unsubscribe() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,13 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error
   }
   async function signUp(email: string, password: string) {
-    const { error } = await supabase.auth.signUp({ email, password })
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: { wwg_welcome_requested: true } } })
     if (error) throw error
-    fetch('/api/welcome', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    }).catch(() => {})
   }
   async function signOut() {
     await supabase.auth.signOut()
