@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado } from '@/lib/seo-pages'
+import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado, clubFaq, zoneFaqHeading, updatedAtLabel } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
@@ -123,6 +123,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
 
   const horario = openingHoursSpecification(club.open_hours)
   const horarioVisible = horarioTexto(club.open_hours, params.locale)
+  const faq = clubFaq(club.slug, params.locale)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -159,6 +160,10 @@ export default async function ClubProfile({ params }: { params: { locale: string
     ...(links?.instagram || links?.facebook || links?.web ? {
       sameAs: [links.instagram, links.facebook, links.web].filter(Boolean),
     } : {}),
+    // Senal de frescura para Google, coherente con el texto visible de mas
+    // abajo. Sin updated_at (club creado antes de la migracion que lo anade)
+    // se omite en vez de mentir con la fecha de creacion.
+    ...(club.updated_at ? { dateModified: club.updated_at } : {}),
     url: `https://wherewego.site${clubPath(club)}`,
   }
 
@@ -312,6 +317,30 @@ export default async function ClubProfile({ params }: { params: { locale: string
             Delante de todo lo compactaba y repetia lo que el usuario acababa
             de leer en su propio idioma. */}
         <AnswerBlock resumen={resumen} />
+
+        {/* Fecha de actualizacion: pegada a la descripcion, que es lo que
+            describe (misma logica que dateModified en el schema de arriba). */}
+        {club.updated_at && (
+          <p className="text-xs text-white/35">{updatedAtLabel(club.updated_at, params.locale)}</p>
+        )}
+
+        {/* FAQ: solo en los clubs investigados a mano (ver CLUB_FAQS en
+            seo-pages.ts). Responde lo que se busca de verdad antes de ir
+            (vestimenta, precio) y que hoy no esta en ningun otro sitio de
+            la ficha. */}
+        {faq.length > 0 && (
+          <div className="space-y-3 pt-2">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{zoneFaqHeading(params.locale)}</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {faq.map((f) => (
+                <div key={f.q} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <h3 className="text-sm font-medium text-white">{f.q}</h3>
+                  <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Divider */}
         <div className="border-t border-white/8" />

@@ -1221,6 +1221,21 @@ export function formatShortDate(iso: string, locale: string) {
     .replace(/\.\s*$/, '')
 }
 
+// Fecha de actualizacion visible en la ficha. Es una senal de frescura tanto
+// para quien lee (¿esta info es de este año?) como para Google, que la lee
+// tambien en dateModified del schema — ver la nota en club/[id]/page.tsx.
+const UPDATED_AT_LABEL: Record<string, string> = {
+  es: 'Ficha actualizada el',
+  en: 'Listing updated on',
+  de: 'Eintrag aktualisiert am',
+}
+
+export function updatedAtLabel(iso: string, locale: string) {
+  const tag = DATE_LOCALES[locale] || DATE_LOCALES[routing.defaultLocale]
+  const fecha = new Date(iso).toLocaleDateString(tag, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  return `${UPDATED_AT_LABEL[locale] || UPDATED_AT_LABEL[routing.defaultLocale]} ${fecha}`
+}
+
 // Recorta respetando la palabra. Antes las descripciones salian cortadas en
 // seco a los 155 caracteres ("...de la zona turistica de Mallorc"), que en el
 // resultado de busqueda queda a medias y invita a Google a reescribirlas.
@@ -1478,4 +1493,44 @@ const TITULO_DJ: Record<string, (n: string, g: string | null) => string> = {
 export function tituloDj(nombre: string, generos: string[], locale: string) {
   const g = generos.length ? generos[0] : null
   return (TITULO_DJ[locale] || TITULO_DJ[routing.defaultLocale])(nombre, g)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FAQ por club.
+//
+// zoneFaq() y nearFaq() ya cubren la ciudad; aqui falta el club, que es
+// donde esta la intencion de busqueda mas concreta ("codigo de vestimenta
+// [club]", "precio entrada [club]"). Precio y vestimenta no son campos de la
+// base de datos: salen de reviews reales, investigadas una por una, igual
+// que ZONE_GUIDES. Por eso va por slug y curado a mano, no generado con cada
+// club nuevo — sin entrada aqui, la ficha sigue funcionando igual, solo sin
+// este bloque.
+const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
+  'la-santa': {
+    es: [
+      { q: '¿Hay código de vestimenta en La Santa?', a: 'Sí, y lo aplican con firmeza en la puerta aunque no siempre se comunique de antemano. Varios clientes cuentan que les han dejado fuera por tirantes, chanclas o ropa muy informal, así que conviene ir algo arreglado.' },
+      { q: '¿Cuánto cuesta la entrada en La Santa?', a: 'Según las reseñas de clientes, la entrada suele moverse entre 10 y 20€ según la noche y el cartel.' },
+      { q: '¿Qué música suena en La Santa?', a: 'De martes a domingo, reguetón, música urbana y los éxitos comerciales del momento. Los viernes cambia el registro con LA CLANDESTINA (techno, tech house y deep house), y en temporada alta se suma OASiS Benicàssim los lunes.' },
+      { q: '¿Cómo es el ambiente y el servicio en La Santa?', a: 'Los clientes destacan de forma recurrente el sonido y la iluminación cuidados, la decoración de la sala y un personal atento que responde rápido incluso en las noches de más gente.' },
+    ],
+    en: [
+      { q: 'Is there a dress code at La Santa?', a: "Yes, and it's enforced firmly at the door even if it isn't always announced beforehand. Several customers report being turned away for tank tops, flip-flops or very casual clothing, so it's worth dressing up a bit." },
+      { q: 'How much is a ticket at La Santa?', a: 'Based on customer reviews, entry usually runs between €10 and €20 depending on the night and the lineup.' },
+      { q: 'What music plays at La Santa?', a: "Tuesday through Sunday it's reggaeton, urban music and the current commercial hits. Fridays switch to LA CLANDESTINA (techno, tech house and deep house), and in high season OASiS Benicàssim joins on Mondays." },
+      { q: 'What is the vibe and service like at La Santa?', a: 'Customers consistently mention well-looked-after sound and lighting, considered decor, and attentive staff who respond quickly even on the busiest nights.' },
+    ],
+    de: [
+      { q: 'Gibt es bei La Santa eine Kleiderordnung?', a: 'Ja, und sie wird am Einlass konsequent durchgesetzt, auch wenn das nicht immer vorher angekündigt wird. Mehrere Gäste berichten, wegen Trägershirts, Flip-Flops oder sehr legerer Kleidung abgewiesen worden zu sein — etwas herausgeputzt zu erscheinen lohnt sich also.' },
+      { q: 'Was kostet der Eintritt bei La Santa?', a: 'Nach Kundenbewertungen liegt der Eintritt je nach Abend und Line-up meist zwischen 10 und 20€.' },
+      { q: 'Welche Musik läuft bei La Santa?', a: 'Von Dienstag bis Sonntag laufen Reggaeton, Urban Music und aktuelle Charterfolge. Freitags übernimmt LA CLANDESTINA (Techno, Tech House und Deep House), und in der Hochsaison kommt montags OASiS Benicàssim dazu.' },
+      { q: 'Wie sind Stimmung und Service bei La Santa?', a: 'Gäste erwähnen immer wieder gepflegten Sound und gepflegte Beleuchtung, eine durchdachte Dekoration und aufmerksames Personal, das auch an den vollsten Abenden schnell reagiert.' },
+    ],
+  },
+}
+
+export function clubFaq(slug: string | null | undefined, locale: string): ZoneFaq[] {
+  if (!slug) return []
+  const byLocale = CLUB_FAQS[slug]
+  if (!byLocale) return []
+  return byLocale[locale] || byLocale[routing.defaultLocale] || []
 }
