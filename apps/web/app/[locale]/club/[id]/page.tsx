@@ -47,6 +47,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
       lugar,
       eventos: proximos.length,
       proxima: proximos[0] ? formatShortDate((proximos[0] as any).start_at, params.locale) : null,
+      slug: club.slug,
     },
     params.locale,
     descripcionLocal || `${club.name}: eventos, fotos y como llegar. Descubre la mejor fiesta${place} con Where We Go.`,

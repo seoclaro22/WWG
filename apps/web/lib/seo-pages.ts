@@ -1255,7 +1255,7 @@ export function recortar(texto: string, max = 155) {
 // en su Instagram. Lo que no encuentra en esos sitios es la agenda, asi que la
 // agenda va delante siempre que exista. Sin eventos anunciados se cae a la
 // descripcion de la ficha, que es lo unico honesto que queda por decir.
-type DescPartes = { nombre: string; lugar?: string | null; eventos: number; proxima?: string | null }
+type DescPartes = { nombre: string; lugar?: string | null; eventos: number; proxima?: string | null; slug?: string | null }
 
 const CLUB_DESC: Record<string, (p: DescPartes) => string> = {
   es: (p) => `Agenda de ${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'fiesta próxima' : 'fiestas próximas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Line-ups, entradas y cómo llegar.`,
@@ -1286,14 +1286,39 @@ function construir(
 // respaldo (la descripcion informativa de la ficha) en frio, sin ningun
 // gancho de entradas/agenda. Se le antepone uno corto, igual que hace ya
 // CLUB_DESC cuando si hay eventos.
+//
+// Sin nombre ni lugar a proposito: el respaldo (la descripcion de la ficha)
+// ya empieza casi siempre con "[Nombre] es la discoteca de..." o similar, asi
+// que repetirlos aqui era gastar ~30 caracteres en decir dos veces lo mismo
+// dentro de un hueco de 155. Con el hook corto, el recorte llega mas lejos
+// dentro de la descripcion real antes de cortarse.
 const CLUB_DESC_HOOK: Record<string, (n: string, lugar: string | null) => string> = {
-  es: (n, l) => `Entradas y agenda de ${n}${l ? ` en ${l}` : ''}.`,
-  en: (n, l) => `Tickets and events at ${n}${l ? ` in ${l}` : ''}.`,
-  de: (n, l) => `Tickets und Termine fuer ${n}${l ? ` in ${l}` : ''}.`,
+  es: () => 'Entradas y agenda.',
+  en: () => 'Tickets and events.',
+  de: () => 'Tickets und Termine.',
+}
+
+// Snippet de busqueda curado por club, para cuando no hay agenda.
+//
+// El respaldo generico (la descripcion larga de la ficha) suele abrir con
+// "[Nombre] es la discoteca de..." — quien busca "la santa benicassim" ya lo
+// sabe. Lo que de verdad teclea antes de ir es "precio entrada X", "codigo
+// vestimenta X", "que musica pone X": eso es lo que va aqui, sacado de las
+// mismas reviews que alimentan el CLUB_FAQS. Solo entra el club investigado;
+// el resto sigue cayendo al hook + descripcion de siempre.
+const CLUB_META_DESC: Record<string, Record<string, string>> = {
+  'la-santa': {
+    es: 'Entrada 10-20€. Código de vestimenta estricto: evita tirantes y chanclas. Reguetón de martes a domingo, techno los viernes con LA CLANDESTINA.',
+    en: 'Entry €10-20. Strict dress code: no tank tops or flip-flops. Reggaeton Tue-Sun, techno on Fridays with LA CLANDESTINA.',
+    de: 'Eintritt 10-20€. Strenger Dresscode: keine Trägershirts oder Flip-Flops. Reggaeton Di-So, freitags Techno mit LA CLANDESTINA.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
-  if (partes.eventos === 0 && respaldo) {
+  if (partes.eventos === 0) {
+    const curado = partes.slug ? CLUB_META_DESC[partes.slug]?.[locale] : null
+    if (curado) return recortar(curado)
+    if (!respaldo) return ''
     const hook = CLUB_DESC_HOOK[locale] || CLUB_DESC_HOOK[routing.defaultLocale]
     return recortar(`${hook(partes.nombre, partes.lugar || null)} ${respaldo}`)
   }
