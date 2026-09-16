@@ -207,6 +207,17 @@ export async function zoneEntries(): Promise<Entry[]> {
 // con lastmod de ahora. Ese lastmod es la excepcion al criterio de lastMod():
 // no es una fecha inventada, la URL si cambio de verdad el dia que paso a
 // redirigir, y es la senal que hace que Google la vuelva a pedir.
+// Solo tiene sentido para fichas de antes de que existieran los slugs
+// (222ecb7, 12 ago 2026): son las unicas que llegaron a servirse por UUID y
+// que Google pudo indexar en esa forma. Una ficha creada despues nunca
+// respondio en /club/<uuid> sin redirigir, asi que no hay ningun link
+// antiguo que rescatar — publicarla aqui es puro ruido que crece cada vez
+// que se da de alta un evento, y crecia sin limite: 1.860 fichas x 3
+// idiomas, la mayoria sin exposicion previa alguna, justo cuando el
+// presupuesto de rastreo ya iba escaso. Ver el aviso de "Descubierta:
+// actualmente sin indexar" disparandose en Search Console.
+const CORTE_SLUGS = '2026-08-12'
+
 export async function legacyEntries(): Promise<Entry[]> {
   const fetchAll = async (table: string, select: string, approvedOnly = false) => {
     const sb = getSupabaseClient()
@@ -214,7 +225,7 @@ export async function legacyEntries(): Promise<Entry[]> {
     const pageSize = 1000
 
     for (let from = 0; ; from += pageSize) {
-      let query = sb.from(table).select(select).range(from, from + pageSize - 1)
+      let query = sb.from(table).select(select).lt('created_at', CORTE_SLUGS).range(from, from + pageSize - 1)
       if (approvedOnly) query = query.eq('status', 'approved')
       const { data } = await query
       rows.push(...(data || []))
@@ -225,9 +236,9 @@ export async function legacyEntries(): Promise<Entry[]> {
   }
 
   const [events, clubs, djs] = await Promise.all([
-    fetchAll('events_public', 'id,slug'),
-    fetchAll('clubs', 'id,slug', true),
-    fetchAll('djs', 'id,slug'),
+    fetchAll('events_public', 'id,slug,created_at'),
+    fetchAll('clubs', 'id,slug,created_at', true),
+    fetchAll('djs', 'id,slug,created_at'),
   ])
   const lastModified = new Date()
 
