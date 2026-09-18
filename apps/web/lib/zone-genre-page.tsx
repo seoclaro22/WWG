@@ -16,7 +16,6 @@ import { routing } from '@/i18n/routing'
 import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import { genreZoneGuide, genreZoneGuideHeadings, genreZoneSummary, MIN_EVENTS_TO_INDEX, formatEventDate, formatShortDate, zoneGenreMeta } from '@/lib/seo-pages'
-import { zoneGenreIsZeroClick } from '@/lib/gsc-underperformers'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 type Params = { locale: string; zone: string; name: string }
@@ -73,11 +72,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
 
   const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
   const path = zoneGenrePath(params.zone, genre, params.locale)
-  const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
   const images = ogImage({ eyebrow, title: `${genre} · ${zoneName}`, subtitle: description })
-  // Mismo criterio que djIsIndexable/clubIsIndexable: expuesta en agosto,
-  // cero clics. Ver gsc-underperformers.ts.
-  const provenNoInterest = zoneGenreIsZeroClick(params.zone, genre)
 
   return {
     title,
@@ -85,7 +80,6 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
     alternates: buildAlternatesFor((l) => zoneGenrePath(params.zone, genre, l), params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
-    ...(count < MIN_EVENTS_TO_INDEX || provenNoInterest ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

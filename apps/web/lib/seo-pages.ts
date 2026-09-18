@@ -1,6 +1,5 @@
 import { routing } from '@/i18n/routing'
 import { dictionaries } from '@/lib/dictionaries'
-import { CLUB_ZERO_CLICK_IDS, DJ_ZERO_CLICK_IDS } from '@/lib/gsc-underperformers'
 
 // Primera miga de pan. Estaba escrita como "Inicio" en duro en las fichas de
 // club, DJ, evento y genero, tambien en /en y /de.
@@ -18,52 +17,20 @@ export function homeCrumb(locale: string) {
 // sitemap y lleva noindex.
 export const MIN_EVENTS_TO_INDEX = 3
 
-// Las fichas de DJ eran la unica pagina generada sin umbral: entraban las ~200
-// al sitemap aunque fuesen un nombre suelto sobre fondo negro, y por volumen
-// eran mas de la mitad del dominio indexable. Se indexa la ficha que dice
-// algo: o tiene sesiones anunciadas, o tiene una biografia de verdad.
-//
-// El minimo de biografia es el largo de una meta description. Por debajo de
-// eso no hay contenido que justifique una URL propia.
-export const MIN_DJ_BIO_TO_INDEX = 160
-
+// Sin puerta de calidad a proposito: se indexa cualquier DJ que exista.
 export function djIsIndexable(
   dj: { id?: string | null; slug?: string | null; bio?: string | null; short_bio?: string | null } | null | undefined,
   upcomingEvents: number,
 ) {
-  if (!dj) return false
-  // Google ya la mostro en el pico de indexacion de agosto y no consiguio ni
-  // un clic: repetir la misma ficha no va a dar un resultado distinto. Ver
-  // gsc-underperformers.ts.
-  if ((dj.id && DJ_ZERO_CLICK_IDS.has(dj.id)) || (dj.slug && DJ_ZERO_CLICK_IDS.has(dj.slug))) return false
-  if (upcomingEvents > 0) return true
-  return (dj.short_bio || dj.bio || '').trim().length >= MIN_DJ_BIO_TO_INDEX
+  return Boolean(dj)
 }
 
-// Las fichas de club eran el ultimo bloque generado sin umbral: entraban al
-// sitemap con solo `status = 'approved'`, mientras zonas, DJs y generos ya
-// pasaban por su filtro. Una ficha sin agenda, sin foto y con dos lineas de
-// descripcion no le gana a la ficha de Google Maps del mismo local: es la
-// misma informacion con menos datos, y por volumen arrastra la calidad media
-// del dominio.
-//
-// La ficha sigue existiendo y enlazada desde /clubs y desde las zonas; lo que
-// se retira es la invitacion a indexarla hasta que tenga algo propio.
-export const MIN_CLUB_DESC_TO_INDEX = 160
-
+// Sin puerta de calidad a proposito: se indexa cualquier club que exista.
 export function clubIsIndexable(
   club: { id?: string | null; slug?: string | null; description?: string | null; images?: unknown; logo_url?: string | null } | null | undefined,
   upcomingEvents: number,
 ) {
-  if (!club) return false
-  // Mismo criterio que djIsIndexable: expuesta en agosto, cero clics. Ver
-  // gsc-underperformers.ts.
-  if ((club.id && CLUB_ZERO_CLICK_IDS.has(club.id)) || (club.slug && CLUB_ZERO_CLICK_IDS.has(club.slug))) return false
-  // Con agenda propia la ficha ya aporta lo que no tiene ninguna otra fuente.
-  if (upcomingEvents > 0) return true
-  const hasImage = (Array.isArray(club.images) && club.images.length > 0) || !!club.logo_url
-  const hasText = (club.description || '').trim().length >= MIN_CLUB_DESC_TO_INDEX
-  return hasImage && hasText
+  return Boolean(club)
 }
 
 export type WhenKey = 'today' | 'weekend'

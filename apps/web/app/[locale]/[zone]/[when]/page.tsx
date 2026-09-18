@@ -7,7 +7,7 @@ import { routing } from '@/i18n/routing'
 import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import {
-  MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, resolveWhenSlug, whenMeta, whenRange, whenSlug,
+  WHEN_KEYS, formatEventDate, resolveWhenSlug, whenMeta, whenRange, whenSlug,
 } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
@@ -29,8 +29,6 @@ export async function generateMetadata({ params }: { params: { locale: string; z
 
   const { title, description, eyebrow } = whenMeta(key, zoneName, params.locale)
   const path = `/${params.zone}/${params.when}`
-  const { from, to } = whenRange(key)
-  const count = (await fetchEvents({ zone: zoneName, from, to, limit: MIN_EVENTS_TO_INDEX, grace: key === 'today' })).length
   const images = ogImage({ eyebrow, title: zoneName, subtitle: description })
 
   return {
@@ -39,9 +37,6 @@ export async function generateMetadata({ params }: { params: { locale: string; z
     alternates: buildAlternatesFor((l) => `/${params.zone}/${whenSlug(key, l)}`, params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
-    // Sin inventario suficiente la pagina no aporta nada a quien llega desde
-    // Google, asi que se sirve pero no se indexa.
-    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Link } from '@/lib/navigation'
-import { countUpcomingEvents, fetchEvents, fetchClubsPublic, fetchZoneFacts, fetchZoneGenreCounts, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
+import { fetchEvents, fetchClubsPublic, fetchZoneFacts, fetchZoneGenreCounts, resolveZoneSlug, fetchZonesMap } from '@/lib/db'
 import { EventCard } from '@/components/EventCard'
 import { ClubCard } from '@/components/ClubCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
@@ -29,13 +29,9 @@ export async function generateMetadata({ params }: { params: { locale: string; z
   if (!zoneName) notFound()
   const { title, description, eyebrow } = zoneMeta(zoneName, params.locale)
   const images = ogImage({ eyebrow, title: zoneName, subtitle: description })
-  // Mismo umbral que las paginas hijas. Una ciudad recien abierta, con uno o
-  // dos eventos, era lo primero que Google veia de ese mercado.
-  const count = await countUpcomingEvents({ zone: zoneName })
   return {
     title,
     description,
-    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
     alternates: buildAlternates(`/${params.zone}`, params.locale),
     openGraph: { title, description, type: 'website', url: `/${params.zone}`, images },
     twitter: { card: 'summary_large_image', images },

@@ -20,20 +20,17 @@ import { CATALOG_LIMIT, PAGE_SIZE, rangeFromDateParam, toClubItem, toDjItem, toE
 // filtrada no compite, y sus enlaces salientes se siguen rastreando.
 export function generateMetadata({
   params,
-  searchParams,
 }: {
   params: { locale: string }
   searchParams?: Record<string, string | string[] | undefined>
 }) {
   const { title, description } = listMeta('discover', params.locale)
-  const isFiltered = Object.values(searchParams || {}).some((v) => v != null && v !== '')
 
   return {
     title,
     description,
     alternates: buildAlternates('/discover', params.locale),
     openGraph: { title, description, type: 'website' },
-    ...(isFiltered ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

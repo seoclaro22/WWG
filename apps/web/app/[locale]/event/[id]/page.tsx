@@ -83,15 +83,6 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   const descripcionLocal = e.description_i18n?.[params.locale] || e.description
   const description = (descripcionLocal || '').slice(0, 155) || eventMetaDescription(e.name, venue, date, params.locale)
 
-  // Un evento terminado ya no le sirve a quien llega desde Google, pero la URL
-  // debe seguir resolviendo para quien la tenga guardada o compartida. El cron
-  // de archivado borra el evento a los 7 dias y a partir de ahi la ficha da 404
-  // sola: esto solo cubre esa ventana.
-  const endedAt = e.end_at
-    ? new Date(e.end_at)
-    : new Date(new Date(e.start_at).getTime() + 12 * 60 * 60 * 1000)
-  const hasEnded = endedAt.getTime() < Date.now()
-
   return {
     // La fecha va en el titulo porque sin ella las fiestas semanales lo
     // repiten: 15 "CALABLAVA MORNINGS — Calablava Beach Club" identicos, y 162
@@ -100,7 +91,6 @@ export async function generateMetadata({ params }: { params: { locale: string; i
     // se busca: "calablava mornings 23 agosto".
     title: `${e.name}${venue ? ` — ${venue}` : ''}, ${formatShortDate(e.start_at, params.locale)}`,
     description,
-    ...(hasEnded ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: `${e.name} · ${date}`,
       description,
