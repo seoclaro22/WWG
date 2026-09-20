@@ -128,18 +128,18 @@ export function whenMeta(key: WhenKey, zone: string, locale: string): PageCopy {
     },
     de: {
       today: {
-        title: `Heute Abend feiern in ${zone}`,
-        description: `Die Partys und Clubs in ${zone} für heute Abend: Line-ups, Zeiten, Preise und Tickets. Täglich aktualisiert, damit du in Minuten einen Plan hast.`,
+        title: `Heute Abend feiern ${germanZonePrep(zone)} ${zone}`,
+        description: `Die Partys und Clubs ${germanZonePrep(zone)} ${zone} für heute Abend: Line-ups, Zeiten, Preise und Tickets. Täglich aktualisiert, damit du in Minuten einen Plan hast.`,
         eyebrow: 'Heute Abend',
-        intro: `Alles, was heute in ${zone} läuft. Die Liste aktualisiert sich selbst: hier stehen nur Partys, die heute Abend noch stattfinden.`,
-        empty: `Heute läuft nichts in ${zone}.`,
+        intro: `Alles, was heute ${germanZonePrep(zone)} ${zone} läuft. Die Liste aktualisiert sich selbst: hier stehen nur Partys, die heute Abend noch stattfinden.`,
+        empty: `Heute läuft nichts ${germanZonePrep(zone)} ${zone}.`,
       },
       weekend: {
-        title: `Am Wochenende feiern in ${zone}`,
-        description: `Alle Partys am Wochenende in ${zone}: Freitag, Samstag und Sonntag mit Line-ups, Zeiten und Tickets. Plane deine Nacht mit Where We Go.`,
+        title: `Am Wochenende feiern ${germanZonePrep(zone)} ${zone}`,
+        description: `Alle Partys am Wochenende ${germanZonePrep(zone)} ${zone}: Freitag, Samstag und Sonntag mit Line-ups, Zeiten und Tickets. Plane deine Nacht mit Where We Go.`,
         eyebrow: 'Dieses Wochenende',
-        intro: `Das ganze Wochenende in ${zone}, von Freitagnacht bis Sonntag. Vergleiche Line-ups und buche, bevor es ausverkauft ist.`,
-        empty: `An diesem Wochenende läuft nichts in ${zone}.`,
+        intro: `Das ganze Wochenende ${germanZonePrep(zone)} ${zone}, von Freitagnacht bis Sonntag. Vergleiche Line-ups und buche, bevor es ausverkauft ist.`,
+        empty: `An diesem Wochenende läuft nichts ${germanZonePrep(zone)} ${zone}.`,
       },
     },
   }
@@ -166,11 +166,11 @@ export function zoneGenreMeta(genre: string, zone: string, locale: string): Page
       empty: `No ${genre} sets are scheduled in ${zone} right now.`,
     },
     de: {
-      title: `${genre} Partys in ${zone}`,
-      description: `Wo du ${genre} in ${zone} hörst: Clubs, DJs und kommende Sets mit Zeiten und Tickets. ${genre} Termine, täglich aktualisiert.`,
-      eyebrow: `${genre} in ${zone}`,
-      intro: `Kommende ${genre} Sets in ${zone}, mit Line-ups und den Clubs, die sie spielen.`,
-      empty: `Aktuell sind keine ${genre} Sets in ${zone} geplant.`,
+      title: `${genre} Partys ${germanZonePrep(zone)} ${zone}`,
+      description: `Wo du ${genre} ${germanZonePrep(zone)} ${zone} hörst: Clubs, DJs und kommende Sets mit Zeiten und Tickets. ${genre} Termine, täglich aktualisiert.`,
+      eyebrow: `${genre} ${germanZonePrep(zone)} ${zone}`,
+      intro: `Kommende ${genre} Sets ${germanZonePrep(zone)} ${zone}, mit Line-ups und den Clubs, die sie spielen.`,
+      empty: `Aktuell sind keine ${genre} Sets ${germanZonePrep(zone)} ${zone} geplant.`,
     },
   }
   return copy[locale] || copy[routing.defaultLocale]
@@ -208,7 +208,7 @@ export function genreZoneSummary(
     de: [
       `Aktuell stehen ${eventCount} ${genre}-${eventCount === 1 ? 'Termin' : 'Termine'} in der Agenda von ${zone}`,
       clubList ? `, unter anderem in ${clubList}${more ? ` und ${more} weiteren` : ''}.` : '.',
-      next ? ` Der naechste ist ${next.title} im ${next.club}, am ${next.date}.` : '',
+      next ? ` Der nächste ist ${next.title} im ${next.club}, am ${next.date}.` : '',
     ].join(''),
   }
   return copy[locale] || copy[routing.defaultLocale]
@@ -435,7 +435,7 @@ export function zoneFaq(
   const venues = n('venue', 'venues', facts.venues)
   const parties = n('announced party', 'announced parties', facts.events)
   const clubsDe = n('Club', 'Clubs', facts.venues)
-  const partysDe = n('angekuendigte Party', 'angekuendigte Partys', facts.events)
+  const partysDe = n('angekündigte Party', 'angekündigte Partys', facts.events)
   const price = facts.priceMin === null ? null
     : facts.priceMax !== null && facts.priceMax !== facts.priceMin
       ? `${facts.priceMin} - ${facts.priceMax} €`
@@ -458,11 +458,11 @@ export function zoneFaq(
       venues: { q: `How many clubs are there in ${zone}?`, a: `We currently track ${facts.venues} ${venues} in ${zone} with ${facts.events} ${parties}. Listings are updated daily.` },
     },
     de: {
-      hour: { q: `Wann beginnen die Partys in ${zone}?`, a: `Die meisten Sets in ${zone} starten gegen ${hour}. Jede Veranstaltung zeigt ihre genaue Uhrzeit, denn Rooftop- und After-Partys fallen aus diesem Rahmen.` },
-      price: { q: `Was kostet der Eintritt in ${zone}?`, a: `Die Tickets im aktuellen Programm von ${zone} liegen bei ${price}. Der Preis haengt vom Line-up ab und davon, ob du im Vorverkauf oder an der Tuer kaufst.` },
-      day: { q: `An welchem Abend ist in ${zone} am meisten los?`, a: `${day} ist aktuell der Abend mit den meisten Partys in ${zone}. Dann oeffnen auch die meisten Clubs gleichzeitig.` },
-      genres: { q: `Welche Musik laeuft in ${zone}?`, a: `Am haeufigsten laeuft in ${zone} ${genres}. Du kannst das Programm nach Musikrichtung filtern.` },
-      venues: { q: `Wie viele Clubs gibt es in ${zone}?`, a: `Wir verfolgen derzeit ${facts.venues} ${clubsDe} in ${zone} mit ${facts.events} ${partysDe}. Taeglich aktualisiert.` },
+      hour: { q: `Wann beginnen die Partys ${germanZonePrep(zone)} ${zone}?`, a: `Die meisten Sets ${germanZonePrep(zone)} ${zone} starten gegen ${hour}. Jede Veranstaltung zeigt ihre genaue Uhrzeit, denn Rooftop- und After-Partys fallen aus diesem Rahmen.` },
+      price: { q: `Was kostet der Eintritt ${germanZonePrep(zone)} ${zone}?`, a: `Die Tickets im aktuellen Programm von ${zone} liegen bei ${price}. Der Preis hängt vom Line-up ab und davon, ob du im Vorverkauf oder an der Tür kaufst.` },
+      day: { q: `An welchem Abend ist ${germanZonePrep(zone)} ${zone} am meisten los?`, a: `${day} ist aktuell der Abend mit den meisten Partys ${germanZonePrep(zone)} ${zone}. Dann öffnen auch die meisten Clubs gleichzeitig.` },
+      genres: { q: `Welche Musik läuft ${germanZonePrep(zone)} ${zone}?`, a: `Am häufigsten läuft ${germanZonePrep(zone)} ${zone} ${genres}. Du kannst das Programm nach Musikrichtung filtern.` },
+      venues: { q: `Wie viele Clubs gibt es ${germanZonePrep(zone)} ${zone}?`, a: `Wir verfolgen derzeit ${facts.venues} ${clubsDe} ${germanZonePrep(zone)} ${zone} mit ${facts.events} ${partysDe}. Täglich aktualisiert.` },
     },
   }[l]!
 
@@ -480,7 +480,7 @@ export function zoneFaqHeading(locale: string) {
   const copy: Record<string, string> = {
     es: 'Preguntas frecuentes',
     en: 'Frequently asked questions',
-    de: 'Haeufige Fragen',
+    de: 'Häufige Fragen',
   }
   return copy[locale] || copy[routing.defaultLocale]
 }
@@ -544,20 +544,27 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'The most touristy areas, like Magaluf, central Palma and El Arenal, see the most petty theft and unattended drinks: keep an eye on your glass and never leave it with strangers. It´s best to avoid walking alone in the early hours through poorly lit streets near the party areas, and to head back with company or by taxi. Drinking in the street outside licensed venues isn´t allowed and can lead to a fine. As with any busy tourist nightlife area, sticking with your group, pacing your drinking and planning the way back before you go out removes most of the risk.',
     },
     de: {
-      intro: 'Das Nachtleben auf Mallorca bewegt sowohl die Inselbewohner als auch Touristen, die nur ein paar Sommertage bleiben. Fast jeder Plan findet Platz: Beachclubs mit touristischem Publikum, Electronic-Clubs mit internationalem Line-up und Dachterrassen im Viertel fuer einen ruhigen Start in die Nacht. In den 1960er-Jahren gab es auf der Insel mehr Discos als in Madrid und Barcelona zusammen, und dieses Gewicht ist bis heute spuerbar: Mallorcas Nachtleben ist nicht nur ein Nebeneffekt des Sonne-und-Strand-Tourismus, sondern eine eigene Branche mit jahrzehntelanger Geschichte.',
+      // Reescrita para el mercado aleman, no traducida del castellano. Los
+      // datos de volumen (Ubersuggest, Alemania) dicen que la duda numero uno
+      // no es "wo feiern" sino donde esta el Ballermann y que significa el
+      // numero: "ballermann" 33.100/mes, "ballermann 6" 18.100, "wo ist
+      // ballermann" y variantes ~4.200, "ballermann opening 2026" 1.900,
+      // "closing" 880. Por eso la intro abre respondiendo eso y la temporada
+      // habla de Opening y Closing por su nombre.
+      intro: 'Der Ballermann ist keine einzelne Disco, sondern ein ganzer Strandabschnitt: die Balnearios 1 bis 15 an der Playa de Palma, gut zehn Autominuten vom Flughafen Palma entfernt. Der bekannteste ist der Balneario 6 — der „Ballermann 6", für die meisten schlicht der Ballermann. Rundherum liegen Megapark, Bierkönig und die Bars der Schinkenstraße. Wer zum ersten Mal kommt, sucht meist genau das. Die Insel hat aber deutlich mehr: internationale Clubs am Paseo Marítimo in Palma, junge Partymeilen in Cala Ratjada und ruhigere Strandbars abseits des Trubels.',
       zonas: [
-        { titulo: 'Magaluf und Punta Ballena', texto: 'Die intensivste Gegend der Insel. Die Punta Ballena ist eine gut einen Kilometer lange Strasse voller Bars und Clubs direkt nebeneinander, gemacht fuer einen Barhopping-Abend. Junges, sehr touristisches Publikum, vor allem im Sommer, mit der hoechsten Dichte an grossen Clubs der Insel.' },
-        { titulo: 'Palma und der Paseo Marítimo', texto: 'Hier stehen die groessten Clubs und internationalen Line-ups, direkt am Yachthafen. Das produktionsstaerkste Nachtleben der Insel, mit etwas strengerem Eintrittspreis und Dresscode als in Magaluf.' },
-        { titulo: 'Santa Catalina', texto: 'Palmas altes Fischerviertel, heute das angesagte Cocktail- und Rooftop-Viertel. Weniger Club, mehr Vorgluehen: lokales Publikum, ruhigere Stimmung.' },
-        { titulo: 'El Arenal und Can Pastilla', texto: 'Strandgebiet zwischen Palma und Magaluf mit guenstigeren Clubs und Bars und gemischtem Publikum aus Locals und Touristen. Eine gute Option ohne die Preise von Palmas Zentrum.' },
-        { titulo: 'Alcúdia und die Nordbucht', texto: 'Neben Magaluf der zweite grosse Sommer-Party-Hotspot der Insel. Tagsueber familienfreundlicher, nachts Beachclubs, mit internationalerem und weniger dichtem Publikum als im Sueden.' },
+        { titulo: 'Ballermann und Playa de Palma (Balneario 1–15)', texto: 'Die Partymeile schlechthin. Der Balneario 6 ist das Zentrum, von dort läuft man in wenigen Minuten zu Megapark, Bierkönig und Schinkenstraße. Deutsche Party- und Schlagermusik, Stimmung ab nachmittags. Der östliche Teil heißt El Arenal, Richtung Westen geht es nach Can Pastilla.' },
+        { titulo: 'Cala Ratjada', texto: 'Der zweite große deutsche Hotspot, im Nordosten der Insel. Deutlich jüngeres Publikum als am Ballermann, viele Gruppen- und Abschlussfahrten. Die Bars liegen dicht beieinander rund um den Hafen, sodass man den ganzen Abend zu Fuß unterwegs sein kann.' },
+        { titulo: 'Magaluf und Punta Ballena', texto: 'Das britische Gegenstück zum Ballermann, im Südwesten. Wer statt deutscher Partymusik internationale Line-ups sucht, ist hier richtig: die Punta Ballena ist gut einen Kilometer lang und voller Clubs direkt nebeneinander.' },
+        { titulo: 'Palma und der Paseo Marítimo', texto: 'Nachtleben abseits des Pauschaltourismus. Am Yachthafen stehen die größten Clubs der Insel, House und Techno statt Schlager. Eintritt und Dresscode sind eine Stufe strenger als am Ballermann.' },
+        { titulo: 'Santa Ponsa und Peguera', texto: 'Ruhiger und familiärer, mit gemischtem deutsch-britischem Publikum. Gute Wahl, wenn man abends ausgehen will, ohne mitten im Trubel zu wohnen.' },
       ],
-      temporada: 'Feiern auf Mallorca ist stark saisonabhaengig. Die meisten grossen Clubs in Magaluf und Alcúdia oeffnen nur zwischen April/Mai und Oktober und schliessen im Winter komplett (November bis Maerz). Juni, Juli und August sind Hochsaison, mit der meisten Energie, aber auch den groessten Menschenmengen und hoechsten Preisen. September gilt bei Insel-Kennern oft als bester Monat: noch warm, das Meer noch angenehm, und die touristischen Gegenden deutlich ruhiger. In Palma bleiben einige Electronic-Clubs und Stadtlocations das ganze Jahr ueber geoeffnet, unabhaengig von der Strandsaison.',
-      discotecasFamosas: 'BCM Planet Dance in Magaluf ist einer der groessten Nachtclubs Europas: ueber 38 Jahre Geschichte, Platz fuer mehrere Tausend Gaeste und jede Saison internationale DJ-Line-ups, von April bis Oktober. Auch Pachá betreibt einen Club in Palma, am Paseo Marítimo, Teil derselben Gruppe, die die Marke auf Ibiza bekannt gemacht hat. Tito´s, Palmas hundert Jahre alter Club, in dem einst Gaeste von Josephine Baker bis Grace Kelly verkehrten, hat 2021 endgueltig geschlossen und existiert heute nicht mehr: Er wird hier erwaehnt, weil er Teil der Geschichte des Inselnachtlebens ist, nicht weil er noch geoeffnet hat. Das Programm von Where We Go zeigt nur Locations, die gerade aktiv sind, kein historisches Ranking.',
-      transporte: 'Palma hat einen Nachtbusdienst (NIT-Linien), der die Innenstadt mit den Aussenbezirken verbindet, mit gemeinsamer Haltestelle an der Plaza de España zum Umsteigen. Ausserhalb Palmas, in Magaluf und Alcúdia, ist der oeffentliche Nachtverkehr deutlich eingeschraenkter, ueblich ist das Taxi. An Sommernaechten, vor allem direkt nach Clubschluss in den fruehen Morgenstunden, kann es dauern, ein freies Taxi zu finden: am besten vorbestellen oder teilen. Immer offizielle Taxis oder anerkannte Fahrdienst-Apps nutzen, nie unlizenzierte Autos, die auf der Strasse angeboten werden.',
-      precio: 'Der Standardeintritt in Mallorcas Clubs liegt meist zwischen 10 und 25 €, je nach Abend und Line-up. Die groesseren Clubs in Magaluf und Palma koennen an Abenden mit internationalen DJs ueber 30 € kosten, VIP-Bereiche und Tische ab etwa 100 € pro Person. Getraenke kosten meist 3 bis 8 €. Jede Event-Seite auf Where We Go zeigt den echten Preis, sobald der Veranstalter ihn veroeffentlicht.',
-      vestimenta: 'Der Dresscode haengt vom Laden ab. Beachclubs und die touristischen Teile von Magalufs sind leger, in den gehobeneren Locations wird aber etwas mehr Stil erwartet. In Palmas Electronic-Clubs ist es entspannter: bequeme Kleidung reicht, nur keine Flip-Flops oder Badekleidung.',
-      seguridad: 'Die touristischsten Gegenden wie Magaluf, Palmas Zentrum und El Arenal verzeichnen die meisten Taschendiebstaehle und unbeaufsichtigten Getraenke: Behalte dein Glas im Blick und lass es nie bei Fremden stehen. Es empfiehlt sich, in den fruehen Morgenstunden nicht allein durch schlecht beleuchtete Strassen nahe der Partyzonen zu laufen, sondern in Begleitung oder mit dem Taxi zurueckzukehren. Trinken auf der Strasse ausserhalb lizenzierter Lokale ist nicht erlaubt und kann ein Bussgeld nach sich ziehen. Wie in jeder belebten touristischen Nachtlebenszone gilt: in der Gruppe bleiben, das Trinktempo im Blick behalten und den Rueckweg vorher planen senkt fast jedes Risiko.',
+      temporada: 'Die Ballermann-Saison läuft etwa von Ende April bis Oktober. Das Opening Ende April oder Anfang Mai und das Closing im Oktober sind eigene Großereignisse, für die viele extra anreisen — es sind jedes Jahr die meistgesuchten Termine der Saison. Hochsaison ist Juli und August: am meisten los, aber auch am vollsten und teuersten. September gilt bei Malle-Kennern als bester Monat, weil es noch warm ist und die Strandpromenade deutlich entspannter. Von November bis März sind die großen Läden an der Playa de Palma geschlossen; nur in Palma laufen einige Clubs das ganze Jahr. Die aktuellen Termine stehen im Programm auf dieser Seite.',
+      discotecasFamosas: 'Der Megapark an der Playa de Palma ist die größte und bekannteste Adresse am Ballermann, mit Bühne, Live-Acts und Schlagerprogramm bis in die Nacht. Der Bierkönig gleich nebenan ist der zweite Klassiker und für viele der eigentliche Kern des Ballermanns. Internationaler wird es im BCM Planet Dance in Magaluf, einem der größten Clubs Europas, und bei Pachá am Paseo Marítimo in Palma, einem Ableger der Marke, die auf Ibiza bekannt wurde. Das Programm von Where We Go zeigt die Locations, die gerade aktiv sind, kein festes Ranking.',
+      transporte: 'Vom Flughafen Palma (PMI) sind es rund zehn Minuten mit dem Taxi zur Playa de Palma — einer der Gründe, warum sich auch ein Kurztrip lohnt. Innerhalb der Playa läuft man alles zu Fuß. Nach Palma hinein fahren die EMT-Linien 23 und 25, nachts deutlich seltener. In den frühen Morgenstunden ist das Taxi meist die einzige realistische Option, und in der Hochsaison können die Wartezeiten an den Ständen lang werden. Immer offizielle Taxis nehmen, nie Fahrer, die einen auf der Straße ansprechen. Und: Mietwagen und Feiern schließen sich aus, die Kontrollen auf der Insel sind streng.',
+      precio: 'In den meisten Bars am Ballermann zahlt man keinen Eintritt — das Geld geht für Getränke drauf, ein Bier liegt je nach Laden bei etwa 4 bis 8 €. Der Megapark verlangt je nach Veranstaltung Eintritt. In den großen Clubs in Palma und Magaluf liegt er meist zwischen 15 und 30 €, an Abenden mit internationalen DJs auch darüber; Tische und VIP-Bereiche starten ab rund 100 € pro Person. Im Vorverkauf ist es fast immer günstiger als an der Tür. Den genauen Preis zeigt jede Veranstaltung, sobald der Veranstalter ihn veröffentlicht.',
+      vestimenta: 'Am Ballermann gibt es praktisch keinen Dresscode: Shorts, Trikot und Flip-Flops sind völlig normal, viele kommen direkt vom Strand. Trikots und Gruppen-Shirts gehören für viele zum Malle-Urlaub dazu. In den großen Clubs am Paseo Marítimo in Palma sieht das anders aus — dort wird gepflegte Kleidung erwartet, Badekleidung und Sportsachen kommen nicht durch die Tür. In Magaluf liegt es dazwischen und hängt vom Laden ab.',
+      seguridad: 'In der Hochsaison sind Taschendiebstähle an der Playa de Palma häufig: Handy und Geldbeutel nah am Körper tragen und Getränke nie unbeaufsichtigt stehen lassen. Trinken auf offener Straße außerhalb der Lokale ist auf Mallorca verboten und wird mit Bußgeldern geahndet; an der Playa de Palma gelten zusätzlich verschärfte Regeln gegen Alkoholexzesse. In den frühen Morgenstunden nicht allein durch schlecht beleuchtete Straßen laufen, sondern in Begleitung oder mit dem Taxi zurück. Wer in der Gruppe bleibt, das Trinktempo im Blick behält und den Rückweg vorher plant, hat mit dem Rest keine Probleme.',
     },
   },
   Madrid: {
@@ -592,19 +599,19 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'The busiest party areas (Malasaña, Chueca, Huertas) are also the most watched, with plenty of people out late. Still, keep an eye on your belongings in the crowd and don´t lose sight of your drink. The Metro and night buses are safe ways home; if you´re drinking, planning your way back before heading out is the sensible move.',
     },
     de: {
-      intro: 'Madrid ist die Stadt mit dem meisten Nachtleben Spaniens: keine einzelne Partyzone, sondern mehrere Viertel mit ganz eigenem Charakter, und die Nacht beginnt spaet und geht fast an jedem Wochentag bis zum Morgengrauen, nicht nur am Wochenende. Eine Stadt, in der man das ganze Jahr ausgehen kann, unabhaengig von einer Strandsaison.',
+      intro: 'Madrid ist die Stadt mit dem meisten Nachtleben Spaniens: keine einzelne Partyzone, sondern mehrere Viertel mit ganz eigenem Charakter, und die Nacht beginnt spät und geht fast an jedem Wochentag bis zum Morgengrauen, nicht nur am Wochenende. Eine Stadt, in der man das ganze Jahr ausgehen kann, unabhängig von einer Strandsaison.',
       zonas: [
-        { titulo: 'Malasaña', texto: 'Das Viertel, das in den 1980ern das Zentrum der Movida madrileña war. Alternative, Indie-Atmosphaere, mit Cocktailbars, Live-Musik und kleineren Locations als in anderen Vierteln.' },
+        { titulo: 'Malasaña', texto: 'Das Viertel, das in den 1980ern das Zentrum der Movida madrileña war. Alternative, Indie-Atmosphäre, mit Cocktailbars, Live-Musik und kleineren Locations als in anderen Vierteln.' },
         { titulo: 'Chueca', texto: 'Das partyreichste Viertel im Zentrum, auch Zentrum des LGBTQ+-Nachtlebens der Stadt. Electronic, Pop und Reggaeton, mit der Plaza de Chueca als Treffpunkt.' },
-        { titulo: 'Kunstdreieck und Huertas', texto: 'Hier stehen die groessten und bekanntesten Clubs der Stadt, wie Teatro Kapital oder Teatro Barceló. Eher klassischer Nachtclub als Viertelbar, mit strengerem Einlass und Dresscode.' },
+        { titulo: 'Kunstdreieck und Huertas', texto: 'Hier stehen die größten und bekanntesten Clubs der Stadt, wie Teatro Kapital oder Teatro Barceló. Eher klassischer Nachtclub als Viertelbar, mit strengerem Einlass und Dresscode.' },
         { titulo: 'La Latina', texto: 'Eher Tapas und Terrasse als Nachtclub, besonders sonntags nach dem Rastro-Flohmarkt. Ein guter Startpunkt, bevor man in ein anderes Viertel weiterzieht.' },
       ],
-      temporada: 'Anders als Kuestenstaedte legt Madrid sein Nachtleben im Winter nicht still: die zentralen Clubs bleiben das ganze Jahr geoeffnet, meist von Donnerstag bis Sonntag. Der Sommer bringt zusaetzlich Aussenterrassen und das ein oder andere Festival, aber die Club-Szene bleibt unabhaengig von der Saison aktiv.',
-      discotecasFamosas: 'Teatro Kapital mit sieben Stockwerken und unterschiedlichen Stimmungen auf jedem ist der bekannteste Club der Stadt, mitten im Kunstdreieck. Teatro Barceló befindet sich in einem umgebauten Kino aus den 1930ern, mit einer theatralischen Optik, die es vom Rest abhebt. Fabrik, am Stadtrand von Madrid in Humanes, ist einer der groessten Electronic-Superclubs Spaniens mit Platz fuer mehrere Tausend Gaeste. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
-      transporte: 'Die Madrider Metro schliesst zwischen 1:30 und 2:00 Uhr, an manchen Wochenenden mit Zusatzservice. Danach uebernimmt das Nachtbusnetz "búhos" (Eulen), hauptsaechlich ab der Plaza de Cibeles, mit 15 bis 35 Minuten Takt je nach Linie. Ein Taxi ist in den fruehen Morgenstunden die schnellste Option: offizielle Taxis haben sichtbare Lizenz, GPS und berechnen keine dynamischen Preise wie manche Fahrdienst-Apps.',
-      precio: 'Der Eintritt in einen Madrider Club liegt meist bei 15 bis 25 € inklusive Getraenk, sowohl im Teatro Kapital als auch im Teatro Barceló. Im Fabrik kann er je nach Event zwischen 20 und 60 € liegen. Der Vorverkauf ist meist guenstiger als der Kauf an der Tuer.',
-      vestimenta: 'Die grossen zentralen Clubs (Kapital, Barceló) erwarten meist gepflegte Kleidung, keine Sportbekleidung. In Malasaña und Chueca ist es deutlich lockerer, legere Kleidung reicht in den meisten Locations.',
-      seguridad: 'Die belebtesten Partyviertel (Malasaña, Chueca, Huertas) sind auch die am besten ueberwachten, mit vielen Menschen bis spaet auf der Strasse. Trotzdem: im Gedraenge auf die eigenen Sachen achten und das Glas nicht aus den Augen lassen. Metro und Nachtbusse sind sichere Heimwege; wer trinkt, plant den Rueckweg am besten vorher.',
+      temporada: 'Anders als Küstenstädte legt Madrid sein Nachtleben im Winter nicht still: die zentralen Clubs bleiben das ganze Jahr geöffnet, meist von Donnerstag bis Sonntag. Der Sommer bringt zusätzlich Außenterrassen und das ein oder andere Festival, aber die Club-Szene bleibt unabhängig von der Saison aktiv.',
+      discotecasFamosas: 'Teatro Kapital mit sieben Stockwerken und unterschiedlichen Stimmungen auf jedem ist der bekannteste Club der Stadt, mitten im Kunstdreieck. Teatro Barceló befindet sich in einem umgebauten Kino aus den 1930ern, mit einer theatralischen Optik, die es vom Rest abhebt. Fabrik, am Stadtrand von Madrid in Humanes, ist einer der größten Electronic-Superclubs Spaniens mit Platz für mehrere Tausend Gäste. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
+      transporte: 'Die Madrider Metro schließt zwischen 1:30 und 2:00 Uhr, an manchen Wochenenden mit Zusatzservice. Danach übernimmt das Nachtbusnetz "búhos" (Eulen), hauptsächlich ab der Plaza de Cibeles, mit 15 bis 35 Minuten Takt je nach Linie. Ein Taxi ist in den frühen Morgenstunden die schnellste Option: offizielle Taxis haben sichtbare Lizenz, GPS und berechnen keine dynamischen Preise wie manche Fahrdienst-Apps.',
+      precio: 'Der Eintritt in einen Madrider Club liegt meist bei 15 bis 25 € inklusive Getränk, sowohl im Teatro Kapital als auch im Teatro Barceló. Im Fabrik kann er je nach Event zwischen 20 und 60 € liegen. Der Vorverkauf ist meist günstiger als der Kauf an der Tür.',
+      vestimenta: 'Die großen zentralen Clubs (Kapital, Barceló) erwarten meist gepflegte Kleidung, keine Sportbekleidung. In Malasaña und Chueca ist es deutlich lockerer, legere Kleidung reicht in den meisten Locations.',
+      seguridad: 'Die belebtesten Partyviertel (Malasaña, Chueca, Huertas) sind auch die am besten überwachten, mit vielen Menschen bis spät auf der Straße. Trotzdem: im Gedränge auf die eigenen Sachen achten und das Glas nicht aus den Augen lassen. Metro und Nachtbusse sind sichere Heimwege; wer trinkt, plant den Rückweg am besten vorher.',
     },
   },
   Valencia: {
@@ -637,18 +644,18 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'The busiest areas (Malvarrosa, Ruzafa, El Carmen) have plenty of people out late, which helps, but keep an eye on bags and belongings in the more crowded beach areas in summer. Getting home by night bus, taxi or with your group is the sensible option in the small hours.',
     },
     de: {
-      intro: 'Valencia verbindet Strandparty mit urbanem Viertel-Nachtleben: es gibt keine einzelne dominante Zone, sondern mehrere mit ganz unterschiedlicher Atmosphaere, von den Strandclubs in Malvarrosa bis zur alternativen Szene in Ruzafa. Eine Stadt, die das ganze Jahr feiert, mit deutlichem Intensitaetssprung in den heissen Monaten.',
+      intro: 'Valencia verbindet Strandparty mit urbanem Viertel-Nachtleben: es gibt keine einzelne dominante Zone, sondern mehrere mit ganz unterschiedlicher Atmosphäre, von den Strandclubs in Malvarrosa bis zur alternativen Szene in Ruzafa. Eine Stadt, die das ganze Jahr feiert, mit deutlichem Intensitaetssprung in den heißen Monaten.',
       zonas: [
-        { titulo: 'Strand Malvarrosa und der Hafen', texto: 'Valencias Beachclub-Gegend, mit Strandlocations, die tagsueber Strandbar und nachts Nachtclub sind. Im Sommer touristisches und lokales Publikum gleichermassen.' },
+        { titulo: 'Strand Malvarrosa und der Hafen', texto: 'Valencias Beachclub-Gegend, mit Strandlocations, die tagsüber Strandbar und nachts Nachtclub sind. Im Sommer touristisches und lokales Publikum gleichermaßen.' },
         { titulo: 'Ruzafa', texto: 'Das alternativste, multikulturellste Viertel der Stadt, mit LGBTQ+-Locations, Indie und experimenteller Electronic-Musik. Junges, internationales Publikum.' },
-        { titulo: 'El Carmen', texto: 'Die Altstadt, eher Cocktailbars und Live-Musik als grosse Clubs. Ein guter Ort, um die Nacht zu beginnen, bevor es an den Strand geht.' },
+        { titulo: 'El Carmen', texto: 'Die Altstadt, eher Cocktailbars und Live-Musik als große Clubs. Ein guter Ort, um die Nacht zu beginnen, bevor es an den Strand geht.' },
       ],
-      temporada: 'Die Strandclubs von Malvarrosa sind stark saisonabhaengig: die meisten oeffnen ab dem Fruehling und laufen im Sommer auf Hochtouren, mit Hoehepunkt im Juli und August. Die Clubs im Zentrum und in Ruzafa dagegen haben das ganze Jahr ueber ein aktives Programm, unabhaengig von der Hitze.',
-      discotecasFamosas: 'Akuarela Playa ist einer der bekanntesten Strandclubs von Malvarrosa, mit mehreren Raeumen und Meerblick. Marina Beach Club, neben dem Gebaeude Veles e Vents, ist ein weiterer Fixpunkt im Hafengebiet. Im Zentrum ist Únic, mitten im Carmen-Viertel, ein Anlaufpunkt fuer Themenpartys. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
-      transporte: 'Die Metro von Valencia schliesst meist gegen 0:30 Uhr, danach haengt der Heimweg vom EMT-Nachtbus oder Taxi ab. Mehrere EMT-Linien bedienen die Club-Gegenden am Hafen und in Malvarrosa direkt, es lohnt sich aber, den aktuellen Nachtfahrplan vorher zu pruefen, da er je nach Linie variiert.',
-      precio: 'Der Eintritt in einen Club in Valencia liegt meist bei 12 bis 25 €, bei manchen Strandlocations oder Sonderevents bis zu 40 €. Der Vorverkauf spart meist ein paar Euro gegenueber dem Kauf an der Tuer.',
-      vestimenta: 'Strandclubs sind tagsueber leger und abends etwas gepflegter. Locations im Zentrum und in El Carmen sind entspannt, ausser bei bestimmten Events mit eigenem Dresscode.',
-      seguridad: 'Die belebtesten Gegenden (Malvarrosa, Ruzafa, El Carmen) haben bis spaet viele Menschen auf der Strasse, was hilft, aber im Sommer sollte man in den ueberfuellteren Strandbereichen auf Taschen und Wertsachen achten. Nachtbus, Taxi oder die Rueckkehr in der Gruppe sind in den fruehen Morgenstunden die sinnvollste Option.',
+      temporada: 'Die Strandclubs von Malvarrosa sind stark saisonabhängig: die meisten öffnen ab dem Frühling und laufen im Sommer auf Hochtouren, mit Höhepunkt im Juli und August. Die Clubs im Zentrum und in Ruzafa dagegen haben das ganze Jahr über ein aktives Programm, unabhängig von der Hitze.',
+      discotecasFamosas: 'Akuarela Playa ist einer der bekanntesten Strandclubs von Malvarrosa, mit mehreren Räumen und Meerblick. Marina Beach Club, neben dem Gebäude Veles e Vents, ist ein weiterer Fixpunkt im Hafengebiet. Im Zentrum ist Únic, mitten im Carmen-Viertel, ein Anlaufpunkt für Themenpartys. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
+      transporte: 'Die Metro von Valencia schließt meist gegen 0:30 Uhr, danach hängt der Heimweg vom EMT-Nachtbus oder Taxi ab. Mehrere EMT-Linien bedienen die Club-Gegenden am Hafen und in Malvarrosa direkt, es lohnt sich aber, den aktuellen Nachtfahrplan vorher zu prüfen, da er je nach Linie variiert.',
+      precio: 'Der Eintritt in einen Club in Valencia liegt meist bei 12 bis 25 €, bei manchen Strandlocations oder Sonderevents bis zu 40 €. Der Vorverkauf spart meist ein paar Euro gegenüber dem Kauf an der Tür.',
+      vestimenta: 'Strandclubs sind tagsüber leger und abends etwas gepflegter. Locations im Zentrum und in El Carmen sind entspannt, außer bei bestimmten Events mit eigenem Dresscode.',
+      seguridad: 'Die belebtesten Gegenden (Malvarrosa, Ruzafa, El Carmen) haben bis spät viele Menschen auf der Straße, was hilft, aber im Sommer sollte man in den überfüllteren Strandbereichen auf Taschen und Wertsachen achten. Nachtbus, Taxi oder die Rückkehr in der Gruppe sind in den frühen Morgenstunden die sinnvollste Option.',
     },
   },
   Castellón: {
@@ -677,16 +684,16 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'Being a small, tightly concentrated area, Benicàssim´s nightlife is fairly walkable and manageable: still, during the busiest months (coinciding with the FIB) it´s worth watching your belongings in the most crowded spots and planning how to get back to your accommodation before heading out.',
     },
     de: {
-      intro: 'Das Nachtleben der Provinz Castellón konzentriert sich auf Benicàssim, einen Kuestenort, der im Sommer seine Einwohnerzahl und sein Freizeitangebot durch nationalen und internationalen Tourismus vervielfacht. Ausserhalb der Strandsaison schrumpft die Partyszene stark: ein Nachtleben, das eng an den Sommerkalender gebunden ist.',
+      intro: 'Das Nachtleben der Provinz Castellón konzentriert sich auf Benicàssim, einen Küstenort, der im Sommer seine Einwohnerzahl und sein Freizeitangebot durch nationalen und internationalen Tourismus vervielfacht. Außerhalb der Strandsaison schrumpft die Partyszene stark: ein Nachtleben, das eng an den Sommerkalender gebunden ist.',
       zonas: [
-        { titulo: 'Benicàssim und seine Strandpromenade', texto: 'Das Zentrum des Nachtlebens der Gegend, mit Clubs in Strandnaehe. Junges Publikum, im Juli und August besonders aktiv, auch wegen nahegelegener Musikfestivals wie dem FIB.' },
+        { titulo: 'Benicàssim und seine Strandpromenade', texto: 'Das Zentrum des Nachtlebens der Gegend, mit Clubs in Strandnähe. Junges Publikum, im Juli und August besonders aktiv, auch wegen nahegelegener Musikfestivals wie dem FIB.' },
       ],
-      temporada: 'Das Clubangebot in Benicàssim ist stark saisonal: die meisten Locations oeffnen von Mai oder Juni bis September, mit Juli und August als aktivsten Monaten, zeitgleich mit den Sommerferien und dem Benicàssim International Festival, das Publikum von ausserhalb der Region anzieht. Ausserhalb dieser Monate schrumpft das naechtliche Programm deutlich.',
+      temporada: 'Das Clubangebot in Benicàssim ist stark saisonal: die meisten Locations öffnen von Mai oder Juni bis September, mit Juli und August als aktivsten Monaten, zeitgleich mit den Sommerferien und dem Benicàssim International Festival, das Publikum von außerhalb der Region anzieht. Außerhalb dieser Monate schrumpft das nächtliche Programm deutlich.',
       discotecasFamosas: 'La Santa in Benicàssim ist der wichtigste Club der Gegend, mit Themenpartys und einem Programm von Pop und Electronic bis Reggaeton. Oasis ist eine weitere bekannte Location im Ort. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
-      transporte: 'Benicàssim ist ein kleiner Ort, und das meiste Nachtleben liegt in Gehdistanz zu den touristischen Unterkuenften und der Strandpromenade. Fuer den Weg nach Castellón oder in andere nahegelegene Orte in den fruehen Morgenstunden ist das Taxi die uebliche Option, da der oeffentliche Nachtverkehr ausserhalb der Hochsaison sehr eingeschraenkt ist.',
-      precio: 'Der Eintritt in die Clubs von Benicàssim bewegt sich in einem aehnlichen Rahmen wie im Rest der Valencianischen Gemeinschaft, etwa 10 bis 20 €, an Festivaltagen oder mit Gast-DJs etwas mehr.',
-      vestimenta: 'Die Stimmung ist leger, typisch fuer einen Kuestenort in der Strandsaison: bequeme Sommerkleidung ist die Norm, keine besonderen Anforderungen ausser bei bestimmten Events.',
-      seguridad: 'Als kleine, dicht konzentrierte Gegend ist das Nachtleben von Benicàssim zu Fuss gut ueberschaubar: trotzdem sollte man in den staerksten Monaten (zeitgleich mit dem FIB) an den ueberfuellteren Stellen auf seine Sachen achten und den Rueckweg zur Unterkunft vorher planen.',
+      transporte: 'Benicàssim ist ein kleiner Ort, und das meiste Nachtleben liegt in Gehdistanz zu den touristischen Unterkünften und der Strandpromenade. Fuer den Weg nach Castellón oder in andere nahegelegene Orte in den frühen Morgenstunden ist das Taxi die übliche Option, da der öffentliche Nachtverkehr außerhalb der Hochsaison sehr eingeschränkt ist.',
+      precio: 'Der Eintritt in die Clubs von Benicàssim bewegt sich in einem ähnlichen Rahmen wie im Rest der Valencianischen Gemeinschaft, etwa 10 bis 20 €, an Festivaltagen oder mit Gast-DJs etwas mehr.',
+      vestimenta: 'Die Stimmung ist leger, typisch für einen Küstenort in der Strandsaison: bequeme Sommerkleidung ist die Norm, keine besonderen Anforderungen außer bei bestimmten Events.',
+      seguridad: 'Als kleine, dicht konzentrierte Gegend ist das Nachtleben von Benicàssim zu Fuß gut überschaubar: trotzdem sollte man in den stärksten Monaten (zeitgleich mit dem FIB) an den überfüllteren Stellen auf seine Sachen achten und den Rückweg zur Unterkunft vorher planen.',
     },
   },
   Ibiza: {
@@ -719,18 +726,18 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'As an island with heavy tourist traffic and very large-capacity venues, it´s worth watching your belongings in queues and inside the more crowded clubs. The night disco-bus and official taxis are the safest ways to get around in the small hours; avoid unlicensed cars offered outside venues.',
     },
     de: {
-      intro: 'Ibiza ist die weltweite Referenz fuer elektronische Musik und Clubkultur, mit einer Nachtlebensindustrie, die die Wirtschaft der ganzen Insel ein halbes Jahr lang antreibt. Nicht nur eine Insel mit Discos: hier entstand ein grosser Teil der modernen Clubkultur, mit Locations, die seit einem halben Jahrhundert aktiv sind.',
+      intro: 'Ibiza ist die weltweite Referenz für elektronische Musik und Clubkultur, mit einer Nachtlebensindustrie, die die Wirtschaft der ganzen Insel ein halbes Jahr lang antreibt. Nicht nur eine Insel mit Discos: hier entstand ein großer Teil der modernen Clubkultur, mit Locations, die seit einem halben Jahrhundert aktiv sind.',
       zonas: [
-        { titulo: 'Playa d\'en Bossa', texto: 'Die intensivste Gegend der Insel der letzten Jahre, mit Ushuaïa und Hï Ibiza nur wenige Meter voneinander entfernt. Tagsueber Beachclubs und Pool-Partys, abends und nachts Open-Air-Shows und Clubbing auf Top-Niveau.' },
-        { titulo: 'San Antonio', texto: 'Guenstigere, legerere Gegend, Heimat des beruehmten Café del Mar, ein klassischer Sonnenuntergangs-Spot vor dem Ausgehen.' },
-        { titulo: 'Dalt Vila und Ibiza-Stadt', texto: 'Die Altstadt, UNESCO-Weltkulturerbe, mit Bars und ruhigerer Atmosphaere, bevor es zu den grossen Clubs ausserhalb der Stadt weitergeht.' },
+        { titulo: 'Playa d\'en Bossa', texto: 'Die intensivste Gegend der Insel der letzten Jahre, mit Ushuaïa und Hï Ibiza nur wenige Meter voneinander entfernt. Tagsüber Beachclubs und Pool-Partys, abends und nachts Open-Air-Shows und Clubbing auf Top-Niveau.' },
+        { titulo: 'San Antonio', texto: 'Günstigere, legerere Gegend, Heimat des berühmten Café del Mar, ein klassischer Sonnenuntergangs-Spot vor dem Ausgehen.' },
+        { titulo: 'Dalt Vila und Ibiza-Stadt', texto: 'Die Altstadt, UNESCO-Weltkulturerbe, mit Bars und ruhigerer Atmosphäre, bevor es zu den großen Clubs außerhalb der Stadt weitergeht.' },
       ],
-      temporada: 'Die Clubsaison auf Ibiza ist klar definiert: sie beginnt Ende April und laeuft bis Mitte Oktober, mit Opening- und Closing-Partys als groessten Terminen im Kalender. Ausserhalb dieser Zeit schliessen fast alle grossen Clubs komplett.',
-      discotecasFamosas: 'Pachá, seit 1973 geoeffnet, ist der einzige grosse Club der Insel, der das ganze Jahr ueber offen bleibt, und eine der bekanntesten Party-Marken weltweit. Amnesia, seit 1974 am selben Standort, wurde mehrfach zum besten Club der Welt gekuert. Ushuaïa, eroeffnet 2011 in Playa d\'en Bossa, ist die neueste der grossen Locations, ein Open-Air-Hotel-Club-Format. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
-      transporte: 'Waehrend der Hochsaison (Juni bis September) verkehrt ein naechtlicher Discobus mit speziellen Linien, die San Antonio, Ibiza-Stadt und die wichtigsten Clubs wie Amnesia, Pachá, Ushuaïa oder Hï Ibiza verbinden. Ausserhalb dieser Zeiten ist das Taxi die uebliche Option, wobei man direkt nach Clubschluss mit langen Wartezeiten rechnen sollte.',
-      precio: 'Ibizas Eintrittspreise gehoeren zu den hoechsten Spaniens: 30 bis 70 € bei Pachá, ab 55 € bei Amnesia und 45 bis 100 € bei Ushuaïa, je nach Event und Kuenstlern. Auch Getraenke sind teurer als im Rest des Landes, meist 16 bis 22 €.',
-      vestimenta: 'Der Dresscode variiert stark je nach Location und Party: manche Clubs erwarten einen gepflegten oder thematischen Look, waehrend die Beachclubs tagsueber Badekleidung-Territorium sind. Es lohnt sich, das konkrete Event vorher zu checken.',
-      seguridad: 'Als Insel mit starkem Touristenandrang und sehr grossen Locations sollte man in Schlangen und in den volleren Clubs auf seine Sachen achten. Der naechtliche Discobus und offizielle Taxis sind die sichersten Wege in den fruehen Morgenstunden; unlizenzierte Autos vor den Locations meiden.',
+      temporada: 'Die Clubsaison auf Ibiza ist klar definiert: sie beginnt Ende April und läuft bis Mitte Oktober, mit Opening- und Closing-Partys als größten Terminen im Kalender. Außerhalb dieser Zeit schließen fast alle großen Clubs komplett.',
+      discotecasFamosas: 'Pachá, seit 1973 geöffnet, ist der einzige große Club der Insel, der das ganze Jahr über offen bleibt, und eine der bekanntesten Party-Marken weltweit. Amnesia, seit 1974 am selben Standort, wurde mehrfach zum besten Club der Welt gekürt. Ushuaïa, eröffnet 2011 in Playa d\'en Bossa, ist die neueste der großen Locations, ein Open-Air-Hotel-Club-Format. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
+      transporte: 'Während der Hochsaison (Juni bis September) verkehrt ein nächtlicher Discobus mit speziellen Linien, die San Antonio, Ibiza-Stadt und die wichtigsten Clubs wie Amnesia, Pachá, Ushuaïa oder Hï Ibiza verbinden. Außerhalb dieser Zeiten ist das Taxi die übliche Option, wobei man direkt nach Clubschluss mit langen Wartezeiten rechnen sollte.',
+      precio: 'Ibizas Eintrittspreise gehören zu den höchsten Spaniens: 30 bis 70 € bei Pachá, ab 55 € bei Amnesia und 45 bis 100 € bei Ushuaïa, je nach Event und Künstlern. Auch Getränke sind teurer als im Rest des Landes, meist 16 bis 22 €.',
+      vestimenta: 'Der Dresscode variiert stark je nach Location und Party: manche Clubs erwarten einen gepflegten oder thematischen Look, während die Beachclubs tagsüber Badekleidung-Territorium sind. Es lohnt sich, das konkrete Event vorher zu checken.',
+      seguridad: 'Als Insel mit starkem Touristenandrang und sehr großen Locations sollte man in Schlangen und in den volleren Clubs auf seine Sachen achten. Der nächtliche Discobus und offizielle Taxis sind die sichersten Wege in den frühen Morgenstunden; unlizenzierte Autos vor den Locations meiden.',
     },
   },
   Amsterdam: {
@@ -763,18 +770,18 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'Amsterdam is a relatively safe city, but as in any busy tourist area it´s worth staying alert to pickpockets, especially keeping your phone and wallet in front pockets or zipped bags. Getting home by bike or night bus is the most common option among locals.',
     },
     de: {
-      intro: 'Amsterdam hat ein kompaktes, sehr fussgaengerfreundliches Nachtleben: die meisten Partyzonen liegen nahe am Zentrum und lassen sich zu Fuss verbinden. Eine Stadt mit internationaler Atmosphaere das ganze Jahr ueber, nicht nur im Sommer, mit einer etablierten Clubkultur innerhalb der europaeischen Electronic-Szene.',
+      intro: 'Amsterdam hat ein kompaktes, sehr fussgaengerfreundliches Nachtleben: die meisten Partyzonen liegen nahe am Zentrum und lassen sich zu Fuß verbinden. Eine Stadt mit internationaler Atmosphäre das ganze Jahr über, nicht nur im Sommer, mit einer etablierten Clubkultur innerhalb der europäischen Electronic-Szene.',
       zonas: [
-        { titulo: 'Leidseplein', texto: 'Die beliebteste Gegend zum Ausgehen, sowohl bei Locals als auch Touristen, mit Locations wie Melkweg und Paradiso. Gute Publikumsmischung und zentrale Lage, ideal ohne Wege ausserhalb des Zentrums.' },
-        { titulo: 'Rembrandtplein', texto: 'Einer der weiteren Plaetze mit viel Partystimmung, mit Escape als Anlaufpunkt und mehreren Cocktailbars drumherum.' },
-        { titulo: 'Red Light District (De Wallen)', texto: 'Jenseits seines Rufs gibt es hier auch eigene Bars und Nachtleben-Spots, mit einer anderen Atmosphaere als im Rest der Stadt.' },
+        { titulo: 'Leidseplein', texto: 'Die beliebteste Gegend zum Ausgehen, sowohl bei Locals als auch Touristen, mit Locations wie Melkweg und Paradiso. Gute Publikumsmischung und zentrale Lage, ideal ohne Wege außerhalb des Zentrums.' },
+        { titulo: 'Rembrandtplein', texto: 'Einer der weiteren Plätze mit viel Partystimmung, mit Escape als Anlaufpunkt und mehreren Cocktailbars drumherum.' },
+        { titulo: 'Red Light District (De Wallen)', texto: 'Jenseits seines Rufs gibt es hier auch eigene Bars und Nachtleben-Spots, mit einer anderen Atmosphäre als im Rest der Stadt.' },
       ],
-      temporada: 'Anders als Strandstaedte haelt Amsterdam sein Nachtleben das ganze Jahr ueber aktiv. Der Sommer bringt zusaetzliche Open-Air-Events und Festivals, aber die zentralen Clubs laufen zu jeder Jahreszeit normal weiter.',
-      discotecasFamosas: 'Jimmy Woo in Leidseplein ist bekannt fuer seine strenge Einlasspolitik und wurde fuer Innendesign und Sound ausgezeichnet. Melkweg und Paradiso, ebenfalls in Leidseplein, verbinden Live-Konzerte mit Clubnaechten. Escape in Rembrandtplein ist einer der grossen Namen des Platzes. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
-      transporte: 'Der oeffentliche Nahverkehr in Amsterdam stellt den Betrieb gegen 1:00 Uhr ein, daher haengt das naechtliche Fortbewegen vor allem vom Fahrrad ab (Leihraeder gibt es am Bahnhof) oder von Nachtbussen mit speziellen Linien wie N80, N81 oder N82 in die Aussenbezirke.',
-      precio: 'Der Clubeintritt in Amsterdam liegt meist bei 10 bis 20 €, Locations mit bekannten Acts koennen aber 25 bis 40 € oder mehr verlangen, besonders von Donnerstag bis Sonntag. Der Vorverkauf ist meist guenstiger als der Kauf an der Tuer.',
-      vestimenta: 'Der Dresscode in Amsterdam ist recht entspannt: kein Anzug noetig, aber Sneaker und Jogginganzuege sollte man meiden. Ein gepflegtes Hemd, eine ordentliche Hose oder gute Jeans reichen in den meisten Locations.',
-      seguridad: 'Amsterdam ist eine relativ sichere Stadt, aber wie in jeder belebten Touristengegend sollte man auf Taschendiebe achten, vor allem Handy und Portemonnaie in Vordertaschen oder verschlossenen Taschen tragen. Der Heimweg per Fahrrad oder Nachtbus ist unter Locals die gaengigste Option.',
+      temporada: 'Anders als Strandstädte hält Amsterdam sein Nachtleben das ganze Jahr über aktiv. Der Sommer bringt zusätzliche Open-Air-Events und Festivals, aber die zentralen Clubs laufen zu jeder Jahreszeit normal weiter.',
+      discotecasFamosas: 'Jimmy Woo in Leidseplein ist bekannt für seine strenge Einlasspolitik und wurde für Innendesign und Sound ausgezeichnet. Melkweg und Paradiso, ebenfalls in Leidseplein, verbinden Live-Konzerte mit Clubnächten. Escape in Rembrandtplein ist einer der großen Namen des Platzes. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
+      transporte: 'Der öffentliche Nahverkehr in Amsterdam stellt den Betrieb gegen 1:00 Uhr ein, daher hängt das nächtliche Fortbewegen vor allem vom Fahrrad ab (Leihräder gibt es am Bahnhof) oder von Nachtbussen mit speziellen Linien wie N80, N81 oder N82 in die Außenbezirke.',
+      precio: 'Der Clubeintritt in Amsterdam liegt meist bei 10 bis 20 €, Locations mit bekannten Acts können aber 25 bis 40 € oder mehr verlangen, besonders von Donnerstag bis Sonntag. Der Vorverkauf ist meist günstiger als der Kauf an der Tür.',
+      vestimenta: 'Der Dresscode in Amsterdam ist recht entspannt: kein Anzug nötig, aber Sneaker und Jogginganzüge sollte man meiden. Ein gepflegtes Hemd, eine ordentliche Hose oder gute Jeans reichen in den meisten Locations.',
+      seguridad: 'Amsterdam ist eine relativ sichere Stadt, aber wie in jeder belebten Touristengegend sollte man auf Taschendiebe achten, vor allem Handy und Portemonnaie in Vordertaschen oder verschlossenen Taschen tragen. Der Heimweg per Fahrrad oder Nachtbus ist unter Locals die gängigste Option.',
     },
   },
   // Barcelona todavia no tiene ningun club dado de alta en la base de datos,
@@ -813,19 +820,19 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'Barcelona is one of the safest cities in Europe for a night out, though petty theft is the most common risk in the busiest tourist areas, like Port Olímpic or El Gòtic: keep your phone and wallet in front pockets or zipped bags. NitBus includes an on-demand stop to drop solo travellers closer to their destination in the small hours.',
     },
     de: {
-      intro: 'Barcelona hat eine der vielseitigsten Clubszenen Spaniens, mit Locations von Indie und Rock bis zu ernsthaftem Techno, und einem Strandgebiet am Port Olímpic, das im Sommer wie ein eigenes Party-Viertel funktioniert. Eine Stadt mit das ganze Jahr ueber aktivem Nachtleben, nicht nur in der Strandsaison, mit sehr internationalem Publikum dank staendigem Tourismus.',
+      intro: 'Barcelona hat eine der vielseitigsten Clubszenen Spaniens, mit Locations von Indie und Rock bis zu ernsthaftem Techno, und einem Strandgebiet am Port Olímpic, das im Sommer wie ein eigenes Party-Viertel funktioniert. Eine Stadt mit das ganze Jahr über aktivem Nachtleben, nicht nur in der Strandsaison, mit sehr internationalem Publikum dank ständigem Tourismus.',
       zonas: [
-        { titulo: 'Port Olímpic und Barceloneta', texto: 'Die Club-Gegend am Meer, mit grossen, bei internationalen Touristen bekannten Locations. Klassische Nachtclub-Atmosphaere, mit Terrassen direkt am Strand und Sessions, die abends beginnen.' },
-        { titulo: 'Poblenou', texto: 'Ein ehemaliges Industrieviertel, heute Zentrum der alternativen Szene, mit Razzmatazz als Anlaufpunkt, der Indie, Techno, Pop und Urban Music in verschiedenen Raeumen im selben Gebaeude mischt.' },
+        { titulo: 'Port Olímpic und Barceloneta', texto: 'Die Club-Gegend am Meer, mit großen, bei internationalen Touristen bekannten Locations. Klassische Nachtclub-Atmosphäre, mit Terrassen direkt am Strand und Sessions, die abends beginnen.' },
+        { titulo: 'Poblenou', texto: 'Ein ehemaliges Industrieviertel, heute Zentrum der alternativen Szene, mit Razzmatazz als Anlaufpunkt, der Indie, Techno, Pop und Urban Music in verschiedenen Räumen im selben Gebäude mischt.' },
         { titulo: 'Poble Sec', texto: 'Heimat der Sala Apolo, einer historischen Location mit sehr abwechslungsreichem Programm aus Konzerten, Themenpartys und DJ-Sets, mit einer etwas eklektischeren Stimmung als am Strand.' },
-        { titulo: 'El Raval und El Gòtic', texto: 'Die Altstadt, mit Cocktailbars und kleineren Locations, ein guter Ort, um die Nacht zu beginnen, bevor es in einen groesseren Club geht.' },
+        { titulo: 'El Raval und El Gòtic', texto: 'Die Altstadt, mit Cocktailbars und kleineren Locations, ein guter Ort, um die Nacht zu beginnen, bevor es in einen größeren Club geht.' },
       ],
-      temporada: 'Barcelona haelt sein Clubprogramm das ganze Jahr ueber aktiv, anders als Staedte, in denen die Party von der Strandsaison abhaengt. Der Sommer bringt zusaetzlich Aussenterrassen und die Clubs am Port Olímpic mit touristischerer Stimmung, waehrend die Locations in Poblenou und Poble Sec auch im Winter auf Hochtouren laufen.',
-      discotecasFamosas: 'Razzmatazz in Poblenou ist einer der groessten Clubs der Stadt, mit fuenf verschiedenen Raeumen unter einem Dach, die je nach Abend Indie, Techno, Pop und Urban Music mischen. Sala Apolo in Poble Sec ist eine historische Location, die Live-Konzerte mit Clubnaechten verbindet. Am Strand decken Pacha Barcelona, Opium und Shoko einen grossen Teil der Club-Szene am Meer ab, zusammen mit Platz fuer mehrere Tausend Gaeste. Das Programm von Where We Go zeigt, was aktiv ist, sobald Locations hinzugefuegt werden.',
-      transporte: 'Barcelonas Nachtbusdienst (NitBus) hat ueber 20 Linien, alle mit gemeinsamer Haltestelle an der Plaça de Catalunya fuer einfaches Umsteigen, mit Ueberwachungskameras in der gesamten Flotte. Die Metro verlaengert ihre Betriebszeiten freitags und samstags bis 2:00 Uhr. Ausserhalb dieser Zeiten sind ein offizielles Taxi oder eine anerkannte Fahrdienst-App der schnellste Weg nach Hause.',
-      precio: 'Der Eintritt in die Strand-Clubs (Pacha, Opium, Shoko) liegt meist bei 20 bis 35 €, meist inklusive Getraenk und etwas guenstiger im Vorverkauf. Bei Locations wie Razzmatazz oder Sala Apolo variiert der Preis stark je nach Event.',
+      temporada: 'Barcelona hält sein Clubprogramm das ganze Jahr über aktiv, anders als Städte, in denen die Party von der Strandsaison abhängt. Der Sommer bringt zusätzlich Außenterrassen und die Clubs am Port Olímpic mit touristischerer Stimmung, während die Locations in Poblenou und Poble Sec auch im Winter auf Hochtouren laufen.',
+      discotecasFamosas: 'Razzmatazz in Poblenou ist einer der größten Clubs der Stadt, mit fünf verschiedenen Räumen unter einem Dach, die je nach Abend Indie, Techno, Pop und Urban Music mischen. Sala Apolo in Poble Sec ist eine historische Location, die Live-Konzerte mit Clubnächten verbindet. Am Strand decken Pacha Barcelona, Opium und Shoko einen großen Teil der Club-Szene am Meer ab, zusammen mit Platz für mehrere Tausend Gäste. Das Programm von Where We Go zeigt, was aktiv ist, sobald Locations hinzugefügt werden.',
+      transporte: 'Barcelonas Nachtbusdienst (NitBus) hat über 20 Linien, alle mit gemeinsamer Haltestelle an der Plaça de Catalunya für einfaches Umsteigen, mit Ueberwachungskameras in der gesamten Flotte. Die Metro verlängert ihre Betriebszeiten freitags und samstags bis 2:00 Uhr. Außerhalb dieser Zeiten sind ein offizielles Taxi oder eine anerkannte Fahrdienst-App der schnellste Weg nach Hause.',
+      precio: 'Der Eintritt in die Strand-Clubs (Pacha, Opium, Shoko) liegt meist bei 20 bis 35 €, meist inklusive Getränk und etwas günstiger im Vorverkauf. Bei Locations wie Razzmatazz oder Sala Apolo variiert der Preis stark je nach Event.',
       vestimenta: 'Die Strand-Clubs haben meist einen strengeren Dresscode, gepflegte Kleidung, keine Flip-Flops oder Badekleidung. Poblenou und Poble Sec sind deutlich entspannter und legerer.',
-      seguridad: 'Barcelona ist eine der sichersten Staedte Europas fuer einen Abend unterwegs, auch wenn Taschendiebstahl das haeufigste Risiko in den belebtesten Touristengegenden wie Port Olímpic oder El Gòtic ist: Handy und Portemonnaie in Vordertaschen oder verschlossenen Taschen tragen. NitBus bietet eine Haltestelle auf Anfrage, um Alleinreisende in den fruehen Morgenstunden naeher an ihr Ziel zu bringen.',
+      seguridad: 'Barcelona ist eine der sichersten Städte Europas für einen Abend unterwegs, auch wenn Taschendiebstahl das häufigste Risiko in den belebtesten Touristengegenden wie Port Olímpic oder El Gòtic ist: Handy und Portemonnaie in Vordertaschen oder verschlossenen Taschen tragen. NitBus bietet eine Haltestelle auf Anfrage, um Alleinreisende in den frühen Morgenstunden näher an ihr Ziel zu bringen.',
     },
   },
 }
@@ -856,15 +863,19 @@ export function zoneGuideHeadings(locale: string) {
       vestimenta: (z) => `What to wear to go out in ${z}`,
       seguridad: (z) => `Staying safe on a night out in ${z}`,
     },
+    // "auf Mallorca", no "in Mallorca": las islas llevan otra preposicion, y
+    // el titulo de la pagina (zoneMeta) ya usaba germanZonePrep mientras estos
+    // encabezados decian "in". Quedaba la incoherencia a la vista, en la misma
+    // pantalla, que es justo lo que delata una traduccion sin revisar.
     de: {
-      vidaNocturna: (z) => `Nachtleben in ${z}`,
-      zonas: (z) => `Wo man in ${z} feiern geht`,
-      temporada: (z) => `Wann man in ${z} feiern gehen sollte`,
-      discotecasFamosas: (z) => `Die bekanntesten Clubs in ${z}`,
-      transporte: (z) => `Nachts unterwegs in ${z}`,
-      precio: (z) => `Was ein Abend in ${z} kostet`,
-      vestimenta: (z) => `Was man in ${z} anzieht`,
-      seguridad: (z) => `Sicherheit beim Feiern in ${z}`,
+      vidaNocturna: (z) => `Nachtleben ${germanZonePrep(z)} ${z}`,
+      zonas: (z) => `Wo man ${germanZonePrep(z)} ${z} feiern geht`,
+      temporada: (z) => `Wann man ${germanZonePrep(z)} ${z} feiern gehen sollte`,
+      discotecasFamosas: (z) => `Die bekanntesten Clubs ${germanZonePrep(z)} ${z}`,
+      transporte: (z) => `Nachts unterwegs ${germanZonePrep(z)} ${z}`,
+      precio: (z) => `Was ein Abend ${germanZonePrep(z)} ${z} kostet`,
+      vestimenta: (z) => `Was man ${germanZonePrep(z)} ${z} anzieht`,
+      seguridad: (z) => `Sicherheit beim Feiern ${germanZonePrep(z)} ${z}`,
     },
   }
   return copy[locale] || copy[routing.defaultLocale]
@@ -1122,11 +1133,11 @@ const VACIOS: Record<string, {
     verAgenda: 'See all listings',
   },
   de: {
-    clubs: 'Keine Clubs verfuegbar.',
-    djs: 'Keine DJs verfuegbar.',
-    eventosFiltro: 'Keine Events fuer diese Auswahl.',
+    clubs: 'Keine Clubs verfügbar.',
+    djs: 'Keine DJs verfügbar.',
+    eventosFiltro: 'Keine Events für diese Auswahl.',
     clubsZona: 'Keine Clubs in dieser Gegend.',
-    djsBusqueda: 'Keine DJs fuer diese Suche.',
+    djsBusqueda: 'Keine DJs für diese Suche.',
     genero: (n) => `Aktuell sind keine ${n} Events geplant.`,
     verAgenda: 'Ganzes Programm ansehen',
   },
@@ -1227,13 +1238,13 @@ type DescPartes = { nombre: string; lugar?: string | null; eventos: number; prox
 const CLUB_DESC: Record<string, (p: DescPartes) => string> = {
   es: (p) => `Agenda de ${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'fiesta próxima' : 'fiestas próximas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Line-ups, entradas y cómo llegar.`,
   en: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''} listings: ${p.eventos} upcoming ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Line-ups, tickets and how to get there.`,
-  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'kommende Party' : 'kommende Partys'}${p.proxima ? `, die naechste am ${p.proxima}` : ''}. Line-ups, Tickets und Anfahrt.`,
+  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'kommende Party' : 'kommende Partys'}${p.proxima ? `, die nächste am ${p.proxima}` : ''}. Line-ups, Tickets und Anfahrt.`,
 }
 
 const DJ_DESC: Record<string, (p: DescPartes) => string> = {
   es: (p) => `${p.nombre}${p.lugar ? ` en ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'sesión anunciada' : 'sesiones anunciadas'}${p.proxima ? `, la siguiente el ${p.proxima}` : ''}. Fechas, salas y entradas.`,
   en: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} announced ${p.eventos === 1 ? 'set' : 'sets'}${p.proxima ? `, next one on ${p.proxima}` : ''}. Dates, venues and tickets.`,
-  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'angekuendigtes Set' : 'angekuendigte Sets'}${p.proxima ? `, das naechste am ${p.proxima}` : ''}. Termine, Clubs und Tickets.`,
+  de: (p) => `${p.nombre}${p.lugar ? ` in ${p.lugar}` : ''}: ${p.eventos} ${p.eventos === 1 ? 'angekündigtes Set' : 'angekündigte Sets'}${p.proxima ? `, das nächste am ${p.proxima}` : ''}. Termine, Clubs und Tickets.`,
 }
 
 function construir(
@@ -1336,8 +1347,8 @@ const RESUMEN_CLUB: Record<string, (p: {
     ? `${p.nombre} has ${p.eventos} announced ${p.eventos === 1 ? 'party' : 'parties'}${p.proxima ? `, the next one on ${p.proxima}` : ''}.`
     : `${p.nombre} has no announced parties right now.`,
   de: (p) => p.eventos > 0
-    ? `${p.nombre}: ${p.eventos === 1 ? '1 Party angekuendigt' : `${p.eventos} Partys angekuendigt`}${p.proxima ? `, die naechste am ${p.proxima}` : ''}.`
-    : `${p.nombre}: aktuell keine Partys angekuendigt.`,
+    ? `${p.nombre}: ${p.eventos === 1 ? '1 Party angekündigt' : `${p.eventos} Partys angekündigt`}${p.proxima ? `, die nächste am ${p.proxima}` : ''}.`
+    : `${p.nombre}: aktuell keine Partys angekündigt.`,
 }
 
 // Tres generos como mucho. La Santa tiene nueve dados de alta y la frase salia
@@ -1364,8 +1375,8 @@ const RESUMEN_DJ: Record<string, (p: {
     ? `${p.nombre} has ${p.eventos} announced ${p.eventos === 1 ? 'set' : 'sets'}${p.proxima ? `, the next one on ${p.proxima}` : ''}${p.club ? ` at ${p.club}` : ''}.`
     : `${p.nombre} has no announced sets right now.`,
   de: (p) => p.eventos > 0
-    ? `${p.nombre}: ${p.eventos === 1 ? '1 Set angekuendigt' : `${p.eventos} Sets angekuendigt`}${p.proxima ? `, das naechste am ${p.proxima}` : ''}${p.club ? ` im ${p.club}` : ''}.`
-    : `${p.nombre}: aktuell keine Sets angekuendigt.`,
+    ? `${p.nombre}: ${p.eventos === 1 ? '1 Set angekündigt' : `${p.eventos} Sets angekündigt`}${p.proxima ? `, das nächste am ${p.proxima}` : ''}${p.club ? ` im ${p.club}` : ''}.`
+    : `${p.nombre}: aktuell keine Sets angekündigt.`,
 }
 
 export function resumenDj(p: {
@@ -1389,7 +1400,7 @@ const RESUMEN_EVENTO: Record<string, (p: {
     ? `Tickets for ${p.nombre} can be booked from this page.`
     : `${p.nombre} has no online ticket booking yet.`,
   de: (p) => p.reserva
-    ? `Tickets fuer ${p.nombre} koennen ueber diese Seite gebucht werden.`
+    ? `Tickets für ${p.nombre} können über diese Seite gebucht werden.`
     : `Fuer ${p.nombre} gibt es noch keine Online-Ticketbuchung.`,
 }
 
