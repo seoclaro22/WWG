@@ -99,6 +99,33 @@ const nextConfig = {
       },
     ]
   },
+  // Fichas de club que Google tiene indexadas y hoy responden 404. La ficha
+  // viva existe, solo que con otra URL: sin redirect, cada impresion de estas
+  // termina en un error y la autoridad acumulada se pierde. Son 1.398
+  // impresiones en 90 dias.
+  //
+  // El redirect va aqui y no en la propia pagina porque el club de origen ya
+  // no se puede resolver: perro-negro quedo como duplicado sin aprobar (y por
+  // tanto no se sirve) y el UUID de Brokers se borro de la tabla, asi que
+  // fetchClub() no encuentra nada a lo que redirigir.
+  //
+  // OJO: si alguna vez se aprueban esos duplicados pendientes, estas reglas
+  // los dejarian inalcanzables. Lo correcto es borrarlos, no aprobarlos.
+  async redirects() {
+    const alias = [
+      // Duplicado creado el 5 sept 2026 y dejado en 'pending'.
+      ['perro-negro', 'perro-negro-madrid'],
+      // Slug anterior del mismo local, hoy 'brokers-valencia'.
+      ['brokers', 'brokers-valencia'],
+      // UUID de una ficha de Brokers ya borrada: Search Console confirma que
+      // posicionaba para "brokers valencia", "brokers pub" y variantes.
+      ['e8e74492-f837-429e-97b0-044156da4884', 'brokers-valencia'],
+    ]
+    return alias.flatMap(([viejo, nuevo]) => [
+      { source: `/club/${viejo}`, destination: `/club/${nuevo}`, permanent: true },
+      { source: `/:locale(en|de)/club/${viejo}`, destination: `/:locale/club/${nuevo}`, permanent: true },
+    ])
+  },
   images: {
     // Redimensionado en Supabase y no en el optimizador de Vercel: ese tiene
     // un tope de 5000 transformaciones al mes y al agotarse devuelve 402, que
