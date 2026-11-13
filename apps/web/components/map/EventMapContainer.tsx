@@ -6,6 +6,7 @@ import type { MapVenue } from '@/lib/map-data'
 import { KNOWN_ZONES } from '@/lib/map-data'
 import { VenueEventsDrawer } from './VenueEventsDrawer'
 import { haversineKm } from '@/lib/geo-client'
+import { nightRange, wallNowMs } from '@/lib/event-night'
 
 // Carga dinámica del mapa 3D para evitar errores de SSR
 const EventMap3D = dynamic(
@@ -70,20 +71,9 @@ export function EventMapContainer({ initialVenues, defaultZone = 'mallorca' }: E
 
   // 1. Filtrado de locales y sus eventos según Ciudad, Fechas, Género y Búsqueda
   const filteredVenues = useMemo(() => {
-    const now = new Date()
-    // Rangos de fecha en UTC para evaluar de forma exacta las fiestas según su fecha calendario
-    const todayStartUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-    const tomorrowStartUtc = todayStartUtc + 24 * 60 * 60 * 1000
-    const dayAfterTomorrowUtc = tomorrowStartUtc + 24 * 60 * 60 * 1000
-
-    // Fin de semana: Viernes a Domingo (0=Dom, 1=Lun, ..., 5=Vie, 6=Sáb)
-    const currentDay = now.getUTCDay()
-    const daysToFriday = currentDay === 0 ? -2 : currentDay === 6 ? -1 : currentDay === 5 ? 0 : 5 - currentDay
-    const weekendStartUtc = todayStartUtc + daysToFriday * 24 * 60 * 60 * 1000
-    const weekendEndUtc = weekendStartUtc + 3 * 24 * 60 * 60 * 1000 // Abarca viernes, sábado y domingo noche
-
-    // Próximos 7 días
-    const weekEndUtc = todayStartUtc + 7 * 24 * 60 * 60 * 1000
+    // Misma ventana que los chips de /descubrir: "hoy" es la noche en curso
+    // (hasta las 06:00 sigue siendo el dia anterior). Ver lib/event-night.ts.
+    const range = dateFilter === 'all' ? null : nightRange(dateFilter, wallNowMs())
 
     const result: MapVenue[] = []
 
@@ -109,15 +99,7 @@ export function EventMapContainer({ initialVenues, defaultZone = 'mallorca' }: E
       const matchingEvents = venue.events.filter((ev) => {
         // Filtro por Fecha
         const eventTime = new Date(ev.start_at).getTime()
-        if (dateFilter === 'today') {
-          if (eventTime < todayStartUtc || eventTime >= tomorrowStartUtc) return false
-        } else if (dateFilter === 'tomorrow') {
-          if (eventTime < tomorrowStartUtc || eventTime >= dayAfterTomorrowUtc) return false
-        } else if (dateFilter === 'weekend') {
-          if (eventTime < weekendStartUtc || eventTime >= weekendEndUtc) return false
-        } else if (dateFilter === 'week') {
-          if (eventTime < todayStartUtc || eventTime >= weekEndUtc) return false
-        }
+        if (range && (eventTime < range.fromMs || eventTime >= range.toMs)) return false
 
         // Filtro por Género
         if (selectedGenre !== 'all') {

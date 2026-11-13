@@ -48,7 +48,7 @@ export default async function WhenPage({ params }: { params: { locale: string; z
 
   const { title, eyebrow, intro, empty } = whenMeta(key, zoneName, params.locale)
   const { from, to } = whenRange(key)
-  const events = await fetchEvents({ zone: zoneName, from, to, limit: 60, sponsoredFirst: true, grace: key === 'today' })
+  const events = await fetchEvents({ zone: zoneName, from, to, limit: 60, sponsoredFirst: true })
 
   const dict = dictionaries[params.locale] || dictionaries[routing.defaultLocale]
   const other = WHEN_KEYS.filter((k) => k !== key)

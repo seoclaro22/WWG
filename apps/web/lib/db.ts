@@ -1,6 +1,7 @@
 import { getSupabaseClient } from '@/lib/supabase'
 import { isTimeoutError } from '@/lib/supabase-fetch'
 import { cachedRead, dedupedRead } from '@/lib/query-cache'
+import { DAY_MS, isStillOn, wallNowMs } from '@/lib/event-night'
 import type { EventPublic, Club } from './types'
 import { genreSlug } from '@/lib/hrefs'
 
@@ -53,12 +54,15 @@ function chunk<T>(items: T[], size = IN_CHUNK_SIZE): T[][] {
   return out
 }
 
-function normalizeEventFromDate(from?: string) {
-  const now = new Date()
-  if (!from) return now.toISOString()
-  const parsed = new Date(from)
-  if (Number.isNaN(parsed.getTime()) || parsed < now) return now.toISOString()
-  return from
+// Corte para la consulta: un dia entero por detras de la hora de Espana. Los
+// eventos de madrugada tienen el end_at guardado 24h antes de su final real
+// (ver lib/event-night.ts), asi que la base trae de mas y stillOn() afina.
+function stillOnCutoffIso(wallMs: number) {
+  return new Date(wallMs - DAY_MS).toISOString()
+}
+
+function stillOn<T extends { start_at: string; end_at?: string | null }>(rows: T[] | null | undefined, wallMs: number): T[] {
+  return (rows || []).filter((e) => isStillOn(e.start_at, e.end_at, wallMs))
 }
 
 // Un evento sigue siendo relevante mientras no haya terminado, no solo
@@ -100,12 +104,12 @@ export type FetchEventsParams = {
   genre?: string
   zone?: string
   sponsoredFirst?: boolean
-  grace?: boolean
 }
 
 async function loadEvents(params: FetchEventsParams): Promise<EventPublic[]> {
   const sb = getSupabaseClient()
-  const effectiveFrom = normalizeEventFromDate(params?.from)
+  const wallMs = wallNowMs()
+  const cutoff = stillOnCutoffIso(wallMs)
   let q = sb.from('events_public').select(EVENT_LIST_COLUMNS)
   if (params?.sponsoredFirst) {
     q = q.order('sponsored', { ascending: false }).order('start_at', { ascending: true })
@@ -116,13 +120,12 @@ async function loadEvents(params: FetchEventsParams): Promise<EventPublic[]> {
     // Búsqueda simple por nombre/desc/club
     q = q.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
   }
-  // Con "to" la llamada pide una ventana concreta (hoy, fin de semana, un dia
-  // del calendario). Por defecto ahi no hay margen para no desvirtuar la
-  // ventana, salvo que el llamador pida explicitamente "grace: true" (la
-  // pagina "hoy", que si debe incluir la cola de la noche anterior).
-  // Sin "to" es el listado general, donde el margen aplica siempre.
-  const applyGrace = params?.grace ?? !params?.to
-  q = applyStillOnFilter(q, effectiveFrom, applyGrace ? GRACE_MS : 0)
+  // Con "from" la llamada pide una ventana de dias (hoy, fin de semana...):
+  // se acota por start_at, que ya lleva el dia de la noche del evento. Sin
+  // "from" es el listado general. En los dos casos, lo que ya termino se
+  // quita despues con stillOn().
+  if (params?.from) q = q.gte('start_at', params.from)
+  else q = applyStillOnFilter(q, cutoff)
   if (params?.to) q = q.lte('start_at', params.to)
   if (params?.genre) q = q.contains('genres', [params.genre])
   if (params?.zone) q = (q as any).eq('zone', params.zone)
@@ -149,7 +152,8 @@ async function loadEvents(params: FetchEventsParams): Promise<EventPublic[]> {
       if (params?.q) {
         retryQ = retryQ.or(`name.ilike.%${params.q}%,description.ilike.%${params.q}%,club_name.ilike.%${params.q}%`)
       }
-      retryQ = applyStillOnFilter(retryQ, effectiveFrom, applyGrace ? GRACE_MS : 0)
+      if (params?.from) retryQ = retryQ.gte('start_at', params.from)
+      else retryQ = applyStillOnFilter(retryQ, cutoff)
       if (params?.to) retryQ = retryQ.lte('start_at', params.to)
       if (params?.genre) retryQ = retryQ.contains('genres', [params.genre])
       if (params?.zone && !zoneMissing) retryQ = (retryQ as any).eq('zone', params.zone)
@@ -162,7 +166,7 @@ async function loadEvents(params: FetchEventsParams): Promise<EventPublic[]> {
   // Lanza en vez de devolver []: un fallo cacheado dejaria la web vacia
   // durante todo el TTL. Ver lib/query-cache.ts.
   if (error) throw error
-  let events = (data || []) as unknown as EventPublic[]
+  let events = stillOn(data as unknown as EventPublic[], wallMs)
   events = events
     .map((e, i) => ({ e, i }))
     .sort((a, b) => {
@@ -435,9 +439,10 @@ export async function fetchEventLineup(eventId: string) {
 
 const readRelatedEvents = dedupedRead(async ({ eventId, genres, zone, limit }: { eventId: string; genres: string[] | null | undefined; zone: string | null | undefined; limit: number }) => {
   const sb = getSupabaseClient()
-  const nowIso = new Date().toISOString()
+  const wallMs = wallNowMs()
+  const cutoff = stillOnCutoffIso(wallMs)
   const base = () => {
-    let q = sb.from('events_public').select(EVENT_LIST_COLUMNS).neq('id', eventId).or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`).order('start_at', { ascending: true }).limit(limit)
+    let q = sb.from('events_public').select(EVENT_LIST_COLUMNS).neq('id', eventId).or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`).order('start_at', { ascending: true }).limit(limit)
     q = (q as any).eq('status', 'published')
     return q
   }
@@ -447,19 +452,22 @@ const readRelatedEvents = dedupedRead(async ({ eventId, genres, zone, limit }: {
   if (zone) {
     if (genres && genres.length) {
       const { data } = await (base() as any).eq('zone', zone).overlaps('genres', genres)
-      if (data?.length) return data as any[]
+      const on = stillOn(data as any[], wallMs)
+      if (on.length) return on
     }
     const { data } = await (base() as any).eq('zone', zone)
-    if (data?.length) return data as any[]
+    const on = stillOn(data as any[], wallMs)
+    if (on.length) return on
   }
   // Sin nada en la zona, cualquier alternativa va a estar lejos igual, asi
   // que al menos que coincida el estilo.
   if (genres && genres.length) {
     const { data } = await (base() as any).overlaps('genres', genres)
-    if (data?.length) return data as any[]
+    const on = stillOn(data as any[], wallMs)
+    if (on.length) return on
   }
   const { data } = await base()
-  return (data || []) as any[]
+  return stillOn(data as any[], wallMs)
 })
 
 export async function fetchRelatedEvents(eventId: string, genres: string[] | null | undefined, zone: string | null | undefined, limit = 4) {
@@ -677,12 +685,13 @@ export async function fetchClub(idOrSlug: string) {
 
 const readClubEvents = cachedRead('db-club-events', async ({ clubId, limit }: { clubId: string; limit: number }): Promise<EventPublic[]> => {
   const sb = getSupabaseClient()
-  const nowIso = new Date().toISOString()
+  const wallMs = wallNowMs()
+  const cutoff = stillOnCutoffIso(wallMs)
   let { data, error } = await sb
     .from('events_public')
     .select(EVENT_LIST_COLUMNS)
     .eq('club_id', clubId)
-    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+    .or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
     .eq('status', 'published')
     .order('start_at', { ascending: true })
     .limit(limit)
@@ -691,14 +700,14 @@ const readClubEvents = cachedRead('db-club-events', async ({ clubId, limit }: { 
       .from('events_public')
       .select('*')
       .eq('club_id', clubId)
-      .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+      .or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
       .order('start_at', { ascending: true })
       .limit(limit)
     data = retry.data as any
     error = retry.error as any
   }
   if (error) throw error
-  return (data || []) as unknown as EventPublic[]
+  return stillOn(data as unknown as EventPublic[], wallMs)
 })
 
 export async function fetchClubEvents(clubId: string, limit = 10) {
@@ -734,7 +743,8 @@ export async function fetchDj(idOrSlug: string) {
 
 const readDjEvents = cachedRead('db-dj-events', async ({ djId, limit }: { djId: string; limit: number }): Promise<EventPublic[]> => {
   const sb = getSupabaseClient()
-  const nowIso = new Date().toISOString()
+  const wallMs = wallNowMs()
+  const cutoff = stillOnCutoffIso(wallMs)
   const idsRes = await sb.from('event_djs').select('event_id').eq('dj_id', djId).order('position', { ascending: true })
   if (idsRes.error) throw idsRes.error
   const ids = (idsRes.data || []).map((r: any) => r.event_id)
@@ -743,7 +753,7 @@ const readDjEvents = cachedRead('db-dj-events', async ({ djId, limit }: { djId: 
     .from('events_public')
     .select(EVENT_LIST_COLUMNS)
     .in('id', ids)
-    .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+    .or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
     .eq('status', 'published')
     .order('start_at', { ascending: true })
     .limit(limit)
@@ -752,14 +762,14 @@ const readDjEvents = cachedRead('db-dj-events', async ({ djId, limit }: { djId: 
       .from('events_public')
       .select('*')
       .in('id', ids)
-      .or(`end_at.gte.${nowIso},and(end_at.is.null,start_at.gte.${nowIso})`)
+      .or(`end_at.gte.${cutoff},and(end_at.is.null,start_at.gte.${cutoff})`)
       .order('start_at', { ascending: true })
       .limit(limit)
     data = retry.data as any
     error = retry.error as any
   }
   if (error) throw error
-  return (data || []) as unknown as EventPublic[]
+  return stillOn(data as unknown as EventPublic[], wallMs)
 })
 
 export async function fetchDjEvents(djId: string, limit = 10) {

@@ -1,3 +1,4 @@
+import { nightRangeIso } from '@/lib/event-night'
 import { routing } from '@/i18n/routing'
 import { dictionaries } from '@/lib/dictionaries'
 
@@ -61,23 +62,10 @@ export function resolveWhenSlug(slug: string, locale: string): WhenKey | null {
 // Ventana temporal de la consulta.
 //
 // La noche no termina a medianoche: un evento que empieza el viernes a las
-// 23:30 pertenece al viernes, y uno de las 02:00 del sabado tambien. Por eso
-// ambos rangos cierran a las 06:00 y no a las 00:00.
-export function whenRange(key: WhenKey, now = new Date()) {
-  if (key === 'today') {
-    const to = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 6))
-    return { from: now.toISOString(), to: to.toISOString() }
-  }
-
-  // Fin de semana: viernes 18:00 -> lunes 06:00. Si ya estamos dentro de esa
-  // ventana devuelve el fin de semana en curso, no el siguiente.
-  const day = now.getUTCDay() // 0 domingo ... 5 viernes, 6 sabado
-  const daysToFriday = day === 0 ? -2 : 5 - day
-  const friday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysToFriday, 18))
-  const monday = new Date(friday.getTime())
-  monday.setUTCDate(monday.getUTCDate() + 3)
-  monday.setUTCHours(6, 0, 0, 0)
-  return { from: (friday > now ? friday : now).toISOString(), to: monday.toISOString() }
+// 23:30 pertenece al viernes, y uno de las 02:00 del sabado tambien. La
+// cuenta es la misma que usan los chips de /descubrir (lib/event-night.ts).
+export function whenRange(key: WhenKey) {
+  return nightRangeIso(key)
 }
 
 interface PageCopy {

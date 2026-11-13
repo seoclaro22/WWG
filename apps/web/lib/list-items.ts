@@ -1,4 +1,5 @@
 import { formatEventDate } from '@/lib/seo-pages'
+import { nightDayStartMs, nightRangeIso } from '@/lib/event-night'
 
 // Forma de las tarjetas de los listados largos.
 //
@@ -116,37 +117,22 @@ export const CATALOG_LIMIT = { events: 600, clubs: 300, djs: 900 } as const
 // encajan con los de arriba.
 export function rangeFromDateParam(dateParam?: string) {
   if (!dateParam) return {}
-  const now = new Date()
-  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59)
+  // "Hoy" es la noche en curso, no el dia del reloj: a las 02:00 del sabado
+  // sigue siendo viernes. Toda esa cuenta vive en lib/event-night.ts.
+  if (dateParam === 'today' || dateParam === 'tomorrow' || dateParam === 'weekend' || dateParam === 'week') {
+    return nightRangeIso(dateParam)
+  }
+  const startOfDay = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
+  const endOfDay = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59))
   let from: Date | undefined
   let to: Date | undefined
-  switch (dateParam) {
-    case 'today':
-      from = startOfDay(now); to = endOfDay(now); break
-    case 'tomorrow': {
-      const t = new Date(now); t.setDate(t.getDate() + 1); from = startOfDay(t); to = endOfDay(t); break
-    }
-    case 'weekend': {
-      const t = new Date(now)
-      const day = t.getDay()
-      const diffToFri = (5 - day + 7) % 7
-      const fri = new Date(t); fri.setDate(t.getDate() + diffToFri)
-      const sun = new Date(fri); sun.setDate(fri.getDate() + 2)
-      from = startOfDay(fri); to = endOfDay(sun); break
-    }
-    case 'week': {
-      from = startOfDay(now); const toD = new Date(now); toD.setDate(now.getDate() + 7); to = endOfDay(toD); break
-    }
-    case 'month': {
-      from = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
-      to = endOfDay(new Date(now.getFullYear(), now.getMonth() + 1, 0))
-      break
-    }
-    default: {
-      const parsed = new Date(dateParam)
-      if (!isNaN(parsed.getTime())) { from = startOfDay(parsed); to = endOfDay(parsed) }
-    }
+  if (dateParam === 'month') {
+    const today = new Date(nightDayStartMs())
+    from = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1))
+    to = endOfDay(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)))
+  } else {
+    const parsed = new Date(dateParam)
+    if (!isNaN(parsed.getTime())) { from = startOfDay(parsed); to = endOfDay(parsed) }
   }
   const fmt = (d?: Date) => (d ? d.toISOString() : undefined)
   return { from: fmt(from), to: fmt(to) }

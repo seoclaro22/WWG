@@ -36,7 +36,7 @@ async function loadActiveZones() {
       // y no tener nada hoy.
       const when = await Promise.all(WHEN_KEYS.map(async (k) => {
         const { from, to } = whenRange(k)
-        const found = await fetchEvents({ zone: name, from, to, limit: MIN_EVENTS_TO_INDEX, grace: k === 'today' })
+        const found = await fetchEvents({ zone: name, from, to, limit: MIN_EVENTS_TO_INDEX })
         return found.length >= MIN_EVENTS_TO_INDEX ? k : null
       }))
       return { slug, name, when: when.filter((k): k is typeof WHEN_KEYS[number] => k !== null) }

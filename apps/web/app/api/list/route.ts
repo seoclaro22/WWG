@@ -44,7 +44,6 @@ export async function GET(req: NextRequest) {
     q, from, to, genre, zone,
     limit: CATALOG_LIMIT.events,
     sponsoredFirst: true,
-    grace: date === 'today' ? true : undefined,
   })
   const slice = rows.slice(offset, upTo)
   return NextResponse.json({
