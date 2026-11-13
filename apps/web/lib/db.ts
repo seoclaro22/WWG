@@ -257,11 +257,40 @@ export async function countClubs(params?: { zone?: string }) {
 
 // Los DJs no tienen zona (son globales), asi que aqui no hay filtro que
 // aplicar: el total es el mismo se mire desde la ciudad que se mire.
+// Que DJs se ensenan en los listados.
+//
+// El extractor crea la ficha en cuanto ve el nombre en un cartel, a veces
+// antes de tener foto y a veces dos veces. Ninguna de las dos cosas debe
+// llegar al visitante: sin foto no sale, y de un mismo nombre sale una sola
+// ficha. La ficha sigue existiendo (los eventos la enlazan), solo no se lista.
+function djNameKey(name: string) {
+  return String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+function djHasPhoto(dj: any) {
+  return Array.isArray(dj?.images) && typeof dj.images[0] === 'string' && dj.images[0].trim() !== ''
+}
+
+function listableDjs<T extends { name: string }>(rows: T[] | null | undefined): T[] {
+  const seen = new Set<string>()
+  const out: T[] = []
+  for (const dj of rows || []) {
+    if (!djHasPhoto(dj)) continue
+    const key = djNameKey(dj.name)
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(dj)
+  }
+  return out
+}
+
+// El total es el de los DJs que se listan, no el de filas de la tabla, para
+// que el numero de la pestana coincida con lo que hay debajo.
 const readDjCount = cachedRead('db-djs-count', async (_params: Record<string, never>): Promise<number> => {
   const sb = getSupabaseClient()
-  const { count, error } = await withRetry<{ count: number | null; error: any }>(() => sb.from('djs').select('id', { count: 'exact', head: true }))
+  const { data, error } = await withRetry<{ data: any[] | null; error: any }>(() => sb.from('djs').select('name,images').limit(5000) as any)
   if (error) throw error
-  return count || 0
+  return listableDjs(data as any[]).length
 })
 
 export async function countDjs() {
@@ -372,10 +401,12 @@ const readDjsPublic = cachedRead('db-djs', async (params: { q?: string; limit?: 
     .order('name', { ascending: true })
   if (params?.q) q = q.ilike('name', `%${params.q}%`)
   if (params?.genre) q = (q as any).contains('genres', [params.genre])
-  if (params?.limit) q = q.limit(params.limit)
-  const { data, error } = await q
+  // El limite se aplica despues de filtrar: si se recortara en la consulta,
+  // los DJs sin foto ocuparian hueco y la lista saldria mas corta.
+  const { data, error } = await q.limit(5000)
   if (error) throw error
-  return (data || []) as any[]
+  const djs = listableDjs(data as any[])
+  return params?.limit ? djs.slice(0, params.limit) : djs
 })
 
 export async function fetchDjsPublic(params?: { q?: string; limit?: number; genre?: string }) {
@@ -915,13 +946,13 @@ const readSimilarDjPool = dedupedRead(async ({ currentId, genres }: { currentId:
     // overlap returns rows that share any of the provided genres
     q = (q as any).overlaps('genres', genres)
   }
-  const { data, error } = await q.limit(10)
+  const { data, error } = await q.limit(40)
   if (error) throw error
-  let pool = (data || []) as any[]
+  let pool = listableDjs(data as any[]).slice(0, 10)
   if (!pool.length) {
     // fallback: any other DJs
-    const { data: anyDjs } = await sb.from('djs').select('id,slug,name,genres,images').neq('id', currentId).limit(10)
-    pool = anyDjs || []
+    const { data: anyDjs } = await sb.from('djs').select('id,slug,name,genres,images').neq('id', currentId).limit(40)
+    pool = listableDjs(anyDjs as any[]).slice(0, 10)
   }
   return pool
 })
