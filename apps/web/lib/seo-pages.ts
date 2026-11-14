@@ -1272,6 +1272,31 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Entry €10-20. Strict dress code: no tank tops or flip-flops. Reggaeton Tue-Sun, techno on Fridays with LA CLANDESTINA.',
     de: 'Eintritt 10-20€. Strenger Dresscode: keine Trägershirts oder Flip-Flops. Reggaeton Di-So, freitags Techno mit LA CLANDESTINA.',
   },
+  'perro-negro-madrid': {
+    es: 'Reguetón colombiano en el barrio de Salamanca. Abre jueves, viernes y sábado de 00:00 a 06:00. Entrada desde 30€ con consumición. Metro Lista o Serrano.',
+    en: 'Colombian reggaeton in the Salamanca district. Open Thursday to Saturday, midnight to 6am. Entry from €30 with a drink. Metro Lista or Serrano.',
+    de: 'Kolumbianischer Reggaeton im Viertel Salamanca. Donnerstag bis Samstag von 0 bis 6 Uhr. Eintritt ab 30€ inklusive Getränk. Metro Lista oder Serrano.',
+  },
+  'koya-club': {
+    es: 'El antiguo Magic de S\'Arenal, en Playa de Palma. Afro house, latin tech y reguetón. Entrada en puerta desde 10€ y lista gratuita limitada en verano 2026.',
+    en: 'The former Magic in S\'Arenal, Playa de Palma. Afro house, Latin tech and reggaeton. Door entry from €10 and a limited free guest list in summer 2026.',
+    de: 'Das frühere Magic in S\'Arenal an der Playa de Palma. Afro House, Latin Tech und Reggaeton. Abendkasse ab 10€ und begrenzte Gästeliste im Sommer 2026.',
+  },
+  'calablava-beach-club': {
+    es: 'Piscina frente al mar, hamacas y camas balinesas a unos 20 minutos de Valencia. Cocina mediterránea y tardeo con DJ, de mayo a septiembre.',
+    en: 'Seafront pool, sunbeds and Balinese beds about 20 minutes from Valencia. Mediterranean food and afternoon DJ sessions, from May to September.',
+    de: 'Pool am Meer, Liegen und Balibetten rund 20 Minuten von Valencia. Mediterrane Küche und DJ-Sets am Nachmittag, von Mai bis September.',
+  },
+  'todos-santos': {
+    es: 'Entrada 25€ con consumición. Lista gratis para chicas hasta la 1:00. Mayores de 20, vestimenta casual. Jueves desde las 23:30, viernes y sábado a las 00:00.',
+    en: 'Entry €25 with a drink. Free guest list for women until 1am. Ages 20+, casual dress. Thursdays from 11:30pm, Fridays and Saturdays from midnight.',
+    de: 'Eintritt 25€ inklusive Getränk. Gästeliste für Frauen bis 1 Uhr gratis. Ab 20, Dresscode casual. Donnerstags ab 23:30, freitags und samstags ab 0 Uhr.',
+  },
+  'panama-jack-magaluf': {
+    es: 'Reguetón y música latina en la Strip de Magaluf. Abre cada día de 22:00 a 06:00 en temporada. Mayores de 18, vestimenta casual. Mesas VIP sin cola.',
+    en: 'Reggaeton and Latin music on the Magaluf Strip. Open daily 10pm to 6am in season. Ages 18+, casual dress. VIP tables with priority entry.',
+    de: 'Reggaeton und Latin am Strip von Magaluf. In der Saison täglich von 22 bis 6 Uhr. Ab 18 Jahren, Dresscode casual. VIP-Tische mit bevorzugtem Einlass.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -1505,6 +1530,115 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Was kostet der Eintritt bei La Santa?', a: 'Nach Kundenbewertungen liegt der Eintritt je nach Abend und Line-up meist zwischen 10 und 20€.' },
       { q: 'Welche Musik läuft bei La Santa?', a: 'Von Dienstag bis Sonntag laufen Reggaeton, Urban Music und aktuelle Charterfolge. Freitags übernimmt LA CLANDESTINA (Techno, Tech House und Deep House), und in der Hochsaison kommt montags OASiS Benicàssim dazu.' },
       { q: 'Wie sind Stimmung und Service bei La Santa?', a: 'Gäste erwähnen immer wieder gepflegten Sound und gepflegte Beleuchtung, eine durchdachte Dekoration und aufmerksames Personal, das auch an den vollsten Abenden schnell reagiert.' },
+    ],
+  },
+  'perro-negro-madrid': {
+    es: [
+      { q: '¿Qué días abre Perro Negro Madrid?', a: 'Abre jueves, viernes y sábado, de 00:00 a 06:00.' },
+      { q: '¿Cuánto cuesta la entrada en Perro Negro Madrid?', a: 'Según Time Out (febrero de 2025), la entrada parte de 30€ e incluye una consumición. El precio puede cambiar según la noche, así que conviene confirmarlo antes de ir.' },
+      { q: '¿Qué música suena en Perro Negro Madrid?', a: 'Reguetón colombiano y música urbana, con DJs residentes llegados de Medellín, la ciudad donde nació el club en 2017.' },
+      { q: '¿Cómo llegar a Perro Negro Madrid en metro?', a: 'Está en la calle Don Ramón de la Cruz, 28, en el barrio de Salamanca. Las estaciones más cercanas son Lista, Serrano y Velázquez (línea 4) y Núñez de Balboa (líneas 5 y 9).' },
+      { q: '¿Cómo es la sala de Perro Negro Madrid?', a: 'Es una sala pequeña, para unas 300 personas. Se entra por un pasillo estrecho de espejos que lleva a unas escaleras y a la pista, con la cabina del DJ al fondo y reservados VIP a ambos lados. Abrió el 14 de noviembre de 2024 como primera sede de la marca en Europa.' },
+    ],
+    en: [
+      { q: 'Which days is Perro Negro Madrid open?', a: 'It opens Thursday, Friday and Saturday, from midnight to 6am.' },
+      { q: 'How much is entry at Perro Negro Madrid?', a: 'According to Time Out (February 2025), entry starts at €30 and includes one drink. Prices can change from night to night, so check before you go.' },
+      { q: 'What music plays at Perro Negro Madrid?', a: 'Colombian reggaeton and urban music, with resident DJs from Medellín, the city where the club was founded in 2017.' },
+      { q: 'How do I get to Perro Negro Madrid by metro?', a: 'It is at Calle Don Ramón de la Cruz, 28, in the Salamanca district. The closest stations are Lista, Serrano and Velázquez (line 4) and Núñez de Balboa (lines 5 and 9).' },
+      { q: 'What is the venue like?', a: 'It is a small club for around 300 people. A narrow mirrored corridor leads to stairs and the dance floor, with the DJ booth at the back and VIP areas on both sides. It opened on 14 November 2024 as the brand\'s first venue in Europe.' },
+    ],
+    de: [
+      { q: 'An welchen Tagen hat Perro Negro Madrid geöffnet?', a: 'Geöffnet ist donnerstags, freitags und samstags von 0 bis 6 Uhr.' },
+      { q: 'Was kostet der Eintritt bei Perro Negro Madrid?', a: 'Laut Time Out (Februar 2025) kostet der Eintritt ab 30€ und enthält ein Getränk. Der Preis kann je nach Abend abweichen, vorher nachzusehen lohnt sich.' },
+      { q: 'Welche Musik läuft bei Perro Negro Madrid?', a: 'Kolumbianischer Reggaeton und Urban Music, mit Resident-DJs aus Medellín, wo der Club 2017 gegründet wurde.' },
+      { q: 'Wie komme ich mit der Metro zu Perro Negro Madrid?', a: 'Der Club liegt in der Calle Don Ramón de la Cruz, 28, im Viertel Salamanca. Die nächsten Stationen sind Lista, Serrano und Velázquez (Linie 4) sowie Núñez de Balboa (Linien 5 und 9).' },
+      { q: 'Wie ist der Club aufgebaut?', a: 'Es ist ein kleiner Club für rund 300 Personen. Ein schmaler, verspiegelter Gang führt über eine Treppe zur Tanzfläche, mit dem DJ-Pult am Ende und VIP-Bereichen auf beiden Seiten. Eröffnet wurde er am 14. November 2024 als erster Standort der Marke in Europa.' },
+    ],
+  },
+  'koya-club': {
+    es: [
+      { q: '¿Koya Club es el antiguo Magic de El Arenal?', a: 'Sí. Koya ocupa el local del antiguo Magic, en la Avenida Nacional, 21, en Playa de Palma (S\'Arenal).' },
+      { q: '¿Cuánto cuesta la entrada en Koya Club?', a: 'En las fiestas del verano de 2026 la entrada en puerta costaba 10€, con una lista gratuita de plazas limitadas. El precio depende de la fiesta y del promotor.' },
+      { q: '¿Qué música suena en Koya Club?', a: 'Afro house, latin tech, electro latino y reguetón, según los carteles de sus fiestas de 2026.' },
+      { q: '¿Cuándo abre Koya Club?', a: 'Funciona por temporada. Se estrenó el 4 de julio de 2026 y sus fiestas empezaban a las 23:45. Fuera del verano no siempre hay programación, así que conviene mirar la agenda antes de ir.' },
+    ],
+    en: [
+      { q: 'Is Koya Club the former Magic in El Arenal?', a: 'Yes. Koya took over the former Magic venue at Avenida Nacional, 21, in Playa de Palma (S\'Arenal).' },
+      { q: 'How much is entry at Koya Club?', a: 'At its summer 2026 parties, door entry was €10, with a limited free guest list. The price depends on the night and the promoter.' },
+      { q: 'What music plays at Koya Club?', a: 'Afro house, Latin tech, electro latino and reggaeton, according to its 2026 lineups.' },
+      { q: 'When is Koya Club open?', a: 'It runs seasonally. It opened on 4 July 2026 and its parties started at 11:45pm. Outside summer there is not always a programme, so check the listings before you go.' },
+    ],
+    de: [
+      { q: 'Ist der Koya Club das frühere Magic in El Arenal?', a: 'Ja. Koya hat die Räume des früheren Magic in der Avenida Nacional, 21, an der Playa de Palma (S\'Arenal) übernommen.' },
+      { q: 'Was kostet der Eintritt im Koya Club?', a: 'Bei den Partys im Sommer 2026 kostete der Eintritt an der Abendkasse 10€, dazu gab es eine begrenzte kostenlose Gästeliste. Der Preis hängt vom Abend und vom Veranstalter ab.' },
+      { q: 'Welche Musik läuft im Koya Club?', a: 'Afro House, Latin Tech, Electro Latino und Reggaeton, so die Line-ups von 2026.' },
+      { q: 'Wann hat der Koya Club geöffnet?', a: 'Der Club läuft saisonal. Eröffnet wurde er am 4. Juli 2026, die Partys begannen um 23:45 Uhr. Außerhalb des Sommers gibt es nicht immer Programm, ein Blick in den Kalender lohnt sich.' },
+    ],
+  },
+  'calablava-beach-club': {
+    es: [
+      { q: '¿Qué ofrece Calablava Beach Club?', a: 'Es un club de piscina frente al mar, con hamacas, camas balinesas y una zona VIP separada pensada para grupos. Está planteado para pasar el día entero.' },
+      { q: '¿Dónde está Calablava y a cuánto queda de Valencia?', a: 'En el Passeig del Port, 6, junto al puerto deportivo de la Pobla de Farnals, a unos veinte minutos de Valencia. La playa queda justo delante.' },
+      { q: '¿Se puede comer en Calablava Beach Club?', a: 'Sí. Tiene carta mediterránea, con arroces, que se puede pedir en la hamaca o en mesa con vistas al mar.' },
+      { q: '¿Cuándo es mejor ir a Calablava?', a: 'De mayo a septiembre. Las condiciones de acceso y de reserva cambian según la temporada, así que conviene confirmarlas con el club antes de ir.' },
+    ],
+    en: [
+      { q: 'What does Calablava Beach Club offer?', a: 'It is a seafront pool club with sunbeds, Balinese beds and a separate VIP area for groups. It is designed for spending the whole day.' },
+      { q: 'Where is Calablava and how far is it from Valencia?', a: 'At Passeig del Port, 6, next to the marina in La Pobla de Farnals, about twenty minutes from Valencia. The beach is right in front.' },
+      { q: 'Can you eat at Calablava Beach Club?', a: 'Yes. It has a Mediterranean menu, including rice dishes, served at your sunbed or at a table with sea views.' },
+      { q: 'When is the best time to go to Calablava?', a: 'From May to September. Access and booking conditions change with the season, so confirm them with the club before you go.' },
+    ],
+    de: [
+      { q: 'Was bietet der Calablava Beach Club?', a: 'Ein Poolclub direkt am Meer mit Liegen, Balibetten und einem separaten VIP-Bereich für Gruppen. Er ist darauf ausgelegt, den ganzen Tag dort zu verbringen.' },
+      { q: 'Wo liegt Calablava und wie weit ist es von Valencia?', a: 'Am Passeig del Port, 6, neben dem Yachthafen von La Pobla de Farnals, rund zwanzig Minuten von Valencia. Der Strand liegt direkt davor.' },
+      { q: 'Kann man im Calablava Beach Club essen?', a: 'Ja. Es gibt eine mediterrane Karte mit Reisgerichten, serviert an der Liege oder am Tisch mit Meerblick.' },
+      { q: 'Wann ist die beste Zeit für Calablava?', a: 'Von Mai bis September. Zugangs- und Reservierungsbedingungen ändern sich je nach Saison, am besten vorher beim Club nachfragen.' },
+    ],
+  },
+  'todos-santos': {
+    es: [
+      { q: '¿Cuánto cuesta la entrada en Todos Santos?', a: 'En su venta de entradas de septiembre de 2026, la entrada general costaba 25€ con una consumición. Entrando antes de la 1:30, esos 25€ incluían dos consumiciones.' },
+      { q: '¿Hay lista gratuita en Todos Santos?', a: 'Sí, para chicas: lista gratuita hasta la 1:00, sujeta a aforo.' },
+      { q: '¿Qué edad mínima y qué vestimenta piden en Todos Santos?', a: 'El acceso es para mayores de 20 años y el estilo indicado es casual, según su página de entradas.' },
+      { q: '¿Qué días abre Todos Santos?', a: 'Los jueves de 23:30 a 06:00, y viernes y sábado de 00:00 a 06:00. Está en la calle de Génova, 28.' },
+      { q: '¿Cuánto cuesta una mesa en Todos Santos?', a: 'Las mesas parten de 300€, según su página de entradas de septiembre de 2026.' },
+    ],
+    en: [
+      { q: 'How much is entry at Todos Santos?', a: 'On its September 2026 ticket listing, general entry was €25 with one drink. Arriving before 1:30am, the same €25 included two drinks.' },
+      { q: 'Is there a free guest list at Todos Santos?', a: 'Yes, for women: free guest list until 1am, subject to capacity.' },
+      { q: 'What are the minimum age and dress code at Todos Santos?', a: 'Entry is for ages 20 and over, and the listed style is casual, according to its ticket page.' },
+      { q: 'Which days is Todos Santos open?', a: 'Thursdays from 11:30pm to 6am, and Fridays and Saturdays from midnight to 6am. It is at Calle de Génova, 28.' },
+      { q: 'How much is a table at Todos Santos?', a: 'Tables start at €300, according to its September 2026 ticket page.' },
+    ],
+    de: [
+      { q: 'Was kostet der Eintritt im Todos Santos?', a: 'Im Ticketverkauf vom September 2026 kostete der normale Eintritt 25€ inklusive eines Getränks. Wer vor 1:30 Uhr kam, bekam für dieselben 25€ zwei Getränke.' },
+      { q: 'Gibt es im Todos Santos eine kostenlose Gästeliste?', a: 'Ja, für Frauen: kostenlose Gästeliste bis 1 Uhr, solange Kapazität vorhanden ist.' },
+      { q: 'Welches Mindestalter und welcher Dresscode gelten im Todos Santos?', a: 'Einlass ab 20 Jahren, der angegebene Stil ist casual, so die Ticketseite.' },
+      { q: 'An welchen Tagen hat Todos Santos geöffnet?', a: 'Donnerstags von 23:30 bis 6 Uhr, freitags und samstags von 0 bis 6 Uhr. Der Club liegt in der Calle de Génova, 28.' },
+      { q: 'Was kostet ein Tisch im Todos Santos?', a: 'Tische gibt es ab 300€, so die Ticketseite vom September 2026.' },
+    ],
+  },
+  'panama-jack-magaluf': {
+    es: [
+      { q: '¿Qué horario tiene Panama Jack Magaluf?', a: 'En temporada abre todos los días de 22:00 a 06:00.' },
+      { q: '¿Qué edad mínima y qué vestimenta piden en Panama Jack?', a: 'El acceso es para mayores de 18 años y el código de vestimenta es casual, según sus listados de eventos.' },
+      { q: '¿Qué música suena en Panama Jack Magaluf?', a: 'Sobre todo reguetón y música latina, con noches temáticas que cambian durante la semana. También suenan R&B y hip hop.' },
+      { q: '¿Cómo se consiguen entradas o mesa en Panama Jack?', a: 'Las entradas y la lista se gestionan por Fourvenues. El club ofrece mesas reservables con acceso prioritario, sin cola.' },
+      { q: '¿Dónde está Panama Jack Magaluf?', a: 'En la Avinguda de l\'Olivera, 13, en plena Strip de Magaluf, a pocos metros de BCM Mallorca.' },
+    ],
+    en: [
+      { q: 'What are the opening hours of Panama Jack Magaluf?', a: 'In season it opens every day from 10pm to 6am.' },
+      { q: 'What are the minimum age and dress code at Panama Jack?', a: 'Entry is for ages 18 and over and the dress code is casual, according to its event listings.' },
+      { q: 'What music plays at Panama Jack Magaluf?', a: 'Mainly reggaeton and Latin music, with themed nights that change through the week. You will also hear R&B and hip hop.' },
+      { q: 'How do I get tickets or a table at Panama Jack?', a: 'Tickets and guest list are handled through Fourvenues. The club offers bookable tables with priority entry, skipping the queue.' },
+      { q: 'Where is Panama Jack Magaluf?', a: 'At Avinguda de l\'Olivera, 13, right on the Magaluf Strip, a few metres from BCM Mallorca.' },
+    ],
+    de: [
+      { q: 'Welche Öffnungszeiten hat Panama Jack Magaluf?', a: 'In der Saison ist täglich von 22 bis 6 Uhr geöffnet.' },
+      { q: 'Welches Mindestalter und welcher Dresscode gelten im Panama Jack?', a: 'Einlass ab 18 Jahren, der Dresscode ist casual, so die Veranstaltungslisten des Clubs.' },
+      { q: 'Welche Musik läuft im Panama Jack Magaluf?', a: 'Vor allem Reggaeton und Latin, mit Mottoabenden, die im Lauf der Woche wechseln. Dazu kommen R&B und Hip-Hop.' },
+      { q: 'Wie bekomme ich Tickets oder einen Tisch im Panama Jack?', a: 'Tickets und Gästeliste laufen über Fourvenues. Der Club bietet reservierbare Tische mit bevorzugtem Einlass ohne Warteschlange.' },
+      { q: 'Wo liegt Panama Jack Magaluf?', a: 'In der Avinguda de l\'Olivera, 13, mitten am Strip von Magaluf, wenige Meter vom BCM Mallorca entfernt.' },
     ],
   },
 }
