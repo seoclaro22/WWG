@@ -18,18 +18,28 @@ export function homeCrumb(locale: string) {
 // sitemap y lleva noindex.
 export const MIN_EVENTS_TO_INDEX = 3
 
-// Sin puerta de calidad a proposito: se indexa cualquier DJ que exista.
+// Que fichas de DJ se ofrecen a Google.
+//
+// El extractor crea una ficha por cada nombre que ve en un cartel: unas 900,
+// por tres idiomas, y mas de la mitad sin foto. Ese volumen de paginas que son
+// un nombre sobre una plantilla es lo que llevo a Google a sacar del indice el
+// sitio entero en septiembre de 2026. Se indexa lo mismo que se lista en /djs
+// (la ficha con foto, ver listableDjs en db.ts) y, ademas, la que tiene
+// sesiones anunciadas. El resto sigue existiendo para quien llega desde el sitio.
 export function djIsIndexable(
-  dj: { id?: string | null; slug?: string | null; bio?: string | null; short_bio?: string | null } | null | undefined,
+  dj: { images?: unknown } | null | undefined,
   upcomingEvents: number,
 ) {
-  return Boolean(dj)
+  if (!dj) return false
+  if (upcomingEvents > 0) return true
+  return Array.isArray(dj.images) && typeof dj.images[0] === 'string' && dj.images[0].trim() !== ''
 }
 
-// Sin puerta de calidad a proposito: se indexa cualquier club que exista.
+// Los clubs se indexan todos, sin puerta de calidad: son el contenido
+// principal del sitio y pocos (menos de cien).
 export function clubIsIndexable(
-  club: { id?: string | null; slug?: string | null; description?: string | null; images?: unknown; logo_url?: string | null } | null | undefined,
-  upcomingEvents: number,
+  club: { id?: string | null } | null | undefined,
+  _upcomingEvents: number,
 ) {
   return Boolean(club)
 }
@@ -1248,22 +1258,6 @@ function construir(
   return respaldo ? recortar(respaldo) : ''
 }
 
-// Mismo motivo que en el titulo: sin agenda, construir() entrega el
-// respaldo (la descripcion informativa de la ficha) en frio, sin ningun
-// gancho de entradas/agenda. Se le antepone uno corto, igual que hace ya
-// CLUB_DESC cuando si hay eventos.
-//
-// Sin nombre ni lugar a proposito: el respaldo (la descripcion de la ficha)
-// ya empieza casi siempre con "[Nombre] es la discoteca de..." o similar, asi
-// que repetirlos aqui era gastar ~30 caracteres en decir dos veces lo mismo
-// dentro de un hueco de 155. Con el hook corto, el recorte llega mas lejos
-// dentro de la descripcion real antes de cortarse.
-const CLUB_DESC_HOOK: Record<string, (n: string, lugar: string | null) => string> = {
-  es: () => 'Entradas y agenda.',
-  en: () => 'Tickets and events.',
-  de: () => 'Tickets und Termine.',
-}
-
 // Snippet de busqueda curado por club, para cuando no hay agenda.
 //
 // El respaldo generico (la descripcion larga de la ficha) suele abrir con
@@ -1285,8 +1279,7 @@ export function clubMetaDescription(partes: DescPartes, locale: string, respaldo
     const curado = partes.slug ? CLUB_META_DESC[partes.slug]?.[locale] : null
     if (curado) return recortar(curado)
     if (!respaldo) return ''
-    const hook = CLUB_DESC_HOOK[locale] || CLUB_DESC_HOOK[routing.defaultLocale]
-    return recortar(`${hook(partes.nombre, partes.lugar || null)} ${respaldo}`)
+    return recortar(respaldo)
   }
   return construir(CLUB_DESC, partes, locale, respaldo)
 }
@@ -1459,15 +1452,12 @@ export function eventContentSummary(p: {
 // Groove | Where We Go" son 74 caracteres y Google corta sobre los 60. Un solo
 // genero es ademas lo que se busca de verdad ("dj tech house mallorca"), no la
 // lista entera.
-// "discoteca en X" describe la ficha, pero quien busca el nombre de un club
-// la noche antes de salir quiere entradas y lista, no una descripcion: en el
-// SERP de "la santa benicasim" los tres resultados por encima de esta ficha
-// llevan "Entradas, Listas & VIPs" / "Listas y Entradas" en el titulo. Se
-// alinea el titulo con esa intencion en vez de con la ficha.
+// El titulo describe la ficha. En septiembre de 2026 se cambio a "entradas y
+// agenda" en todas a la vez; se vuelve al formato con el que posicionaban.
 const TITULO_CLUB: Record<string, (n: string, lugar: string | null) => string> = {
-  es: (n, l) => `${n}: entradas y agenda${l ? ` en ${l}` : ''}`,
-  en: (n, l) => `${n}: tickets and events${l ? ` in ${l}` : ''}`,
-  de: (n, l) => `${n}: Tickets und Termine${l ? ` in ${l}` : ''}`,
+  es: (n, l) => `${n}: discoteca${l ? ` en ${l}` : ''}`,
+  en: (n, l) => `${n}: nightclub${l ? ` in ${l}` : ''}`,
+  de: (n, l) => `${n}: Club${l ? ` in ${l}` : ''}`,
 }
 
 export function tituloClub(nombre: string, lugar: string | null, locale: string) {

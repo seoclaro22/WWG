@@ -72,6 +72,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
 
   const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
   const path = zoneGenrePath(params.zone, genre, params.locale)
+  const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
   const images = ogImage({ eyebrow, title: `${genre} · ${zoneName}`, subtitle: description })
 
   return {
@@ -80,6 +81,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
     alternates: buildAlternatesFor((l) => zoneGenrePath(params.zone, genre, l), params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
+    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

@@ -87,7 +87,7 @@ async function indexableClubRows() {
 async function indexableDjRows() {
   const sb = getSupabaseClient()
   const [{ data }, withEvents] = await Promise.all([
-    sb.from('djs').select('id,slug,created_at,bio,short_bio').limit(1000),
+    sb.from('djs').select('id,slug,created_at,images').limit(1000),
     fetchDjIdsWithUpcomingEvents(),
   ])
   return (data || []).filter((d: any) => djIsIndexable(d, withEvents.has(d.id) ? 1 : 0))
