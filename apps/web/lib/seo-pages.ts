@@ -1297,6 +1297,51 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Reggaeton and Latin music on the Magaluf Strip. Open daily 10pm to 6am in season. Ages 18+, casual dress. VIP tables with priority entry.',
     de: 'Reggaeton und Latin am Strip von Magaluf. In der Saison täglich von 22 bis 6 Uhr. Ab 18 Jahren, Dresscode casual. VIP-Tische mit bevorzugtem Einlass.',
   },
+  'terraza-karau': {
+    es: 'Terraza en el jardín del Palacio de Linares, junto a Cibeles. Abre de miércoles a domingo desde las 17:00. Cócteles, picoteo y tardeo con DJ.',
+    en: 'Terrace in the garden of Palacio de Linares, next to Cibeles. Open Wednesday to Sunday from 5pm. Cocktails, small plates and afternoon DJ sessions.',
+    de: 'Terrasse im Garten des Palacio de Linares, direkt an der Plaza de Cibeles. Mittwoch bis Sonntag ab 17 Uhr. Cocktails, Snacks und DJ-Sets.',
+  },
+  'bcm-mallorca': {
+    es: 'Entrada entre 30 y 50€ según la noche. Mayores de 18 con documento original. Smart casual: sin chanclas ni ropa de playa. Abre de abril a septiembre.',
+    en: 'Entry €30-50 depending on the night. Ages 18+ with original ID. Smart casual: no flip-flops or beachwear. Open from April to September.',
+    de: 'Eintritt je nach Abend 30 bis 50€. Ab 18 mit Originalausweis. Smart casual: keine Flip-Flops oder Strandkleidung. Geöffnet von April bis September.',
+  },
+  'blvd-maritimo-club': {
+    es: 'En el Paseo Marítimo de Palma. Abre viernes y sábado de 23:45 a 06:00. Éxitos comerciales, reguetón y música latina, con las fiestas KAOS y EUPHORIA.',
+    en: "On Palma's Paseo Marítimo. Open Friday and Saturday, 11:45pm to 6am. Commercial hits, reggaeton and Latin music, with the KAOS and EUPHORIA parties.",
+    de: 'Am Paseo Marítimo in Palma. Freitag und Samstag von 23:45 bis 6 Uhr. Charthits, Reggaeton und Latin, dazu die Partys KAOS und EUPHORIA.',
+  },
+  'overclub': {
+    es: 'Techno y tech house en el polígono Son Rossinyol de Palma. Abre viernes y sábado desde las 23:00. El precio de la entrada depende del cartel.',
+    en: "Techno and tech house in Palma's Son Rossinyol industrial estate. Open Friday and Saturday from 11pm. Ticket prices depend on the lineup.",
+    de: 'Techno und Tech House im Gewerbegebiet Son Rossinyol in Palma. Freitag und Samstag ab 23 Uhr. Der Eintritt hängt vom Line-up ab.',
+  },
+  'calle-365': {
+    es: 'Speakeasy del Barrio de las Letras que cambia de país cada año. Se entra con la contraseña del mes. Abre a diario desde las 18:00. Metro Antón Martín.',
+    en: 'Speakeasy in Barrio de las Letras that switches country every year. You get in with the monthly password. Open daily from 6pm. Metro Antón Martín.',
+    de: 'Speakeasy im Barrio de las Letras, das jedes Jahr das Land wechselt. Einlass mit dem Passwort des Monats. Täglich ab 18 Uhr. Metro Antón Martín.',
+  },
+  'wave-club': {
+    es: 'Club del polígono Can Valero, en Palma. Los viernes, techno y house con R33 desde medianoche; el resto, reguetón. A 15 minutos en taxi del centro.',
+    en: "Club in Palma's Can Valero industrial estate. Fridays bring techno and house with R33 from midnight. Other nights, reggaeton. 15 minutes by taxi.",
+    de: 'Club im Gewerbegebiet Can Valero in Palma. Freitags Techno und House mit R33 ab Mitternacht, sonst Reggaeton. 15 Minuten mit dem Taxi vom Zentrum.',
+  },
+  'fitz-mallorca': {
+    es: 'El antiguo Tito\'s del Paseo Marítimo de Palma, reabierto en julio de 2026 por Grupo Sounds. House, tech house y música urbana. Vestimenta casual.',
+    en: "The former Tito's on Palma's Paseo Marítimo, reopened in July 2026 by Grupo Sounds. House, tech house and urban music. Casual dress code.",
+    de: 'Das frühere Tito\'s am Paseo Marítimo in Palma, im Juli 2026 von Grupo Sounds neu eröffnet. House, Tech House und Urban. Dresscode casual.',
+  },
+  'enredo-club': {
+    es: 'Club a pie de Paseo Marítimo, en Portopí. Abre viernes y sábado de 23:00 a 05:00. MENEO los sábados con reguetón y perreo; cumbia los viernes.',
+    en: "Club right on Palma's Paseo Marítimo, in Portopí. Open Friday and Saturday, 11pm to 5am. MENEO on Saturdays with reggaeton; cumbia on Fridays.",
+    de: 'Club direkt am Paseo Marítimo in Portopí. Freitag und Samstag von 23 bis 5 Uhr. Samstags MENEO mit Reggaeton, freitags Cumbia.',
+  },
+  'brokers-valencia': {
+    es: 'Bank Club en la Avenida de Francia, junto a la Ciudad de las Artes. Tardeo desde las 17:00 y noche hasta las 03:30, de jueves a domingo. Metro línea 10.',
+    en: 'Bank Club on Avenida de Francia, next to the City of Arts and Sciences. Afternoon sessions from 5pm, nights until 3:30am, Thursday to Sunday.',
+    de: 'Bank Club an der Avenida de Francia, neben der Stadt der Künste. Tardeo ab 17 Uhr, nachts bis 3:30 Uhr, Donnerstag bis Sonntag. Metro Linie 10.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -1639,6 +1684,201 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Welche Musik läuft im Panama Jack Magaluf?', a: 'Vor allem Reggaeton und Latin, mit Mottoabenden, die im Lauf der Woche wechseln. Dazu kommen R&B und Hip-Hop.' },
       { q: 'Wie bekomme ich Tickets oder einen Tisch im Panama Jack?', a: 'Tickets und Gästeliste laufen über Fourvenues. Der Club bietet reservierbare Tische mit bevorzugtem Einlass ohne Warteschlange.' },
       { q: 'Wo liegt Panama Jack Magaluf?', a: 'In der Avinguda de l\'Olivera, 13, mitten am Strip von Magaluf, wenige Meter vom BCM Mallorca entfernt.' },
+    ],
+  },
+  'terraza-karau': {
+    es: [
+      { q: '¿Dónde está la Terraza Karãu?', a: 'En el jardín del Palacio de Linares, sede de Casa de América, en el Paseo de Recoletos, 2. Queda junto a la plaza de Cibeles y la estación de metro más cercana es Banco de España (línea 2).' },
+      { q: '¿Qué días abre la Terraza Karãu?', a: 'De miércoles a domingo, desde las 17:00. El cierre cambia según el día y la fiesta, y al ser una terraza al aire libre la programación se concentra entre mayo y octubre. Conviene confirmar el horario antes de ir.' },
+      { q: '¿Hay que reservar en la Terraza Karãu?', a: 'Las mesas se reservan desde su web o por WhatsApp. Algunas sesiones son de acceso libre: el tardeo Madridterrãneo de junio de 2026, por ejemplo, se anunció como gratuito.' },
+      { q: '¿Qué música suena en la Terraza Karãu?', a: 'Lounge, deep house y soft house para la puesta de sol, con sesiones de tardeo y DJ invitados. En 2026 programó una White Party en mayo, los tardeos Madridterrãneo en verano y una fiesta de Halloween con disfraces.' },
+    ],
+    en: [
+      { q: 'Where is Terraza Karãu?', a: 'In the garden of Palacio de Linares, home of Casa de América, at Paseo de Recoletos, 2. It sits next to Plaza de Cibeles and the closest metro station is Banco de España (line 2).' },
+      { q: 'Which days is Terraza Karãu open?', a: 'Wednesday to Sunday, from 5pm. Closing time changes with the day and the event, and as an open-air terrace its programme runs mainly from May to October. Check the hours before you go.' },
+      { q: 'Do I need a reservation at Terraza Karãu?', a: 'Tables are booked through its website or by WhatsApp. Some sessions are free to enter: the Madridterrãneo afternoon party in June 2026, for example, was announced as free.' },
+      { q: 'What music plays at Terraza Karãu?', a: 'Lounge, deep house and soft house for sunset, with afternoon sessions and guest DJs. In 2026 it hosted a White Party in May, the Madridterrãneo afternoon parties in summer and a costume Halloween party.' },
+    ],
+    de: [
+      { q: 'Wo liegt die Terraza Karãu?', a: 'Im Garten des Palacio de Linares, Sitz der Casa de América, am Paseo de Recoletos, 2. Sie liegt direkt an der Plaza de Cibeles, die nächste Metrostation ist Banco de España (Linie 2).' },
+      { q: 'An welchen Tagen hat die Terraza Karãu geöffnet?', a: 'Mittwoch bis Sonntag ab 17 Uhr. Die Schließzeit hängt vom Tag und von der Veranstaltung ab, und als Open-Air-Terrasse läuft das Programm vor allem von Mai bis Oktober. Die Zeiten vorher zu prüfen lohnt sich.' },
+      { q: 'Muss man in der Terraza Karãu reservieren?', a: 'Tische werden über die Website oder per WhatsApp reserviert. Manche Sessions sind frei zugänglich: Der Tardeo Madridterrãneo im Juni 2026 wurde zum Beispiel als kostenlos angekündigt.' },
+      { q: 'Welche Musik läuft in der Terraza Karãu?', a: 'Lounge, Deep House und Soft House zum Sonnenuntergang, mit Tardeo-Sessions und Gast-DJs. 2026 gab es im Mai eine White Party, im Sommer die Madridterrãneo-Tardeos und eine Halloween-Party mit Kostümen.' },
+    ],
+  },
+  'bcm-mallorca': {
+    es: [
+      { q: '¿Cuánto cuesta la entrada en BCM Mallorca?', a: 'Según mallorca.com, la entrada estándar suele costar entre 30 y 50€ y algunas incluyen bebidas. En taquilla la misma noche suele ser más cara, y los grandes carteles se agotan con días de antelación. Las mesas VIP parten de unos 100€ por persona.' },
+      { q: '¿Cuál es la edad mínima para entrar en BCM?', a: 'Hay que tener 18 años y enseñar un documento original en vigor: DNI, pasaporte o carné de conducir. No aceptan fotos ni copias en el móvil.' },
+      { q: '¿Hay código de vestimenta en BCM Mallorca?', a: 'Smart casual. Chanclas, ropa de playa y chándal no pasan la puerta, y las noches de cabeza de cartel y las zonas VIP son más exigentes.' },
+      { q: '¿Cuándo abre BCM Mallorca?', a: 'Abre sobre todo en verano, de abril a septiembre aproximadamente. Las puertas suelen abrir entre las 22:00 y las 23:00 y el cierre llega entre las 05:00 y las 06:00, según el evento. Fuera de temporada programa fechas sueltas, como Navidad y Nochevieja.' },
+      { q: '¿Qué salas tiene BCM y cómo se llega?', a: 'Tiene una pista principal de varias plantas, la planta Millennium, conocida por sus fiestas de la espuma, y una zona exterior. Está en la Avinguda de l\'Olivera de Magaluf, a unos 20 o 25 minutos en coche de Palma. Al cierre se forman colas de taxis, así que conviene tener prevista la vuelta.' },
+    ],
+    en: [
+      { q: 'How much is entry at BCM Mallorca?', a: 'According to mallorca.com, a standard ticket usually costs between €30 and €50 and some include drinks. Buying at the door on the night tends to cost more, and big lineups sell out days ahead. VIP tables start at around €100 per person.' },
+      { q: 'What is the minimum age at BCM?', a: 'You must be 18 and show a valid original document: national ID, passport or driving licence. Photos and copies on your phone are not accepted.' },
+      { q: 'Is there a dress code at BCM Mallorca?', a: 'Smart casual. Flip-flops, beachwear and tracksuits are turned away at the door, and headliner nights and VIP areas are stricter.' },
+      { q: 'When is BCM Mallorca open?', a: 'Mainly in summer, roughly from April to September. Doors usually open between 10pm and 11pm and closing comes between 5am and 6am, depending on the event. Out of season it runs one-off dates such as Christmas and New Year\'s Eve.' },
+      { q: 'What rooms does BCM have and how do I get there?', a: 'There is a multi-level main floor, the Millennium level, known for its foam parties, and an outdoor area. It is on Avinguda de l\'Olivera in Magaluf, about 20 to 25 minutes by car from Palma. Taxi queues build up at closing time, so plan your way back.' },
+    ],
+    de: [
+      { q: 'Was kostet der Eintritt im BCM Mallorca?', a: 'Laut mallorca.com kostet ein Standardticket meist zwischen 30 und 50€, teils inklusive Getränken. An der Abendkasse ist es in der Regel teurer, und große Line-ups sind Tage vorher ausverkauft. VIP-Tische beginnen bei rund 100€ pro Person.' },
+      { q: 'Wie alt muss man für das BCM sein?', a: 'Einlass ab 18 Jahren mit gültigem Originaldokument: Personalausweis, Reisepass oder Führerschein. Fotos und Kopien auf dem Handy werden nicht akzeptiert.' },
+      { q: 'Gibt es im BCM Mallorca einen Dresscode?', a: 'Smart casual. Flip-Flops, Strandkleidung und Trainingsanzüge kommen nicht durch die Tür, bei Headliner-Abenden und in den VIP-Bereichen wird strenger kontrolliert.' },
+      { q: 'Wann hat das BCM Mallorca geöffnet?', a: 'Vor allem im Sommer, etwa von April bis September. Einlass ist meist zwischen 22 und 23 Uhr, Schluss zwischen 5 und 6 Uhr, je nach Veranstaltung. Außerhalb der Saison gibt es einzelne Termine wie Weihnachten und Silvester.' },
+      { q: 'Welche Bereiche hat das BCM und wie kommt man hin?', a: 'Es gibt eine Hauptfläche über mehrere Ebenen, die Millennium-Ebene, bekannt für ihre Schaumpartys, und einen Außenbereich. Der Club liegt an der Avinguda de l\'Olivera in Magaluf, etwa 20 bis 25 Autominuten von Palma. Nach Schluss bilden sich Taxischlangen, die Rückfahrt sollte man also einplanen.' },
+    ],
+  },
+  'blvd-maritimo-club': {
+    es: [
+      { q: '¿Qué días abre BLVD Marítimo Club?', a: 'Viernes y sábado, de 23:45 a 06:00.' },
+      { q: '¿Qué música suena en BLVD Marítimo Club?', a: 'Éxitos comerciales, dance, reguetón y música latina. La programación se organiza por fiestas: los sábados de noviembre de 2026 los ocupan KAOS x BLVD y EUPHORIA.' },
+      { q: '¿Hay sesiones para menores de 18 en BLVD Marítimo?', a: 'Algunas fiestas, como EUPHORIA, se anuncian para mayores de 16. La edad mínima cambia con cada sesión, así que conviene mirarla en la ficha del evento antes de comprar.' },
+      { q: '¿Dónde está BLVD Marítimo Club?', a: 'En la Avinguda de Gabriel Roca, 29, en pleno Paseo Marítimo de Palma, a pocos pasos de otros clubs de la zona como Fitz Mallorca. Se puede llegar andando desde el centro bordeando el puerto, y hay taxis en el propio paseo.' },
+    ],
+    en: [
+      { q: 'Which days is BLVD Marítimo Club open?', a: 'Friday and Saturday, from 11:45pm to 6am.' },
+      { q: 'What music plays at BLVD Marítimo Club?', a: 'Commercial hits, dance, reggaeton and Latin music. The programme is built around parties: in November 2026, Saturdays belong to KAOS x BLVD and EUPHORIA.' },
+      { q: 'Are there under-18 sessions at BLVD Marítimo?', a: 'Some parties, such as EUPHORIA, are announced for ages 16 and over. The minimum age changes with each session, so check the event page before buying.' },
+      { q: 'Where is BLVD Marítimo Club?', a: "At Avinguda de Gabriel Roca, 29, right on Palma's Paseo Marítimo, a short walk from other clubs in the area such as Fitz Mallorca. You can walk from the centre along the harbour, and there are taxis on the promenade itself." },
+    ],
+    de: [
+      { q: 'An welchen Tagen hat der BLVD Marítimo Club geöffnet?', a: 'Freitag und Samstag von 23:45 bis 6 Uhr.' },
+      { q: 'Welche Musik läuft im BLVD Marítimo Club?', a: 'Charthits, Dance, Reggaeton und Latin. Das Programm besteht aus festen Partys: Im November 2026 gehören die Samstage KAOS x BLVD und EUPHORIA.' },
+      { q: 'Gibt es im BLVD Marítimo Partys für unter 18-Jährige?', a: 'Einige Partys, etwa EUPHORIA, sind ab 16 Jahren angekündigt. Das Mindestalter wechselt je nach Abend, ein Blick auf die Veranstaltungsseite vor dem Kauf lohnt sich.' },
+      { q: 'Wo liegt der BLVD Marítimo Club?', a: 'In der Avinguda de Gabriel Roca, 29, direkt am Paseo Marítimo in Palma, wenige Schritte von anderen Clubs wie Fitz Mallorca entfernt. Vom Zentrum aus läuft man am Hafen entlang, Taxis stehen an der Promenade.' },
+    ],
+  },
+  'overclub': {
+    es: [
+      { q: '¿Qué música suena en Overclub?', a: 'Sobre todo techno y tech house, con nombres internacionales que traen promotoras como VANNDAL, GOODLIFE, DISORDER 360º y OVERLOAD. Los jueves, PARAO va rotando de estilo, del reguetón antiguo al tech house, y hay fechas sueltas de otros estilos, como remember o makina.' },
+      { q: '¿Cuánto cuesta la entrada en Overclub?', a: 'Depende de la fiesta. Como referencia, LA DEMENCE de octubre de 2026 vendía la entrada general con consumición entre 20 y 35€, según la hora de llegada, y mesas en zona VIP desde 250€.' },
+      { q: '¿Cuál es la edad mínima en Overclub?', a: 'Las fiestas de electrónica se anuncian para mayores de 18. Cada promotora fija sus condiciones, así que conviene revisar la ficha del evento.' },
+      { q: '¿Cómo llegar a Overclub y dónde aparcar?', a: 'Está en la calle Gremi de Passamaners, 17, en el polígono Son Rossinyol, al norte de Palma. Suele haber aparcamiento en las calles del polígono, aunque lo más cómodo para volver de madrugada es el taxi desde el centro.' },
+      { q: '¿Qué días abre Overclub?', a: 'Viernes y sábado desde las 23:00 hasta las 06:00, con algunas sesiones de tarde los fines de semana.' },
+    ],
+    en: [
+      { q: 'What music plays at Overclub?', a: 'Mostly techno and tech house, with international names brought in by promoters such as VANNDAL, GOODLIFE, DISORDER 360º and OVERLOAD. On Thursdays PARAO rotates styles, from old-school reggaeton to tech house, and there are one-off nights in other styles such as remember or makina.' },
+      { q: 'How much is entry at Overclub?', a: 'It depends on the party. As a reference, LA DEMENCE in October 2026 sold general admission with a drink for €20 to €35, depending on arrival time, and VIP area tables from €250.' },
+      { q: 'What is the minimum age at Overclub?', a: 'Electronic music nights are announced for ages 18 and over. Each promoter sets its own terms, so check the event page.' },
+      { q: 'How do I get to Overclub and where can I park?', a: 'It is at Calle Gremi de Passamaners, 17, in the Son Rossinyol industrial estate, north of Palma. There is usually street parking in the estate, though a taxi from the centre is the easiest way back in the early hours.' },
+      { q: 'Which days is Overclub open?', a: 'Friday and Saturday from 11pm to 6am, with some afternoon sessions at weekends.' },
+    ],
+    de: [
+      { q: 'Welche Musik läuft im Overclub?', a: 'Vor allem Techno und Tech House, mit internationalen Namen, die Veranstalter wie VANNDAL, GOODLIFE, DISORDER 360º und OVERLOAD holen. Donnerstags wechselt PARAO den Stil, von Oldschool-Reggaeton bis Tech House, dazu kommen einzelne Abende mit Remember oder Makina.' },
+      { q: 'Was kostet der Eintritt im Overclub?', a: 'Das hängt von der Party ab. Als Anhaltspunkt: LA DEMENCE im Oktober 2026 kostete im allgemeinen Eintritt mit Getränk je nach Ankunftszeit 20 bis 35€, Tische im VIP-Bereich gab es ab 250€.' },
+      { q: 'Wie alt muss man für den Overclub sein?', a: 'Die Elektro-Nächte sind ab 18 Jahren angekündigt. Jeder Veranstalter legt seine Bedingungen fest, ein Blick auf die Veranstaltungsseite lohnt sich.' },
+      { q: 'Wie komme ich zum Overclub und wo kann ich parken?', a: 'Der Club liegt in der Calle Gremi de Passamaners, 17, im Gewerbegebiet Son Rossinyol im Norden von Palma. In den Straßen des Gebiets findet man meist einen Parkplatz, für die Rückfahrt am frühen Morgen ist das Taxi aus dem Zentrum aber am bequemsten.' },
+      { q: 'An welchen Tagen hat der Overclub geöffnet?', a: 'Freitag und Samstag von 23 bis 6 Uhr, am Wochenende teils auch mit Nachmittags-Sessions.' },
+    ],
+  },
+  'calle-365': {
+    es: [
+      { q: '¿Cómo se entra en Calle 365?', a: 'El local está oculto tras una puerta en la calle Echegaray, 18. Para pasar hay que decir la contraseña del mes, que publican en su Instagram (@calle_365).' },
+      { q: '¿Se puede reservar en Calle 365?', a: 'Según Time Out, no admite reservas como tal, pero puedes apuntarte a su guest list, que además da descuento en la entrada. El precio cambia según el evento de cada noche y es habitual tener que esperar para entrar.' },
+      { q: '¿Qué temática tiene Calle 365?', a: 'Cambia cada año: el callejón se redecora por completo y estrena carta de cócteles para llevarte a un país distinto. Ha pasado por México, Colombia, India y Brasil.' },
+      { q: '¿Qué horario tiene Calle 365?', a: 'Abre todos los días a las 18:00. De domingo a jueves cierra a las 03:00 y los viernes y sábados a las 03:30.' },
+      { q: '¿Cómo llegar a Calle 365 en metro?', a: 'Está en el Barrio de las Letras. Las estaciones más cercanas son Antón Martín (línea 1), Sevilla (línea 2) y Sol (líneas 1, 2 y 3, además de Cercanías).' },
+    ],
+    en: [
+      { q: 'How do you get into Calle 365?', a: 'The venue is hidden behind a door at Calle Echegaray, 18. To get in you have to give the monthly password, which is posted on its Instagram (@calle_365).' },
+      { q: 'Can I book at Calle 365?', a: 'According to Time Out, it does not take reservations as such, but you can sign up for its guest list, which also gives a discount on entry. The price changes with each night\'s event and queuing to get in is common.' },
+      { q: 'What is the theme at Calle 365?', a: 'It changes every year: the alley is fully redecorated and gets a new cocktail menu to take you to a different country. So far it has been Mexico, Colombia, India and Brazil.' },
+      { q: 'What are the opening hours of Calle 365?', a: 'It opens every day at 6pm. Sunday to Thursday it closes at 3am, and on Fridays and Saturdays at 3:30am.' },
+      { q: 'How do I get to Calle 365 by metro?', a: 'It is in Barrio de las Letras. The closest stations are Antón Martín (line 1), Sevilla (line 2) and Sol (lines 1, 2 and 3, plus Cercanías trains).' },
+    ],
+    de: [
+      { q: 'Wie kommt man ins Calle 365?', a: 'Das Lokal versteckt sich hinter einer Tür in der Calle Echegaray, 18. Für den Einlass braucht man das Passwort des Monats, das auf Instagram (@calle_365) veröffentlicht wird.' },
+      { q: 'Kann man im Calle 365 reservieren?', a: 'Laut Time Out gibt es keine klassischen Reservierungen, man kann sich aber auf die Gästeliste setzen lassen, die auch einen Rabatt auf den Eintritt bringt. Der Preis hängt von der jeweiligen Veranstaltung ab, Wartezeiten am Einlass sind üblich.' },
+      { q: 'Welches Motto hat das Calle 365?', a: 'Es wechselt jedes Jahr: Die Gasse wird komplett neu dekoriert und bekommt eine neue Cocktailkarte, die in ein anderes Land führt. Bisher waren es Mexiko, Kolumbien, Indien und Brasilien.' },
+      { q: 'Welche Öffnungszeiten hat das Calle 365?', a: 'Geöffnet ist täglich ab 18 Uhr. Sonntag bis Donnerstag bis 3 Uhr, freitags und samstags bis 3:30 Uhr.' },
+      { q: 'Wie komme ich mit der Metro zum Calle 365?', a: 'Es liegt im Barrio de las Letras. Die nächsten Stationen sind Antón Martín (Linie 1), Sevilla (Linie 2) und Sol (Linien 1, 2 und 3 sowie Cercanías).' },
+    ],
+  },
+  'wave-club': {
+    es: [
+      { q: '¿Qué es R33 en Wave Club?', a: 'Es la noche de electrónica de los viernes: house y techno underground con artistas internacionales y cartel nuevo cada semana, desde medianoche hasta el amanecer.' },
+      { q: '¿Qué música suena en Wave Club el resto de noches?', a: 'Fuera de los viernes de R33, la programación gira hacia el reguetón y la música urbana, con sesiones de perreo y fiestas temáticas.' },
+      { q: '¿Cuánto cuesta la entrada en Wave Club?', a: 'Depende de la sesión. Como referencia, una fecha de R33 se vendió desde 15€ en preventa anticipada hasta 40€ a última hora, sin consumición. Comprar por adelantado sale más barato y evita cola.' },
+      { q: '¿Dónde está Wave Club y cómo se llega?', a: 'En el Carrer Poima, 24, en el polígono Can Valero, a las afueras de Palma. Desde el centro son unos 15 minutos en taxi, que es la forma más práctica de ir y volver de madrugada.' },
+      { q: '¿Cómo es la sala de Wave Club?', a: 'Tiene una sala principal para unas 500 personas, de estética industrial y con grandes pantallas LED, y una terraza para cambiar de ambiente durante la noche.' },
+    ],
+    en: [
+      { q: 'What is R33 at Wave Club?', a: 'It is the Friday electronic night: underground house and techno with international artists and a new lineup every week, from midnight until dawn.' },
+      { q: 'What music plays at Wave Club on other nights?', a: 'Outside R33 Fridays, the programme leans towards reggaeton and urban music, with perreo sessions and themed parties.' },
+      { q: 'How much is entry at Wave Club?', a: 'It depends on the session. As a reference, one R33 date sold from €15 as an early bird up to €40 at the last minute, without a drink. Buying ahead is cheaper and avoids the queue.' },
+      { q: 'Where is Wave Club and how do I get there?', a: 'At Carrer Poima, 24, in the Can Valero industrial estate on the outskirts of Palma. It is about 15 minutes by taxi from the centre, the most practical way to get there and back in the early hours.' },
+      { q: 'What is the venue like?', a: 'It has a main room for around 500 people, with an industrial look and large LED screens, plus a terrace for a change of scene during the night.' },
+    ],
+    de: [
+      { q: 'Was ist R33 im Wave Club?', a: 'Die Elektro-Nacht am Freitag: Underground-House und Techno mit internationalen Acts und jede Woche neuem Line-up, von Mitternacht bis zum Morgen.' },
+      { q: 'Welche Musik läuft im Wave Club an den anderen Abenden?', a: 'Abseits der R33-Freitage geht das Programm in Richtung Reggaeton und Urban, mit Perreo-Sessions und Mottopartys.' },
+      { q: 'Was kostet der Eintritt im Wave Club?', a: 'Das hängt vom Abend ab. Als Anhaltspunkt: Ein R33-Termin kostete von 15€ als Early Bird bis 40€ kurz vor Beginn, ohne Getränk. Im Vorverkauf ist es günstiger und man spart sich die Schlange.' },
+      { q: 'Wo liegt der Wave Club und wie kommt man hin?', a: 'Im Carrer Poima, 24, im Gewerbegebiet Can Valero am Stadtrand von Palma. Vom Zentrum sind es etwa 15 Minuten mit dem Taxi, für Hin- und Rückweg in der Nacht die praktischste Lösung.' },
+      { q: 'Wie ist der Club aufgebaut?', a: 'Es gibt einen Hauptraum für rund 500 Personen im Industrial-Look mit großen LED-Wänden und eine Terrasse für einen Szenenwechsel während der Nacht.' },
+    ],
+  },
+  'fitz-mallorca': {
+    es: [
+      { q: '¿Fitz Mallorca es el antiguo Tito\'s?', a: 'Sí. Ocupa el local histórico de Tito\'s en el Paseo Marítimo de Palma, que después fue Lío Mallorca. Lo gestiona Grupo Sounds, la empresa madrileña detrás de Fitz Madrid.' },
+      { q: '¿Cuándo abrió Fitz Mallorca?', a: 'El 16 de julio de 2026, con una fiesta de doce horas, de 18:30 a 06:00, en la que pincharon PAWSA, Nic Fanciulli y Miguelle & Tons.' },
+      { q: '¿Qué música suena en Fitz Mallorca?', a: 'House y tech house con DJs internacionales dentro de su programa The House of Artists, además de noches de música urbana y latina: en su primer mes pasaron por allí GORDO, Chimbala, Ozuna y Mëstiza.' },
+      { q: '¿Hay código de vestimenta y edad mínima en Fitz Mallorca?', a: 'La vestimenta que indican sus eventos es casual. La edad mínima depende de la noche: hay sesiones para mayores de 18 y algunos sábados se anuncian para mayores de 23.' },
+      { q: '¿Cómo es la sala de Fitz Mallorca y cómo se llega?', a: 'Según Mixmag, tiene aforo para 1.300 personas, sonido d&b Audiotechnik y ventanales de suelo a techo con vistas a la bahía. Aparcar de noche en el Paseo Marítimo es difícil, así que lo más práctico es ir en taxi o VTC.' },
+    ],
+    en: [
+      { q: "Is Fitz Mallorca the former Tito's?", a: "Yes. It occupies the historic Tito's venue on Palma's Paseo Marítimo, which later became Lío Mallorca. It is run by Grupo Sounds, the Madrid company behind Fitz Madrid." },
+      { q: 'When did Fitz Mallorca open?', a: 'On 16 July 2026, with a twelve-hour party from 6:30pm to 6am featuring PAWSA, Nic Fanciulli and Miguelle & Tons.' },
+      { q: 'What music plays at Fitz Mallorca?', a: 'House and tech house with international DJs under its The House of Artists programme, plus urban and Latin nights: GORDO, Chimbala, Ozuna and Mëstiza all played in its first month.' },
+      { q: 'Is there a dress code or minimum age at Fitz Mallorca?', a: 'Its event listings give the dress code as casual. The minimum age depends on the night: some sessions are 18+ and certain Saturdays are announced as 23+.' },
+      { q: 'What is the venue like and how do I get there?', a: 'According to Mixmag, it holds 1,300 people and has a d&b Audiotechnik sound system and floor-to-ceiling windows overlooking the bay. Parking on the Paseo Marítimo at night is difficult, so a taxi or ride-hailing car is the practical option.' },
+    ],
+    de: [
+      { q: 'Ist Fitz Mallorca das frühere Tito\'s?', a: 'Ja. Der Club belegt die historischen Räume des Tito\'s am Paseo Marítimo in Palma, die später Lío Mallorca waren. Betreiber ist Grupo Sounds, das Madrider Unternehmen hinter Fitz Madrid.' },
+      { q: 'Wann hat Fitz Mallorca eröffnet?', a: 'Am 16. Juli 2026 mit einer zwölfstündigen Party von 18:30 bis 6 Uhr, bei der PAWSA, Nic Fanciulli und Miguelle & Tons auflegten.' },
+      { q: 'Welche Musik läuft im Fitz Mallorca?', a: 'House und Tech House mit internationalen DJs im Programm The House of Artists, dazu Urban- und Latin-Nächte: Im ersten Monat traten GORDO, Chimbala, Ozuna und Mëstiza auf.' },
+      { q: 'Gibt es im Fitz Mallorca einen Dresscode und ein Mindestalter?', a: 'Die Veranstaltungen geben als Dresscode casual an. Das Mindestalter hängt vom Abend ab: Manche Sessions sind ab 18, einzelne Samstage ab 23 Jahren angekündigt.' },
+      { q: 'Wie ist der Club aufgebaut und wie kommt man hin?', a: 'Laut Mixmag fasst er 1.300 Personen und hat eine Anlage von d&b Audiotechnik sowie bodentiefe Fenster mit Blick auf die Bucht. Nachts ist das Parken am Paseo Marítimo schwierig, am praktischsten sind Taxi oder Fahrdienst.' },
+    ],
+  },
+  'enredo-club': {
+    es: [
+      { q: '¿Qué días abre Enredo Club?', a: 'Viernes y sábado, de 23:00 a 05:00. Algunas fiestas de viernes arrancan antes, a las 22:30.' },
+      { q: '¿Qué fiestas hay en Enredo Club?', a: 'MENEO ocupa los sábados desde las 23:00 con reguetón, perreo y música urbana. Los viernes se reparten entre EGOÍSTA, de house comercial y éxitos del momento, y DESPELOTE, la noche de cumbia. En verano se suma SALAO, sesión de atardecer en la terraza con deep house y afro house.' },
+      { q: '¿Dónde está Enredo Club?', a: 'En la Avinguda de Gabriel Roca, 45, en Portopí, a pie de Paseo Marítimo. Es de los pocos clubs de Palma a los que se puede ir y volver andando por el puerto, sin desplazarse a los polígonos.' },
+      { q: '¿Cómo consigo entradas para Enredo Club?', a: 'Las entradas de cada fiesta se reservan desde la ficha del evento. El precio y las condiciones de acceso cambian según la noche.' },
+    ],
+    en: [
+      { q: 'Which days is Enredo Club open?', a: 'Friday and Saturday, from 11pm to 5am. Some Friday parties start earlier, at 10:30pm.' },
+      { q: 'What parties run at Enredo Club?', a: 'MENEO takes Saturdays from 11pm with reggaeton, perreo and urban music. Fridays are shared between EGOÍSTA, with commercial house and current hits, and DESPELOTE, the cumbia night. In summer there is also SALAO, a sunset session on the terrace with deep house and afro house.' },
+      { q: 'Where is Enredo Club?', a: "At Avinguda de Gabriel Roca, 45, in Portopí, right on the Paseo Marítimo. It is one of the few clubs in Palma you can walk to and from along the harbour, with no trip out to the industrial estates." },
+      { q: 'How do I get tickets for Enredo Club?', a: 'Tickets for each party are booked from the event page. Prices and entry conditions change from night to night.' },
+    ],
+    de: [
+      { q: 'An welchen Tagen hat der Enredo Club geöffnet?', a: 'Freitag und Samstag von 23 bis 5 Uhr. Manche Freitagspartys beginnen schon um 22:30 Uhr.' },
+      { q: 'Welche Partys gibt es im Enredo Club?', a: 'MENEO belegt die Samstage ab 23 Uhr mit Reggaeton, Perreo und Urban. Die Freitage teilen sich EGOÍSTA mit Commercial House und aktuellen Hits und DESPELOTE, die Cumbia-Nacht. Im Sommer kommt SALAO dazu, eine Sunset-Session auf der Terrasse mit Deep House und Afro House.' },
+      { q: 'Wo liegt der Enredo Club?', a: 'In der Avinguda de Gabriel Roca, 45, in Portopí, direkt am Paseo Marítimo. Er ist einer der wenigen Clubs in Palma, die man zu Fuß am Hafen entlang erreicht, ohne in die Gewerbegebiete zu fahren.' },
+      { q: 'Wie bekomme ich Tickets für den Enredo Club?', a: 'Tickets für jede Party werden über die Veranstaltungsseite reserviert. Preis und Einlassbedingungen wechseln je nach Abend.' },
+    ],
+  },
+  'brokers-valencia': {
+    es: [
+      { q: '¿Qué es el concepto Bank Club de Brokers?', a: 'Es la temática del local: una decoración inspirada en el mundo financiero, con iluminación LED, barras de coctelería de autor y zonas de mesas VIP. Además de la sala interior tiene una terraza con butacas y mesas altas.' },
+      { q: '¿Qué días y a qué hora abre Brokers Valencia?', a: 'De jueves a domingo. Los tardeos empiezan a las 17:00 y las sesiones de noche a las 22:00, y cierra a las 03:30.' },
+      { q: '¿Qué música suena en Brokers Valencia?', a: 'Por la tarde, pop comercial y éxitos internacionales. A partir de medianoche sube el reguetón y la música urbana. Programa tardeos como RETROSPECTIVE los sábados, además de fiestas universitarias.' },
+      { q: '¿Cómo llegar a Brokers Valencia?', a: 'Está en la Avenida de Francia, 4, junto a la Ciudad de las Artes y las Ciencias. La parada de metro más cercana es Ciutat Arts i Ciències - Justícia (línea 10) y pasan por la avenida las líneas 19, 35, 40 y 94 de la EMT.' },
+    ],
+    en: [
+      { q: 'What is the Bank Club concept at Brokers?', a: 'It is the theme of the venue: decor inspired by the financial world, with LED lighting, signature cocktail bars and VIP table areas. Besides the indoor room there is a terrace with armchairs and high tables.' },
+      { q: 'Which days and hours is Brokers Valencia open?', a: 'Thursday to Sunday. Afternoon sessions start at 5pm and night sessions at 10pm, and it closes at 3:30am.' },
+      { q: 'What music plays at Brokers Valencia?', a: 'In the afternoon, commercial pop and international hits. From midnight on, reggaeton and urban music take over. It runs afternoon parties such as RETROSPECTIVE on Saturdays, plus student nights.' },
+      { q: 'How do I get to Brokers Valencia?', a: 'It is at Avenida de Francia, 4, next to the City of Arts and Sciences. The closest metro stop is Ciutat Arts i Ciències - Justícia (line 10), and EMT bus lines 19, 35, 40 and 94 run along the avenue.' },
+    ],
+    de: [
+      { q: 'Was bedeutet das Bank-Club-Konzept im Brokers?', a: 'Es ist das Motto des Lokals: eine von der Finanzwelt inspirierte Einrichtung mit LED-Beleuchtung, Bars mit Signature-Cocktails und VIP-Tischbereichen. Neben dem Innenraum gibt es eine Terrasse mit Sesseln und Stehtischen.' },
+      { q: 'An welchen Tagen und zu welchen Zeiten hat Brokers Valencia geöffnet?', a: 'Donnerstag bis Sonntag. Die Tardeos beginnen um 17 Uhr, die Nacht-Sessions um 22 Uhr, Schluss ist um 3:30 Uhr.' },
+      { q: 'Welche Musik läuft im Brokers Valencia?', a: 'Nachmittags Pop und internationale Hits, ab Mitternacht übernehmen Reggaeton und Urban. Dazu kommen Tardeos wie RETROSPECTIVE am Samstag und Studentenpartys.' },
+      { q: 'Wie komme ich zum Brokers Valencia?', a: 'Der Club liegt an der Avenida de Francia, 4, neben der Stadt der Künste und der Wissenschaften. Die nächste Metrostation ist Ciutat Arts i Ciències - Justícia (Linie 10), außerdem fahren die EMT-Buslinien 19, 35, 40 und 94 durch die Avenida.' },
     ],
   },
 }
