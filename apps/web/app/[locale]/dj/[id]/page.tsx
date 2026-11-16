@@ -14,7 +14,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
 import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones, resumenDj, tituloDj, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
-import { limpiarFicha, resumenFicha } from '@/lib/limpiar-ficha'
+import { limpiarFicha, limpiarI18n, resumenFicha } from '@/lib/limpiar-ficha'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -217,7 +217,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
 
         {/* Bio */}
         {bio && (
-          <ClubDescriptionExpand text={bio} i18n={bioI18n} />
+          <ClubDescriptionExpand text={limpiarFicha(bio)} i18n={limpiarI18n(bioI18n)} />
         )}
 
         {/* Respuesta corta: debajo de la bio, no antes. Ver la nota de la

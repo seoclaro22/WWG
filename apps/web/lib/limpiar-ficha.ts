@@ -52,6 +52,13 @@ export function limpiarFicha(texto: string | null | undefined): string {
   return lineas.join('\n').replace(/\n{3,}/g, '\n\n').trim()
 }
 
+// Version por idioma, para limpiar en el servidor antes de pasar el texto a un
+// componente cliente: si no, el texto en bruto viaja igual en el payload RSC.
+export function limpiarI18n(i18n: Record<string, string> | null | undefined) {
+  if (!i18n) return null
+  return Object.fromEntries(Object.entries(i18n).map(([k, v]) => [k, limpiarFicha(v)]))
+}
+
 // Para meta description: el primer parrafo narrativo, saltando las lineas
 // "Etiqueta: valor" de la ficha. Si no hay ninguno, el texto limpio entero.
 export function resumenFicha(texto: string | null | undefined): string {

@@ -12,7 +12,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
 import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado, clubFaq, zoneFaqHeading, updatedAtLabel } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
-import { limpiarFicha, resumenFicha } from '@/lib/limpiar-ficha'
+import { limpiarFicha, limpiarI18n, resumenFicha } from '@/lib/limpiar-ficha'
 import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
@@ -309,8 +309,8 @@ export default async function ClubProfile({ params }: { params: { locale: string
         {(club.description || club.description_i18n) && (
           <div>
             <ClubDescriptionExpand
-              text={club.description || ''}
-              i18n={club.description_i18n || null}
+              text={limpiarFicha(club.description)}
+              i18n={limpiarI18n(club.description_i18n)}
             />
           </div>
         )}
