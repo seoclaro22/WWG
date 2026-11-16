@@ -12,6 +12,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
 import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado, clubFaq, zoneFaqHeading, updatedAtLabel } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
+import { limpiarFicha, resumenFicha } from '@/lib/limpiar-ficha'
 import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   // castellano, asi que /en/club/x y /de/club/x anunciaban un idioma en el
   // hreflang y entregaban otro en el snippet de busqueda. Con eventos si hay
   // agenda, la plantilla de clubMetaDescription ya es propia de cada idioma.
-  const descripcionLocal = club.description_i18n?.[params.locale] || club.description
+  const descripcionLocal = resumenFicha(club.description_i18n?.[params.locale] || club.description)
   // La agenda por delante de la descripcion: es lo unico que este resultado
   // tiene y no tienen la web oficial, Maps ni el Instagram del local.
   const description = clubMetaDescription(
@@ -134,7 +135,7 @@ export default async function ClubProfile({ params }: { params: { locale: string
     '@id': `https://wherewego.site${clubPath(club)}#club`,
     name: club.name,
     ...((club.description_i18n?.[params.locale] || club.description)
-      ? { description: String(club.description_i18n?.[params.locale] || club.description).slice(0, 500) }
+      ? { description: limpiarFicha(club.description_i18n?.[params.locale] || club.description).slice(0, 500) }
       : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
     ...(club.phone ? { telephone: club.phone } : {}),

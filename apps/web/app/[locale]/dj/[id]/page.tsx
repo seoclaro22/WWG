@@ -14,6 +14,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates, listMeta } from '@/lib/seo'
 import { djIsIndexable, homeCrumb, djMetaDescription, formatShortDate, secciones, resumenDj, tituloDj, noEncontrado, alts } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
+import { limpiarFicha, resumenFicha } from '@/lib/limpiar-ficha'
 import { VerifiedBadge } from '@/components/VerifiedBadge'
 import { ClaimProfileButton } from '@/components/ClaimProfileButton'
 
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: { params: { locale: string; i
   const nextZone = (upcoming[0] as any)?.zone as string | undefined
   // Igual que en la ficha de club: sin el _i18n, /en/dj/x y /de/dj/x servian
   // el short_bio/bio en castellano fijo.
-  const bioLocal = (dj as any).short_bio_i18n?.[params.locale] || (dj as any).bio_i18n?.[params.locale] || dj.short_bio || dj.bio
+  const bioLocal = resumenFicha((dj as any).short_bio_i18n?.[params.locale] || (dj as any).bio_i18n?.[params.locale] || dj.short_bio || dj.bio)
   // Igual que en los locales: las fechas primero, la biografia de respaldo.
   const description = djMetaDescription(
     {
@@ -137,7 +138,7 @@ export default async function DjProfile({ params }: { params: { locale: string; 
     // Mismo @id con el que las fichas de evento lo listan en performer.
     '@id': `https://wherewego.site${djPath(dj as any)}#dj`,
     name: (dj as any).name,
-    ...(bio ? { description: bio.slice(0, 500) } : {}),
+    ...(bio ? { description: limpiarFicha(bio).slice(0, 500) } : {}),
     ...(heroImg ? { image: [heroImg] } : {}),
     jobTitle: 'DJ',
     url: `https://wherewego.site${djPath(dj as any)}`,

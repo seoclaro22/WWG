@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import { useI18n } from '@/lib/i18n'
+import { limpiarFicha } from '@/lib/limpiar-ficha'
 
 type Props = {
   text: string
@@ -11,7 +12,7 @@ export function ClubDescriptionExpand({ text, i18n }: Props) {
   const [expanded, setExpanded] = useState(false)
   const { locale, t } = useI18n()
 
-  const localizedText = (i18n && i18n[locale]) || text
+  const localizedText = limpiarFicha((i18n && i18n[locale]) || text)
   const isLong = localizedText.length > 180
 
   return (
