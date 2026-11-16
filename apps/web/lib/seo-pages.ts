@@ -30,9 +30,14 @@ export function djIsIndexable(
   dj: { images?: unknown } | null | undefined,
   upcomingEvents: number,
 ) {
+  // Solo con sesiones anunciadas. Antes bastaba con tener foto, y asi
+  // entraban ~500 fichas (x3 idiomas) cuya unica sustancia era una bio
+  // generada: Search Console no muestra accion manual, asi que la caida del 3
+  // de septiembre es una valoracion de calidad del sitio entero, y ese
+  // volumen de fichas flojas es lo que mas pesa en ella. La ficha sigue
+  // existiendo y enlazada; vuelve a ofrecerse en cuanto tenga una fecha.
   if (!dj) return false
-  if (upcomingEvents > 0) return true
-  return Array.isArray(dj.images) && typeof dj.images[0] === 'string' && dj.images[0].trim() !== ''
+  return upcomingEvents > 0
 }
 
 // Los clubs se indexan todos, sin puerta de calidad: son el contenido
