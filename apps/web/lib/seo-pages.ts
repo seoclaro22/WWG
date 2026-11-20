@@ -728,6 +728,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'La entrada a una discoteca en Valencia suele moverse entre 12 y 25 €, con algunos locales de playa o eventos especiales que suben hasta 40 €. Comprar con antelación suele ahorrar unos euros frente a pagar en puerta.',
       vestimenta: 'En los clubs de playa el ambiente es informal durante el día y algo más cuidado por la noche. En las salas del centro y del Carmen el criterio es relajado, salvo en eventos concretos con dress code propio.',
       seguridad: 'Las zonas más concurridas (Malvarrosa, Ruzafa, El Carmen) tienen buena presencia de gente hasta tarde, lo que ayuda a la sensación de seguridad, pero conviene vigilar bolsos y pertenencias en las zonas de playa más masificadas en verano. Volver en autobús nocturno, taxi o en grupo es la opción más sensata de madrugada.',
+      destacados: [
+        { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club en la Avenida de Francia. Tardeo desde las 17:00 y noche hasta las 03:30, de jueves a domingo.' },
+        { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Piscina frente al mar en la Pobla de Farnals, a unos 20 minutos. De mayo a septiembre.' },
+      ],
+      faqs: [
+        { q: '¿Dónde hacer tardeo en Valencia?', a: 'Brokers, en la Avenida de Francia junto a la Ciudad de las Artes, abre de jueves a domingo con tardeo desde las 17:00 y sigue de noche hasta las 03:30.' },
+        { q: '¿Hay beach clubs cerca de Valencia?', a: 'Calablava, en el puerto deportivo de la Pobla de Farnals, a unos 20 minutos, tiene piscina frente al mar, camas balinesas y DJ por la tarde, de mayo a septiembre.' },
+      ],
     },
     en: {
       intro: 'Valencia mixes beach partying with urban neighbourhood nightlife: there is no single dominant area, but several with very different vibes, from the seafront clubs in Malvarrosa to the alternative scene in Ruzafa. It is a city that parties year-round, with a clear jump in intensity during the hot months.',
@@ -742,6 +750,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'A club ticket in Valencia usually runs €12 to €25, with some beach venues or special events going up to €40. Buying ahead usually saves a few euros compared to paying at the door.',
       vestimenta: 'Beach clubs are casual by day and a bit smarter by night. Venues in the centre and El Carmen are relaxed, except for specific events with their own dress code.',
       seguridad: 'The busiest areas (Malvarrosa, Ruzafa, El Carmen) have plenty of people out late, which helps, but keep an eye on bags and belongings in the more crowded beach areas in summer. Getting home by night bus, taxi or with your group is the sensible option in the small hours.',
+      destacados: [
+        { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club on Avenida de Francia. Afternoon sessions from 5pm and nights until 3:30am, Thursday to Sunday.' },
+        { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Seafront pool in Pobla de Farnals, about 20 minutes away. May to September.' },
+      ],
+      faqs: [
+        { q: 'Where to go for afternoon parties in Valencia?', a: 'Brokers, on Avenida de Francia next to the City of Arts and Sciences, opens Thursday to Sunday with afternoon sessions from 5pm and nights until 3:30am.' },
+        { q: 'Are there beach clubs near Valencia?', a: 'Calablava, at the Pobla de Farnals marina about 20 minutes away, has a seafront pool, Balinese beds and afternoon DJs, from May to September.' },
+      ],
     },
     de: {
       intro: 'Valencia verbindet Strandparty mit urbanem Viertel-Nachtleben: es gibt keine einzelne dominante Zone, sondern mehrere mit ganz unterschiedlicher Atmosphäre, von den Strandclubs in Malvarrosa bis zur alternativen Szene in Ruzafa. Eine Stadt, die das ganze Jahr feiert, mit deutlichem Intensitaetssprung in den heißen Monaten.',
@@ -756,6 +772,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Der Eintritt in einen Club in Valencia liegt meist bei 12 bis 25 €, bei manchen Strandlocations oder Sonderevents bis zu 40 €. Der Vorverkauf spart meist ein paar Euro gegenüber dem Kauf an der Tür.',
       vestimenta: 'Strandclubs sind tagsüber leger und abends etwas gepflegter. Locations im Zentrum und in El Carmen sind entspannt, außer bei bestimmten Events mit eigenem Dresscode.',
       seguridad: 'Die belebtesten Gegenden (Malvarrosa, Ruzafa, El Carmen) haben bis spät viele Menschen auf der Straße, was hilft, aber im Sommer sollte man in den überfüllteren Strandbereichen auf Taschen und Wertsachen achten. Nachtbus, Taxi oder die Rückkehr in der Gruppe sind in den frühen Morgenstunden die sinnvollste Option.',
+      destacados: [
+        { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club an der Avenida de Francia. Tardeo ab 17 Uhr, nachts bis 3:30 Uhr, Donnerstag bis Sonntag.' },
+        { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Pool am Meer in Pobla de Farnals, rund 20 Minuten entfernt. Mai bis September.' },
+      ],
+      faqs: [
+        { q: 'Wo gibt es Tardeo in Valencia?', a: 'Das Brokers an der Avenida de Francia, neben der Stadt der Künste, öffnet Donnerstag bis Sonntag mit Tardeo ab 17 Uhr und Nacht bis 3:30 Uhr.' },
+        { q: 'Gibt es Beach Clubs bei Valencia?', a: 'Calablava im Hafen von Pobla de Farnals, rund 20 Minuten entfernt, hat einen Pool am Meer, Balibetten und DJs am Nachmittag, von Mai bis September.' },
+      ],
     },
   },
   Castellón: {
@@ -810,6 +834,12 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Los precios de entrada en Ibiza son de los más altos de España: entre 30 y 70 € en Pachá, desde 55 € en Amnesia y entre 45 y 100 € en Ushuaïa, según el evento y los artistas. Las copas también son más caras que en el resto del país, habitualmente entre 16 y 22 €.',
       vestimenta: 'El código de vestimenta varía mucho según el local y la fiesta concreta: algunas discotecas piden un estilo cuidado o directamente temático, mientras que en los beach clubs de día el ambiente es de bañador y ropa de playa. Conviene revisar el evento concreto antes de ir.',
       seguridad: 'Al ser una isla con mucha afluencia turística y locales con aforos muy grandes, conviene vigilar las pertenencias en las colas y dentro de las discotecas más masificadas. El discobús nocturno y los taxis oficiales son las formas más seguras de moverse de madrugada; evita coches sin licencia que se ofrecen fuera de los locales.',
+      destacados: [
+        { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, abierto en 2024. Noches latinas y afro como Be Latin Bitch o Afrobibi." },
+      ],
+      faqs: [
+        { q: '¿Dónde hay fiestas latinas en Ibiza?', a: "Baloo, en Playa d'en Bossa, programa Be Latin Bitch los viernes y Mentiroso y Afrobibi los jueves. Solo mayores de 18 con DNI." },
+      ],
     },
     en: {
       intro: 'Ibiza is the world reference for electronic music and club culture, with a nightlife industry that drives the entire island´s economy for half the year. It´s not just an island with nightclubs: it´s where much of modern club culture as we know it was born, with venues that have been running for half a century.',
@@ -824,6 +854,12 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Ibiza´s entry prices are among the highest in Spain: €30 to €70 at Pachá, from €55 at Amnesia, and €45 to €100 at Ushuaïa depending on the event and the artists. Drinks are also pricier than the rest of the country, usually €16 to €22.',
       vestimenta: 'Dress code varies a lot by venue and specific party: some clubs expect a polished or themed look, while daytime beach clubs are swimwear-and-beachwear territory. It´s worth checking the specific event before you go.',
       seguridad: 'As an island with heavy tourist traffic and very large-capacity venues, it´s worth watching your belongings in queues and inside the more crowded clubs. The night disco-bus and official taxis are the safest ways to get around in the small hours; avoid unlicensed cars offered outside venues.',
+      destacados: [
+        { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, opened in 2024. Latin and afro nights such as Be Latin Bitch and Afrobibi." },
+      ],
+      faqs: [
+        { q: 'Where are the Latin parties in Ibiza?', a: "Baloo, in Playa d'en Bossa, runs Be Latin Bitch on Fridays and Mentiroso and Afrobibi on Thursdays. 18+ with ID." },
+      ],
     },
     de: {
       intro: 'Ibiza ist die weltweite Referenz für elektronische Musik und Clubkultur, mit einer Nachtlebensindustrie, die die Wirtschaft der ganzen Insel ein halbes Jahr lang antreibt. Nicht nur eine Insel mit Discos: hier entstand ein großer Teil der modernen Clubkultur, mit Locations, die seit einem halben Jahrhundert aktiv sind.',
@@ -838,6 +874,12 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Ibizas Eintrittspreise gehören zu den höchsten Spaniens: 30 bis 70 € bei Pachá, ab 55 € bei Amnesia und 45 bis 100 € bei Ushuaïa, je nach Event und Künstlern. Auch Getränke sind teurer als im Rest des Landes, meist 16 bis 22 €.',
       vestimenta: 'Der Dresscode variiert stark je nach Location und Party: manche Clubs erwarten einen gepflegten oder thematischen Look, während die Beachclubs tagsüber Badekleidung-Territorium sind. Es lohnt sich, das konkrete Event vorher zu checken.',
       seguridad: 'Als Insel mit starkem Touristenandrang und sehr großen Locations sollte man in Schlangen und in den volleren Clubs auf seine Sachen achten. Der nächtliche Discobus und offizielle Taxis sind die sichersten Wege in den frühen Morgenstunden; unlizenzierte Autos vor den Locations meiden.',
+      destacados: [
+        { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, eröffnet 2024. Latin- und Afro-Nächte wie Be Latin Bitch und Afrobibi." },
+      ],
+      faqs: [
+        { q: 'Wo gibt es Latin-Partys auf Ibiza?', a: "Im Baloo in Playa d'en Bossa: freitags Be Latin Bitch, donnerstags Mentiroso und Afrobibi. Ab 18 mit Ausweis." },
+      ],
     },
   },
   Amsterdam: {
