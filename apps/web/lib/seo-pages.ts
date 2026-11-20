@@ -970,9 +970,13 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Cinco salas en una antigua nave industrial; la principal supera las 2.000 personas.' },
         { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'Frente a la playa en el Port Olímpic. Club de 00:00 a 06:00 todos los días.' },
         { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Calle Tuset, Sarrià-Sant Gervasi. Vestimenta cuidada: sin zapatillas ni pantalón corto.' },
+        { slug: 'opium-barcelona', nombre: 'Opium', texto: 'Frente a la playa junto al Port Olímpic. Restaurante y club para más de 3.000 personas.' },
+        { slug: 'sidecar-barcelona', nombre: 'Sidecar', texto: 'Plaça Reial, desde 1982. Conciertos y sesiones de club.' },
+        { slug: 'mooem-barcelona', nombre: 'Moeem', texto: 'Bar LGTBI en el Gaixample. Pop, reguetón y drag, cada día desde las 18:00.' },
       ],
       faqs: [
-        { q: '¿Qué discotecas hay en la playa de Barcelona?', a: 'En el Port Olímpic, frente a la playa de la Barceloneta, está Shoko: restaurante de 11:00 a 00:00 y club de 00:00 a 06:00 todos los días.' },
+        { q: '¿Dónde ver conciertos y luego salir de fiesta en Barcelona?', a: 'Sidecar, en la Plaça Reial desde 1982, y Razzmatazz, en Poblenou, combinan directos por la noche con sesiones de club después.' },
+        { q: '¿Qué discotecas hay en la playa de Barcelona?', a: 'En el Port Olímpic, frente a la playa de la Barceloneta, están Shoko y Opium, los dos con restaurante y club. Shoko abre el club de 00:00 a 06:00 todos los días y la sala principal de Opium supera las 3.000 personas.' },
         { q: '¿Cuántas salas tiene Razzmatazz?', a: 'Cinco, que pueden funcionar por separado o conectadas. La principal supera las 2.000 personas y la más pequeña, Razz 3, ronda las 220.' },
         { q: '¿Hay código de vestimenta en las discotecas de Barcelona?', a: 'Depende del local. En los clubs de la zona alta, como Sutton, no se permiten zapatillas deportivas ni pantalón corto.' },
       ],
@@ -995,9 +999,13 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Five rooms in a former industrial building; the main one holds over 2,000 people.' },
         { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'On the beach at Port Olímpic. Club from midnight to 6am every day.' },
         { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Carrer de Tuset, Sarrià-Sant Gervasi. Smart dress: no trainers or shorts.' },
+        { slug: 'opium-barcelona', nombre: 'Opium', texto: 'On the beach by Port Olímpic. Restaurant and club for over 3,000 people.' },
+        { slug: 'sidecar-barcelona', nombre: 'Sidecar', texto: 'Plaça Reial, since 1982. Concerts and club nights.' },
+        { slug: 'mooem-barcelona', nombre: 'Moeem', texto: 'LGBTQ+ bar in the Gaixample. Pop, reggaeton and drag, daily from 6pm.' },
       ],
       faqs: [
-        { q: 'Which clubs are on the beach in Barcelona?', a: 'Shoko is at Port Olímpic, facing Barceloneta beach: restaurant from 11am to midnight and club from midnight to 6am every day.' },
+        { q: 'Where to see a gig and then go clubbing in Barcelona?', a: 'Sidecar, on Plaça Reial since 1982, and Razzmatazz, in Poblenou, both follow evening concerts with club nights.' },
+        { q: 'Which clubs are on the beach in Barcelona?', a: 'Shoko and Opium are both at Port Olímpic, facing Barceloneta beach, each with a restaurant and a club. Shoko runs its club from midnight to 6am every day, and the main room at Opium holds over 3,000 people.' },
         { q: 'How many rooms does Razzmatazz have?', a: 'Five, which can run separately or connected. The main room holds over 2,000 people and the smallest, Razz 3, around 220.' },
         { q: 'Is there a dress code at Barcelona clubs?', a: 'It depends on the venue. Uptown clubs such as Sutton do not allow trainers or shorts.' },
       ],
@@ -1020,9 +1028,13 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Fünf Räume in einer ehemaligen Industriehalle, der größte für über 2.000 Personen.' },
         { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'Am Strand im Port Olímpic. Club täglich von 0 bis 6 Uhr.' },
         { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Carrer de Tuset, Sarrià-Sant Gervasi. Gepflegter Dresscode: keine Sneaker, keine kurzen Hosen.' },
+        { slug: 'opium-barcelona', nombre: 'Opium', texto: 'Am Strand beim Port Olímpic. Restaurant und Club für über 3.000 Personen.' },
+        { slug: 'sidecar-barcelona', nombre: 'Sidecar', texto: 'Plaça Reial, seit 1982. Konzerte und Clubnächte.' },
+        { slug: 'mooem-barcelona', nombre: 'Moeem', texto: 'LGBTQ+-Bar im Gaixample. Pop, Reggaeton und Drag, täglich ab 18 Uhr.' },
       ],
       faqs: [
-        { q: 'Welche Clubs liegen in Barcelona am Strand?', a: 'Das Shoko im Port Olímpic, gegenüber dem Strand der Barceloneta: Restaurant von 11 bis 24 Uhr, Club täglich von 0 bis 6 Uhr.' },
+        { q: 'Wo gibt es in Barcelona erst Konzert, dann Club?', a: 'Im Sidecar an der Plaça Reial, seit 1982, und im Razzmatazz in Poblenou folgen auf die Konzerte am Abend Clubnächte.' },
+        { q: 'Welche Clubs liegen in Barcelona am Strand?', a: 'Shoko und Opium, beide im Port Olímpic gegenüber dem Strand der Barceloneta, jeweils mit Restaurant und Club. Das Shoko öffnet den Club täglich von 0 bis 6 Uhr, der Hauptraum des Opium fasst über 3.000 Personen.' },
         { q: 'Wie viele Räume hat das Razzmatazz?', a: 'Fünf, die einzeln oder verbunden laufen. Der Hauptraum fasst über 2.000 Personen, der kleinste, Razz 3, etwa 220.' },
         { q: 'Gibt es in Barcelonas Clubs einen Dresscode?', a: 'Das hängt vom Club ab. In den Clubs der Oberstadt wie dem Sutton sind Sneaker und kurze Hosen nicht erlaubt.' },
       ],
@@ -1611,6 +1623,21 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     es: 'Café de Sant Antoni abierto en 1980 con diseño de Lluís Güell. Famoso por ver la puesta de sol con música balear de fondo.',
     en: 'Sant Antoni café opened in 1980, designed by Lluís Güell. Famous for watching the sunset to a Balearic soundtrack.',
     de: '1980 eröffnetes Café in Sant Antoni, entworfen von Lluís Güell. Berühmt für den Sonnenuntergang mit balearischer Musik.',
+  },
+  'opium-barcelona': {
+    es: 'Restaurante y club frente a la playa, junto al Port Olímpic y el Hotel Arts. Sala principal para más de 3.000 personas. Metro Ciutadella-Vila Olímpica.',
+    en: 'Beachfront restaurant and club by Port Olímpic and Hotel Arts. Main room for over 3,000 people. Metro Ciutadella-Vila Olímpica.',
+    de: 'Restaurant und Club am Strand, neben Port Olímpic und Hotel Arts. Hauptraum für über 3.000 Personen. Metro Ciutadella-Vila Olímpica.',
+  },
+  'sidecar-barcelona': {
+    es: 'Sala de conciertos y club en la Plaça Reial, junto a La Rambla, en marcha desde 1982. Directos por la noche y sesiones de club después.',
+    en: 'Live music venue and club on Plaça Reial, off La Rambla, running since 1982. Gigs in the evening, club nights afterwards.',
+    de: 'Konzertsaal und Club an der Plaça Reial bei La Rambla, seit 1982. Abends Konzerte, danach Clubnächte.',
+  },
+  'mooem-barcelona': {
+    es: 'Bar de copas LGTBI en la calle Muntaner, en el Gaixample. Pop, dance y reguetón, con DJ y espectáculos drag. Abre cada día desde las 18:00.',
+    en: 'LGBTQ+ bar on Carrer de Muntaner, in the Gaixample. Pop, dance and reggaeton, with DJs and drag shows. Open daily from 6pm.',
+    de: 'LGBTQ+-Bar in der Carrer de Muntaner im Gaixample. Pop, Dance und Reggaeton, mit DJs und Drag-Shows. Täglich ab 18 Uhr.',
   },
 }
 
@@ -2422,6 +2449,60 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Seit wann gibt es das Café del Mar?', a: 'Seit Juni 1980. Entworfen hat es der katalanische Architekt Lluís Güell.' },
       { q: 'Warum ist das Café del Mar berühmt?', a: 'Für den Sonnenuntergang über der Bucht von Sant Antoni mit Musik. Die Sets von José Padilla in den 1990ern prägten den Chill-out-Sound, für den es steht.' },
       { q: 'Wo liegt es?', a: 'An der Sunset-Promenade von Sant Antoni de Portmany, an der Westküste Ibizas.' },
+    ],
+  },
+  'opium-barcelona': {
+    es: [
+      { q: '¿Dónde está Opium Barcelona?', a: 'En el Passeig Marítim de la Barceloneta, 34, frente a la playa, junto al Port Olímpic y el Hotel Arts. El metro más cercano es Ciutadella-Vila Olímpica (L4).' },
+      { q: '¿Qué aforo tiene Opium?', a: 'La sala principal tiene capacidad para más de 3.000 personas.' },
+      { q: '¿Opium es restaurante o discoteca?', a: 'Las dos cosas: funciona como restaurante a mediodía y por la noche, y como club a partir de la medianoche. Los horarios cambian según la temporada, así que conviene revisarlos en cada evento.' },
+    ],
+    en: [
+      { q: 'Where is Opium Barcelona?', a: 'At Passeig Marítim de la Barceloneta, 34, on the beach, next to Port Olímpic and Hotel Arts. The closest metro is Ciutadella-Vila Olímpica (L4).' },
+      { q: 'What is the capacity of Opium?', a: 'The main room holds more than 3,000 people.' },
+      { q: 'Is Opium a restaurant or a club?', a: 'Both: it works as a restaurant at lunch and dinner, and as a club from midnight. Hours change with the season, so check each event.' },
+    ],
+    de: [
+      { q: 'Wo liegt Opium Barcelona?', a: 'Am Passeig Marítim de la Barceloneta, 34, direkt am Strand neben Port Olímpic und Hotel Arts. Nächste Metro ist Ciutadella-Vila Olímpica (L4).' },
+      { q: 'Wie groß ist Opium?', a: 'Der Hauptraum fasst über 3.000 Personen.' },
+      { q: 'Ist Opium Restaurant oder Club?', a: 'Beides: mittags und abends Restaurant, ab Mitternacht Club. Die Zeiten ändern sich je nach Saison, ein Blick auf das jeweilige Event lohnt sich.' },
+    ],
+  },
+  'sidecar-barcelona': {
+    es: [
+      { q: '¿Desde cuándo existe Sidecar?', a: 'Desde 1982. Es uno de los locales históricos de la escena alternativa de Barcelona. Durante una etapa se llamó Club Sauvage y después recuperó su nombre.' },
+      { q: '¿Qué se hace en Sidecar?', a: 'Conciertos por la noche y, después, sesiones de club. Los horarios dependen de cada evento.' },
+      { q: '¿Dónde está?', a: 'En la Plaça Reial, 7, en el Barri Gòtic, a un paso de La Rambla. El metro más cercano es Liceu (L3).' },
+    ],
+    en: [
+      { q: 'How long has Sidecar been around?', a: "Since 1982. It is one of the historic venues of Barcelona's alternative scene. For a while it was called Club Sauvage before taking back its name." },
+      { q: 'What happens at Sidecar?', a: 'Concerts in the evening, followed by club nights. Hours depend on each event.' },
+      { q: 'Where is it?', a: 'At Plaça Reial, 7, in the Gothic Quarter, a step from La Rambla. The closest metro is Liceu (L3).' },
+    ],
+    de: [
+      { q: 'Seit wann gibt es das Sidecar?', a: 'Seit 1982. Es gehört zu den historischen Locations der alternativen Szene Barcelonas. Eine Zeit lang hieß es Club Sauvage, dann bekam es seinen Namen zurück.' },
+      { q: 'Was findet im Sidecar statt?', a: 'Abends Konzerte, danach Clubnächte. Die Zeiten hängen vom jeweiligen Event ab.' },
+      { q: 'Wo liegt es?', a: 'An der Plaça Reial, 7, im Barri Gòtic, nur einen Schritt von La Rambla. Nächste Metro ist Liceu (L3).' },
+    ],
+  },
+  'mooem-barcelona': {
+    es: [
+      { q: '¿Qué tipo de local es?', a: 'Un bar de copas LGTBI en el Gaixample, la zona gay del Eixample, con DJ y espectáculos drag.' },
+      { q: '¿Qué música suena?', a: 'Pop, dance y reguetón.' },
+      { q: '¿Qué horario tiene?', a: 'Abre cada día desde las 18:00 y cierra entre las 02:30 entre semana y las 03:00 los fines de semana.' },
+      { q: '¿Dónde está?', a: 'En el Carrer de Muntaner, 11, en el Eixample, a pocos minutos de la Plaça Universitat.' },
+    ],
+    en: [
+      { q: 'What kind of venue is it?', a: "An LGBTQ+ bar in the Gaixample, the Eixample's gay district, with DJs and drag shows." },
+      { q: 'What music plays?', a: 'Pop, dance and reggaeton.' },
+      { q: 'What are the opening hours?', a: 'Open daily from 6pm, closing at 2:30am on weeknights and 3am at weekends.' },
+      { q: 'Where is it?', a: 'At Carrer de Muntaner, 11, in the Eixample, a few minutes from Plaça Universitat.' },
+    ],
+    de: [
+      { q: 'Was für ein Lokal ist das?', a: 'Eine LGBTQ+-Bar im Gaixample, dem schwulen Viertel des Eixample, mit DJs und Drag-Shows.' },
+      { q: 'Welche Musik läuft?', a: 'Pop, Dance und Reggaeton.' },
+      { q: 'Wie sind die Öffnungszeiten?', a: 'Täglich ab 18 Uhr, unter der Woche bis 2:30 Uhr, am Wochenende bis 3 Uhr.' },
+      { q: 'Wo liegt die Bar?', a: 'In der Carrer de Muntaner, 11, im Eixample, wenige Minuten von der Plaça Universitat.' },
     ],
   },
 }
