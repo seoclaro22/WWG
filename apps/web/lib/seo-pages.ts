@@ -640,6 +640,20 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'La entrada a una discoteca de Madrid suele rondar entre 15 y 25 € con una consumición incluida, tanto en Teatro Kapital como en Teatro Barceló. En Fabrik, según el evento, puede ir de 20 a 60 €. Comprar la entrada anticipada suele salir más barato que pagar en puerta.',
       vestimenta: 'Las discotecas grandes del centro (Kapital, Barceló) suelen pedir ir arreglado, sin ropa deportiva. En Malasaña y Chueca el ambiente es bastante más relajado, con ropa informal aceptada en la mayoría de locales.',
       seguridad: 'Las zonas más concurridas de fiesta (Malasaña, Chueca, Huertas) son también las más vigiladas, con bastante gente en la calle hasta tarde. Aun así, conviene vigilar tus pertenencias entre la multitud y no perder de vista tu copa. El Metro y los búhos nocturnos son opciones seguras para volver a casa; si vas a beber, lo más sensato es planear el regreso antes de salir.',
+      destacados: [
+        { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Siete plantas junto a Atocha, de miércoles a domingo de 23:00 a 06:00.' },
+        { slug: 'joy-eslava', nombre: 'Joy Eslava', texto: 'Teatro de 1872 en la Calle del Arenal, junto a Sol. Conciertos y sesiones de club.' },
+        { slug: 'shoko-madrid', nombre: 'Shoko Madrid', texto: 'La Latina, de miércoles a domingo. Pure Shoko los sábados y Puro Perreo los domingos.' },
+        { slug: 'gunilla-club', nombre: 'Gunilla', texto: 'Paseo de Recoletos. Reguetón y house comercial de medianoche a las 06:00.' },
+        { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Reguetón colombiano en el barrio de Salamanca, de jueves a sábado.' },
+        { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Jardín del Palacio de Linares, junto a Cibeles. Tardeo con DJ desde las 17:00.' },
+        { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy del Barrio de las Letras: se entra con la contraseña del mes.' },
+      ],
+      faqs: [
+        { q: '¿Dónde salir de fiesta en el centro de Madrid?', a: 'Joy Eslava está en la Calle del Arenal, a dos minutos de Sol. Teatro Kapital, junto a la estación de Atocha. Shoko, en La Latina, junto a Puerta de Toledo.' },
+        { q: '¿Dónde escuchar reguetón en Madrid?', a: 'Gunilla, en el Paseo de Recoletos, y Perro Negro, en el barrio de Salamanca, abren de jueves a sábado. Shoko dedica los domingos a Puro Perreo.' },
+        { q: '¿Dónde hacer tardeo en Madrid?', a: 'Terraza Karau, en el jardín del Palacio de Linares junto a Cibeles, abre de miércoles a domingo desde las 17:00 con cócteles y DJ.' },
+      ],
     },
     en: {
       intro: 'Madrid is the city with the most nightlife in Spain: it is not one single party area but several neighbourhoods each with its own personality, and the night starts late and runs until dawn on almost any day of the week, not just weekends. It is a city where you can go out year-round, without depending on a beach season.',
@@ -655,6 +669,20 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'A club ticket in Madrid usually runs €15 to €25 with a drink included, both at Teatro Kapital and Teatro Barceló. At Fabrik, depending on the event, it can range from €20 to €60. Buying in advance is usually cheaper than paying at the door.',
       vestimenta: 'The big central clubs (Kapital, Barceló) usually expect smart dress, no sportswear. Malasaña and Chueca are far more relaxed, with casual clothing fine in most venues.',
       seguridad: 'The busiest party areas (Malasaña, Chueca, Huertas) are also the most watched, with plenty of people out late. Still, keep an eye on your belongings in the crowd and don´t lose sight of your drink. The Metro and night buses are safe ways home; if you´re drinking, planning your way back before heading out is the sensible move.',
+      destacados: [
+        { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Seven floors by Atocha, Wednesday to Sunday, 11pm to 6am.' },
+        { slug: 'joy-eslava', nombre: 'Joy Eslava', texto: 'An 1872 theatre on Calle del Arenal, by Sol. Concerts and club nights.' },
+        { slug: 'shoko-madrid', nombre: 'Shoko Madrid', texto: 'La Latina, Wednesday to Sunday. Pure Shoko on Saturdays and Puro Perreo on Sundays.' },
+        { slug: 'gunilla-club', nombre: 'Gunilla', texto: 'Paseo de Recoletos. Reggaeton and commercial house from midnight to 6am.' },
+        { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Colombian reggaeton in the Salamanca district, Thursday to Saturday.' },
+        { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Garden of Palacio de Linares, by Cibeles. Afternoon DJ sessions from 5pm.' },
+        { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy in Barrio de las Letras: you get in with the monthly password.' },
+      ],
+      faqs: [
+        { q: 'Where to go out in central Madrid?', a: 'Joy Eslava is on Calle del Arenal, two minutes from Sol. Teatro Kapital is next to Atocha station. Shoko is in La Latina, by Puerta de Toledo.' },
+        { q: 'Where to hear reggaeton in Madrid?', a: 'Gunilla, on Paseo de Recoletos, and Perro Negro, in the Salamanca district, open Thursday to Saturday. Shoko gives Sundays to Puro Perreo.' },
+        { q: 'Where to go for afternoon drinks and DJs in Madrid?', a: 'Terraza Karau, in the garden of Palacio de Linares next to Cibeles, opens Wednesday to Sunday from 5pm with cocktails and DJs.' },
+      ],
     },
     de: {
       intro: 'Madrid ist die Stadt mit dem meisten Nachtleben Spaniens: keine einzelne Partyzone, sondern mehrere Viertel mit ganz eigenem Charakter, und die Nacht beginnt spät und geht fast an jedem Wochentag bis zum Morgengrauen, nicht nur am Wochenende. Eine Stadt, in der man das ganze Jahr ausgehen kann, unabhängig von einer Strandsaison.',
@@ -670,6 +698,20 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Der Eintritt in einen Madrider Club liegt meist bei 15 bis 25 € inklusive Getränk, sowohl im Teatro Kapital als auch im Teatro Barceló. Im Fabrik kann er je nach Event zwischen 20 und 60 € liegen. Der Vorverkauf ist meist günstiger als der Kauf an der Tür.',
       vestimenta: 'Die großen zentralen Clubs (Kapital, Barceló) erwarten meist gepflegte Kleidung, keine Sportbekleidung. In Malasaña und Chueca ist es deutlich lockerer, legere Kleidung reicht in den meisten Locations.',
       seguridad: 'Die belebtesten Partyviertel (Malasaña, Chueca, Huertas) sind auch die am besten überwachten, mit vielen Menschen bis spät auf der Straße. Trotzdem: im Gedränge auf die eigenen Sachen achten und das Glas nicht aus den Augen lassen. Metro und Nachtbusse sind sichere Heimwege; wer trinkt, plant den Rückweg am besten vorher.',
+      destacados: [
+        { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Sieben Etagen bei Atocha, Mittwoch bis Sonntag von 23 bis 6 Uhr.' },
+        { slug: 'joy-eslava', nombre: 'Joy Eslava', texto: 'Theater von 1872 in der Calle del Arenal, nahe Sol. Konzerte und Clubnächte.' },
+        { slug: 'shoko-madrid', nombre: 'Shoko Madrid', texto: 'La Latina, Mittwoch bis Sonntag. Samstags Pure Shoko, sonntags Puro Perreo.' },
+        { slug: 'gunilla-club', nombre: 'Gunilla', texto: 'Paseo de Recoletos. Reggaeton und Commercial House von Mitternacht bis 6 Uhr.' },
+        { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Kolumbianischer Reggaeton im Viertel Salamanca, Donnerstag bis Samstag.' },
+        { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Garten des Palacio de Linares bei Cibeles. Tardeo mit DJ ab 17 Uhr.' },
+        { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy im Barrio de las Letras: Einlass mit dem Passwort des Monats.' },
+      ],
+      faqs: [
+        { q: 'Wo kann man im Zentrum von Madrid feiern?', a: 'Joy Eslava liegt in der Calle del Arenal, zwei Minuten von der Puerta del Sol. Teatro Kapital neben dem Bahnhof Atocha. Shoko in La Latina, bei Puerta de Toledo.' },
+        { q: 'Wo läuft Reggaeton in Madrid?', a: 'Gunilla am Paseo de Recoletos und Perro Negro im Viertel Salamanca öffnen Donnerstag bis Samstag. Shoko widmet die Sonntage Puro Perreo.' },
+        { q: 'Wo gibt es Tardeo in Madrid?', a: 'Die Terraza Karau im Garten des Palacio de Linares bei Cibeles öffnet Mittwoch bis Sonntag ab 17 Uhr mit Cocktails und DJ.' },
+      ],
     },
   },
   Valencia: {
@@ -861,6 +903,16 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'La entrada a las discotecas de la zona de playa (Pacha, Opium, Shoko) suele rondar entre 20 y 35 €, normalmente con una consumición incluida y algo más barata si se compra por adelantado. En salas como Razzmatazz o Sala Apolo el precio varía mucho según el evento concreto.',
       vestimenta: 'En los clubs de la zona de playa el código de vestimenta suele ser algo más exigente, con ropa arreglada y sin chanclas ni bañador. En Poblenou y Poble Sec el ambiente es bastante más relajado e informal.',
       seguridad: 'Barcelona es una de las ciudades más seguras de Europa para salir de noche, aunque los hurtos por descuido son el riesgo más habitual en las zonas turísticas con más afluencia, como el Port Olímpic o el Gòtic: conviene vigilar el móvil y la cartera en bolsillos delanteros o bolsos cerrados. El NitBus incluye parada a demanda para dejar más cerca del destino a quien viaja solo de madrugada.',
+      destacados: [
+        { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Cinco salas en una antigua nave industrial; la principal supera las 2.000 personas.' },
+        { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'Frente a la playa en el Port Olímpic. Club de 00:00 a 06:00 todos los días.' },
+        { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Calle Tuset, Sarrià-Sant Gervasi. Vestimenta cuidada: sin zapatillas ni pantalón corto.' },
+      ],
+      faqs: [
+        { q: '¿Qué discotecas hay en la playa de Barcelona?', a: 'En el Port Olímpic, frente a la playa de la Barceloneta, está Shoko: restaurante de 11:00 a 00:00 y club de 00:00 a 06:00 todos los días.' },
+        { q: '¿Cuántas salas tiene Razzmatazz?', a: 'Cinco, que pueden funcionar por separado o conectadas. La principal supera las 2.000 personas y la más pequeña, Razz 3, ronda las 220.' },
+        { q: '¿Hay código de vestimenta en las discotecas de Barcelona?', a: 'Depende del local. En los clubs de la zona alta, como Sutton, no se permiten zapatillas deportivas ni pantalón corto.' },
+      ],
     },
     en: {
       intro: 'Barcelona has one of the most complete club scenes in Spain, with venues ranging from indie and rock to serious techno, and a beach area by the Port Olímpic that in summer works as its own party district. A city with nightlife active year-round, not just in beach season, with a very international crowd thanks to steady tourism.',
@@ -876,6 +928,16 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Entry to the beach-area clubs (Pacha, Opium, Shoko) usually runs €20 to €35, typically with a drink included and a bit cheaper if bought in advance. At venues like Razzmatazz or Sala Apolo, price varies a lot depending on the specific event.',
       vestimenta: 'Beach-area clubs tend to have a stricter dress code, smart clothes and no flip-flops or swimwear. Poblenou and Poble Sec are far more relaxed and casual.',
       seguridad: 'Barcelona is one of the safest cities in Europe for a night out, though petty theft is the most common risk in the busiest tourist areas, like Port Olímpic or El Gòtic: keep your phone and wallet in front pockets or zipped bags. NitBus includes an on-demand stop to drop solo travellers closer to their destination in the small hours.',
+      destacados: [
+        { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Five rooms in a former industrial building; the main one holds over 2,000 people.' },
+        { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'On the beach at Port Olímpic. Club from midnight to 6am every day.' },
+        { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Carrer de Tuset, Sarrià-Sant Gervasi. Smart dress: no trainers or shorts.' },
+      ],
+      faqs: [
+        { q: 'Which clubs are on the beach in Barcelona?', a: 'Shoko is at Port Olímpic, facing Barceloneta beach: restaurant from 11am to midnight and club from midnight to 6am every day.' },
+        { q: 'How many rooms does Razzmatazz have?', a: 'Five, which can run separately or connected. The main room holds over 2,000 people and the smallest, Razz 3, around 220.' },
+        { q: 'Is there a dress code at Barcelona clubs?', a: 'It depends on the venue. Uptown clubs such as Sutton do not allow trainers or shorts.' },
+      ],
     },
     de: {
       intro: 'Barcelona hat eine der vielseitigsten Clubszenen Spaniens, mit Locations von Indie und Rock bis zu ernsthaftem Techno, und einem Strandgebiet am Port Olímpic, das im Sommer wie ein eigenes Party-Viertel funktioniert. Eine Stadt mit das ganze Jahr über aktivem Nachtleben, nicht nur in der Strandsaison, mit sehr internationalem Publikum dank ständigem Tourismus.',
@@ -891,6 +953,16 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'Der Eintritt in die Strand-Clubs (Pacha, Opium, Shoko) liegt meist bei 20 bis 35 €, meist inklusive Getränk und etwas günstiger im Vorverkauf. Bei Locations wie Razzmatazz oder Sala Apolo variiert der Preis stark je nach Event.',
       vestimenta: 'Die Strand-Clubs haben meist einen strengeren Dresscode, gepflegte Kleidung, keine Flip-Flops oder Badekleidung. Poblenou und Poble Sec sind deutlich entspannter und legerer.',
       seguridad: 'Barcelona ist eine der sichersten Städte Europas für einen Abend unterwegs, auch wenn Taschendiebstahl das häufigste Risiko in den belebtesten Touristengegenden wie Port Olímpic oder El Gòtic ist: Handy und Portemonnaie in Vordertaschen oder verschlossenen Taschen tragen. NitBus bietet eine Haltestelle auf Anfrage, um Alleinreisende in den frühen Morgenstunden näher an ihr Ziel zu bringen.',
+      destacados: [
+        { slug: 'razzmatazz-barcelona', nombre: 'Razzmatazz', texto: 'Poblenou. Fünf Räume in einer ehemaligen Industriehalle, der größte für über 2.000 Personen.' },
+        { slug: 'shoko-barcelona', nombre: 'Shoko Barcelona', texto: 'Am Strand im Port Olímpic. Club täglich von 0 bis 6 Uhr.' },
+        { slug: 'sutton-barcelona', nombre: 'Sutton', texto: 'Carrer de Tuset, Sarrià-Sant Gervasi. Gepflegter Dresscode: keine Sneaker, keine kurzen Hosen.' },
+      ],
+      faqs: [
+        { q: 'Welche Clubs liegen in Barcelona am Strand?', a: 'Das Shoko im Port Olímpic, gegenüber dem Strand der Barceloneta: Restaurant von 11 bis 24 Uhr, Club täglich von 0 bis 6 Uhr.' },
+        { q: 'Wie viele Räume hat das Razzmatazz?', a: 'Fünf, die einzeln oder verbunden laufen. Der Hauptraum fasst über 2.000 Personen, der kleinste, Razz 3, etwa 220.' },
+        { q: 'Gibt es in Barcelonas Clubs einen Dresscode?', a: 'Das hängt vom Club ab. In den Clubs der Oberstadt wie dem Sutton sind Sneaker und kurze Hosen nicht erlaubt.' },
+      ],
     },
   },
 }
