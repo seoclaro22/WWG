@@ -1347,6 +1347,56 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Bank Club on Avenida de Francia, next to the City of Arts and Sciences. Afternoon sessions from 5pm, nights until 3:30am, Thursday to Sunday.',
     de: 'Bank Club an der Avenida de Francia, neben der Stadt der Künste. Tardeo ab 17 Uhr, nachts bis 3:30 Uhr, Donnerstag bis Sonntag. Metro Linie 10.',
   },
+  'joy-eslava': {
+    es: 'Antiguo teatro de 1872 en la Calle del Arenal, junto a Sol. Discoteca Joy Eslava desde 1981, hoy Teatro Eslava: conciertos y sesiones de club.',
+    en: 'A former 1872 theatre on Calle del Arenal, by Sol. The Joy Eslava nightclub since 1981, now Teatro Eslava: live shows and club nights.',
+    de: 'Ehemaliges Theater von 1872 in der Calle del Arenal, nahe Sol. Seit 1981 Club Joy Eslava, heute Teatro Eslava: Konzerte und Clubnächte.',
+  },
+  'teatro-kapital': {
+    es: 'Siete plantas junto a la estación de Atocha. Abre de miércoles a domingo de 23:00 a 06:00, con ambiente y música distintos en cada planta.',
+    en: 'Seven floors next to Atocha station. Open Wednesday to Sunday, 11pm to 6am, with a different room and sound on each floor.',
+    de: 'Sieben Etagen neben dem Bahnhof Atocha. Mittwoch bis Sonntag von 23 bis 6 Uhr geöffnet, mit eigener Stimmung auf jeder Etage.',
+  },
+  'razzmatazz-barcelona': {
+    es: 'Antigua nave industrial en Poblenou con cinco salas que funcionan juntas o por separado. La principal supera las 2.000 personas.',
+    en: 'A former industrial building in Poblenou with five rooms that run together or separately. The main room holds over 2,000 people.',
+    de: 'Ehemalige Industriehalle in Poblenou mit fünf Räumen, die einzeln oder zusammen laufen. Der Hauptraum fasst über 2.000 Personen.',
+  },
+  'sutton-barcelona': {
+    es: 'Club en la calle Tuset, en Sarrià-Sant Gervasi. Código de vestimenta cuidado: sin zapatillas deportivas ni pantalón corto.',
+    en: 'Club on Carrer de Tuset, in Sarrià-Sant Gervasi. Smart dress code: no trainers and no shorts.',
+    de: 'Club in der Carrer de Tuset in Sarrià-Sant Gervasi. Gepflegter Dresscode: keine Sneaker und keine kurzen Hosen.',
+  },
+  'zar-society': {
+    es: 'Club en el Paseo Marítimo de Palma. Reguetón, éxitos en español y comercial; jueves, viernes y sábado son las noches fuertes.',
+    en: "Club on Palma's Paseo Marítimo. Reggaeton, Spanish hits and commercial music, with Thursday, Friday and Saturday as the main nights.",
+    de: 'Club am Paseo Marítimo in Palma. Reggaeton, spanische Hits und Commercial, Hauptabende sind Donnerstag, Freitag und Samstag.',
+  },
+  'baloo-ibiza': {
+    es: "Club abierto en 2024 en Playa d'en Bossa, junto a la rotonda. Noches latinas y afro como Be Latin Bitch o Afrobibi. Mayores de 18 con DNI.",
+    en: "Club opened in 2024 in Playa d'en Bossa, by the roundabout. Latin and afro nights such as Be Latin Bitch and Afrobibi. 18+ with ID.",
+    de: "2024 eröffneter Club in Playa d'en Bossa am Kreisverkehr. Latin- und Afro-Nächte wie Be Latin Bitch und Afrobibi. Ab 18 mit Ausweis.",
+  },
+  'gunilla-club': {
+    es: 'Club en el Paseo de Recoletos, entre Colón y Banco de España. Reguetón y house comercial de medianoche a las 06:00.',
+    en: 'Club on Paseo de Recoletos, between Colón and Banco de España. Reggaeton and commercial house from midnight to 6am.',
+    de: 'Club am Paseo de Recoletos zwischen Colón und Banco de España. Reggaeton und Commercial House von Mitternacht bis 6 Uhr.',
+  },
+  'shoko-madrid': {
+    es: 'Club en la Calle de Toledo, en La Latina, junto a Puerta de Toledo (L5). De miércoles a domingo de 00:00 a 06:00; Pure Shoko los sábados.',
+    en: 'Club on Calle de Toledo in La Latina, by Puerta de Toledo (line 5). Wednesday to Sunday, midnight to 6am, with Pure Shoko on Saturdays.',
+    de: 'Club in der Calle de Toledo in La Latina, bei Puerta de Toledo (Linie 5). Mittwoch bis Sonntag, 0 bis 6 Uhr, samstags Pure Shoko.',
+  },
+  'shoko-barcelona': {
+    es: 'Restaurante y club frente a la playa de la Barceloneta, en el Port Olímpic. Restaurante de 11:00 a 00:00 y club de 00:00 a 06:00.',
+    en: 'Beachfront restaurant and club in Barceloneta, at Port Olímpic. Restaurant from 11am to midnight, club from midnight to 6am every day.',
+    de: 'Restaurant und Club direkt am Strand der Barceloneta, im Port Olímpic. Restaurant 11 bis 24 Uhr, Club täglich 0 bis 6 Uhr.',
+  },
+  'sala-malandar-sevilla': {
+    es: 'Sala de conciertos y club en la Calle Torneo desde 2007, con unas 300 personas de aforo. Conciertos por la noche y sesiones de DJ hasta tarde.',
+    en: 'Live music venue and club on Calle Torneo since 2007, holding about 300 people. Gigs in the evening and DJ sessions until late.',
+    de: 'Konzertsaal und Club in der Calle Torneo seit 2007, rund 300 Personen Kapazität. Abends Konzerte, danach DJ-Sets bis spät.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -1884,6 +1934,191 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'An welchen Tagen und zu welchen Zeiten hat Brokers Valencia geöffnet?', a: 'Donnerstag bis Sonntag. Die Tardeos beginnen um 17 Uhr, die Nacht-Sessions um 22 Uhr, Schluss ist um 3:30 Uhr.' },
       { q: 'Welche Musik läuft im Brokers Valencia?', a: 'Nachmittags Pop und internationale Hits, ab Mitternacht übernehmen Reggaeton und Urban. Dazu kommen Tardeos wie RETROSPECTIVE am Samstag und Studentenpartys.' },
       { q: 'Wie komme ich zum Brokers Valencia?', a: 'Der Club liegt an der Avenida de Francia, 4, neben der Stadt der Künste und der Wissenschaften. Die nächste Metrostation ist Ciutat Arts i Ciències - Justícia (Linie 10), außerdem fahren die EMT-Buslinien 19, 35, 40 und 94 durch die Avenida.' },
+    ],
+  },
+  'joy-eslava': {
+    es: [
+      { q: '¿Joy Eslava y Teatro Eslava son el mismo sitio?', a: 'Sí. Es el mismo edificio de la Calle del Arenal, 11. Funcionó como discoteca con el nombre de Joy Eslava desde 1981 y hoy opera como Teatro Eslava.' },
+      { q: '¿Qué historia tiene el edificio?', a: 'Se inauguró como teatro en el siglo XIX, en torno a 1872. En 1981 se convirtió en la discoteca Joy Eslava y conserva la estructura de teatro con palco y anfiteatro.' },
+      { q: '¿Qué se hace en Teatro Eslava?', a: 'Conciertos, sesiones de club y eventos privados. Los horarios cambian según el evento, así que conviene mirarlos en la ficha de cada fiesta.' },
+      { q: '¿Dónde está?', a: 'En la Calle del Arenal, 11, a dos minutos de la Puerta del Sol y junto a la iglesia de San Ginés.' },
+    ],
+    en: [
+      { q: 'Are Joy Eslava and Teatro Eslava the same place?', a: 'Yes. It is the same building at Calle del Arenal, 11. It ran as the Joy Eslava nightclub from 1981 and now operates as Teatro Eslava.' },
+      { q: 'What is the history of the building?', a: 'It opened as a theatre in the 19th century, around 1872. In 1981 it became the Joy Eslava nightclub and kept its theatre layout with boxes and balconies.' },
+      { q: 'What happens at Teatro Eslava?', a: 'Concerts, club nights and private events. Opening hours depend on the event, so check each party page.' },
+      { q: 'Where is it?', a: 'At Calle del Arenal, 11, two minutes from Puerta del Sol and next to the church of San Ginés.' },
+    ],
+    de: [
+      { q: 'Sind Joy Eslava und Teatro Eslava derselbe Ort?', a: 'Ja. Es ist dasselbe Gebäude in der Calle del Arenal, 11. Ab 1981 lief es als Club Joy Eslava, heute heißt es Teatro Eslava.' },
+      { q: 'Welche Geschichte hat das Gebäude?', a: 'Es wurde im 19. Jahrhundert, um 1872, als Theater eröffnet. 1981 wurde daraus der Club Joy Eslava, mit erhaltenem Theaterraum samt Logen und Rängen.' },
+      { q: 'Was findet im Teatro Eslava statt?', a: 'Konzerte, Clubnächte und private Events. Die Zeiten hängen vom jeweiligen Event ab, daher lohnt der Blick auf die Partyseite.' },
+      { q: 'Wo liegt es?', a: 'In der Calle del Arenal, 11, zwei Minuten von der Puerta del Sol, neben der Kirche San Ginés.' },
+    ],
+  },
+  'teatro-kapital': {
+    es: [
+      { q: '¿Cuántas plantas tiene Teatro Kapital?', a: 'Siete, cada una con su propio ambiente y estilo de música, en un antiguo teatro de la Calle de Atocha.' },
+      { q: '¿Qué días y a qué hora abre?', a: 'De miércoles a domingo, de 23:00 a 06:00.' },
+      { q: '¿Cómo llegar?', a: 'Está en la Calle de Atocha, 125, a pocos minutos a pie de la estación de Atocha, con metro y Cercanías.' },
+    ],
+    en: [
+      { q: 'How many floors does Teatro Kapital have?', a: 'Seven, each with its own atmosphere and music, inside a former theatre on Calle de Atocha.' },
+      { q: 'Which days and hours is it open?', a: 'Wednesday to Sunday, from 11pm to 6am.' },
+      { q: 'How do I get there?', a: 'It is at Calle de Atocha, 125, a few minutes on foot from Atocha station, served by metro and Cercanías trains.' },
+    ],
+    de: [
+      { q: 'Wie viele Etagen hat das Teatro Kapital?', a: 'Sieben, jede mit eigener Stimmung und Musik, in einem ehemaligen Theater in der Calle de Atocha.' },
+      { q: 'An welchen Tagen und zu welchen Zeiten ist geöffnet?', a: 'Mittwoch bis Sonntag von 23 bis 6 Uhr.' },
+      { q: 'Wie komme ich hin?', a: 'Calle de Atocha, 125, wenige Gehminuten vom Bahnhof Atocha mit Metro und Cercanías.' },
+    ],
+  },
+  'razzmatazz-barcelona': {
+    es: [
+      { q: '¿Cuántas salas tiene Razzmatazz?', a: 'Cinco. Pueden funcionar por separado, con fiestas distintas, o conectadas en una misma noche. La sala principal supera las 2.000 personas y la más pequeña, Razz 3, ronda las 220.' },
+      { q: '¿Dónde está Razzmatazz?', a: 'En Poblenou, en el distrito 22@, dentro de una antigua nave industrial. La dirección principal es Carrer dels Almogàvers, 122, y tiene otra entrada por Carrer de Pamplona, 88.' },
+      { q: '¿Qué se hace en Razzmatazz?', a: 'Conciertos y sesiones de club. Cada sala tiene su programación, así que en una misma noche conviven estilos distintos.' },
+    ],
+    en: [
+      { q: 'How many rooms does Razzmatazz have?', a: 'Five. They can run separately with different parties or be connected on the same night. The main room holds over 2,000 people and the smallest, Razz 3, around 220.' },
+      { q: 'Where is Razzmatazz?', a: 'In Poblenou, in the 22@ district, inside a former industrial building. The main address is Carrer dels Almogàvers, 122, with another entrance on Carrer de Pamplona, 88.' },
+      { q: 'What happens at Razzmatazz?', a: 'Concerts and club nights. Each room has its own programme, so different styles share the same night.' },
+    ],
+    de: [
+      { q: 'Wie viele Räume hat das Razzmatazz?', a: 'Fünf. Sie laufen einzeln mit eigenen Partys oder verbunden in derselben Nacht. Der Hauptraum fasst über 2.000 Personen, der kleinste, Razz 3, etwa 220.' },
+      { q: 'Wo liegt das Razzmatazz?', a: 'In Poblenou im Viertel 22@, in einer ehemaligen Industriehalle. Hauptadresse ist Carrer dels Almogàvers, 122, ein weiterer Eingang liegt in der Carrer de Pamplona, 88.' },
+      { q: 'Was findet im Razzmatazz statt?', a: 'Konzerte und Clubnächte. Jeder Raum hat sein eigenes Programm, daher laufen in einer Nacht verschiedene Stile.' },
+    ],
+  },
+  'sutton-barcelona': {
+    es: [
+      { q: '¿Hay código de vestimenta en Sutton?', a: 'Sí. Se pide ir arreglado: no se permiten zapatillas deportivas ni pantalón corto.' },
+      { q: '¿Dónde está Sutton?', a: 'En el Carrer de Tuset, 13, en Sarrià-Sant Gervasi, cerca de la Diagonal.' },
+      { q: '¿Cuál es el horario y la edad mínima?', a: 'Varían según la noche y la fiesta, así que conviene revisarlos en la ficha de cada evento.' },
+    ],
+    en: [
+      { q: 'Is there a dress code at Sutton?', a: 'Yes. Smart dress is expected: no trainers and no shorts.' },
+      { q: 'Where is Sutton?', a: 'At Carrer de Tuset, 13, in Sarrià-Sant Gervasi, close to Avinguda Diagonal.' },
+      { q: 'What are the opening hours and minimum age?', a: 'They vary by night and by party, so check each event page.' },
+    ],
+    de: [
+      { q: 'Gibt es im Sutton einen Dresscode?', a: 'Ja. Gepflegte Kleidung wird erwartet: keine Sneaker und keine kurzen Hosen.' },
+      { q: 'Wo liegt das Sutton?', a: 'In der Carrer de Tuset, 13, in Sarrià-Sant Gervasi, nahe der Diagonal.' },
+      { q: 'Wie sind Öffnungszeiten und Mindestalter?', a: 'Sie wechseln je nach Abend und Party, daher lohnt der Blick auf die jeweilige Eventseite.' },
+    ],
+  },
+  'zar-society': {
+    es: [
+      { q: '¿Qué música suena en Zar Society?', a: 'Reguetón, éxitos en español y música comercial, con alguna sesión electrónica puntual.' },
+      { q: '¿Qué días abre?', a: 'Jueves, viernes y sábado son las noches principales. Los domingos organiza CALA SUNDAYS junto a su local hermano, Cala Mallorca.' },
+      { q: '¿Cómo reservar mesa en Zar Society?', a: 'Las reservas se hacen por WhatsApp en el 626 15 63 98.' },
+      { q: '¿Dónde está?', a: 'En la Avinguda de Gabriel Roca, 29, en pleno Paseo Marítimo de Palma.' },
+    ],
+    en: [
+      { q: 'What music plays at Zar Society?', a: 'Reggaeton, Spanish hits and commercial music, with the occasional electronic session.' },
+      { q: 'Which days is it open?', a: 'Thursday, Friday and Saturday are the main nights. On Sundays it runs CALA SUNDAYS with its sister venue, Cala Mallorca.' },
+      { q: 'How do I book a table at Zar Society?', a: 'Bookings are made on WhatsApp at +34 626 15 63 98.' },
+      { q: 'Where is it?', a: "At Avinguda de Gabriel Roca, 29, right on Palma's Paseo Marítimo." },
+    ],
+    de: [
+      { q: 'Welche Musik läuft im Zar Society?', a: 'Reggaeton, spanische Hits und Commercial, ab und zu auch elektronische Sessions.' },
+      { q: 'An welchen Tagen ist geöffnet?', a: 'Donnerstag, Freitag und Samstag sind die Hauptabende. Sonntags gibt es CALA SUNDAYS mit dem Schwesterlokal Cala Mallorca.' },
+      { q: 'Wie reserviere ich einen Tisch im Zar Society?', a: 'Reservierungen laufen über WhatsApp unter +34 626 15 63 98.' },
+      { q: 'Wo liegt der Club?', a: 'In der Avinguda de Gabriel Roca, 29, direkt am Paseo Marítimo von Palma.' },
+    ],
+  },
+  'baloo-ibiza': {
+    es: [
+      { q: '¿Qué fiestas hay en Baloo Ibiza?', a: 'Be Latin Bitch los viernes, Mentiroso y Afrobibi los jueves y Marea Boiler Room los miércoles, entre otras.' },
+      { q: '¿Cuál es el horario?', a: 'Cambia según la noche y la temporada. La mayoría de fiestas van de 23:00 a 05:00, pero conviene revisarlo en cada evento.' },
+      { q: '¿Hay edad mínima?', a: 'Sí, solo mayores de 18 años, con documento de identidad.' },
+      { q: '¿Dónde está?', a: "En el Carrer de les Begònies, 23, en Playa d'en Bossa (Sant Josep), junto a la rotonda. Abrió en 2024." },
+    ],
+    en: [
+      { q: 'Which parties are on at Baloo Ibiza?', a: 'Be Latin Bitch on Fridays, Mentiroso and Afrobibi on Thursdays and Marea Boiler Room on Wednesdays, among others.' },
+      { q: 'What are the opening hours?', a: 'They change by night and season. Most parties run from 11pm to 5am, but check each event.' },
+      { q: 'Is there a minimum age?', a: 'Yes, 18+ only, with ID.' },
+      { q: 'Where is it?', a: "At Carrer de les Begònies, 23, in Playa d'en Bossa (Sant Josep), by the roundabout. It opened in 2024." },
+    ],
+    de: [
+      { q: 'Welche Partys gibt es im Baloo Ibiza?', a: 'Unter anderem Be Latin Bitch freitags, Mentiroso und Afrobibi donnerstags und Marea Boiler Room mittwochs.' },
+      { q: 'Wie sind die Öffnungszeiten?', a: 'Sie ändern sich je nach Abend und Saison. Die meisten Partys laufen von 23 bis 5 Uhr, ein Blick auf das jeweilige Event lohnt sich.' },
+      { q: 'Gibt es ein Mindestalter?', a: 'Ja, nur ab 18 Jahren mit Ausweis.' },
+      { q: 'Wo liegt der Club?', a: "In der Carrer de les Begònies, 23, in Playa d'en Bossa (Sant Josep), am Kreisverkehr. Eröffnet 2024." },
+    ],
+  },
+  'gunilla-club': {
+    es: [
+      { q: '¿Qué música suena en Gunilla?', a: 'Reguetón y house comercial.' },
+      { q: '¿A qué hora abre?', a: 'De medianoche a las 06:00, de jueves a sábado. Algunas fuentes incluyen también el miércoles, así que conviene revisarlo en cada evento.' },
+      { q: '¿Cómo reservar?', a: 'Por teléfono en el 623 047 413 o el 91 056 29 53, de 17:00 a 20:00.' },
+      { q: '¿Dónde está?', a: 'En el Paseo de Recoletos, 16, entre Colón y Banco de España.' },
+    ],
+    en: [
+      { q: 'What music plays at Gunilla?', a: 'Reggaeton and commercial house.' },
+      { q: 'What time does it open?', a: 'Midnight to 6am, Thursday to Saturday. Some sources also list Wednesday, so check each event.' },
+      { q: 'How do I book?', a: 'By phone at +34 623 047 413 or +34 91 056 29 53, from 5pm to 8pm.' },
+      { q: 'Where is it?', a: 'At Paseo de Recoletos, 16, between Colón and Banco de España.' },
+    ],
+    de: [
+      { q: 'Welche Musik läuft im Gunilla?', a: 'Reggaeton und Commercial House.' },
+      { q: 'Wann ist geöffnet?', a: 'Von Mitternacht bis 6 Uhr, Donnerstag bis Samstag. Manche Quellen nennen auch den Mittwoch, daher lohnt der Blick auf das jeweilige Event.' },
+      { q: 'Wie reserviere ich?', a: 'Telefonisch unter +34 623 047 413 oder +34 91 056 29 53, zwischen 17 und 20 Uhr.' },
+      { q: 'Wo liegt der Club?', a: 'Am Paseo de Recoletos, 16, zwischen Colón und Banco de España.' },
+    ],
+  },
+  'shoko-madrid': {
+    es: [
+      { q: '¿Qué días abre Shoko Madrid?', a: 'De miércoles a domingo, de 00:00 a 06:00.' },
+      { q: '¿Qué fiestas tiene?', a: 'Pure Shoko los sábados y Puro Perreo los domingos, además de conciertos.' },
+      { q: '¿Hay edad mínima?', a: 'Sí, solo mayores de 18 años.' },
+      { q: '¿Dónde está?', a: 'En la Calle de Toledo, 86, en La Latina. La parada de metro más cercana es Puerta de Toledo (línea 5).' },
+    ],
+    en: [
+      { q: 'Which days is Shoko Madrid open?', a: 'Wednesday to Sunday, from midnight to 6am.' },
+      { q: 'Which parties does it run?', a: 'Pure Shoko on Saturdays and Puro Perreo on Sundays, plus concerts.' },
+      { q: 'Is there a minimum age?', a: 'Yes, 18+ only.' },
+      { q: 'Where is it?', a: 'At Calle de Toledo, 86, in La Latina. The closest metro stop is Puerta de Toledo (line 5).' },
+    ],
+    de: [
+      { q: 'An welchen Tagen hat Shoko Madrid geöffnet?', a: 'Mittwoch bis Sonntag von 0 bis 6 Uhr.' },
+      { q: 'Welche Partys gibt es?', a: 'Pure Shoko am Samstag und Puro Perreo am Sonntag, dazu Konzerte.' },
+      { q: 'Gibt es ein Mindestalter?', a: 'Ja, nur ab 18 Jahren.' },
+      { q: 'Wo liegt der Club?', a: 'In der Calle de Toledo, 86, in La Latina. Nächste Metrostation ist Puerta de Toledo (Linie 5).' },
+    ],
+  },
+  'shoko-barcelona': {
+    es: [
+      { q: '¿Qué horario tiene Shoko Barcelona?', a: 'El restaurante abre de 11:00 a 00:00 y el club de 00:00 a 06:00, todos los días.' },
+      { q: '¿Dónde está?', a: 'En el Passeig Marítim de la Barceloneta, 36, frente a la playa, en la zona del Port Olímpic.' },
+      { q: '¿Cómo contactar?', a: 'Por teléfono en el 932 259 200. El Ayuntamiento tiene planes de reforma para el Port Olímpic, así que conviene confirmar antes de ir.' },
+    ],
+    en: [
+      { q: 'What are the opening hours at Shoko Barcelona?', a: 'The restaurant is open from 11am to midnight and the club from midnight to 6am, every day.' },
+      { q: 'Where is it?', a: 'At Passeig Marítim de la Barceloneta, 36, on the beach, in the Port Olímpic area.' },
+      { q: 'How do I contact them?', a: 'By phone at +34 932 259 200. The city has redevelopment plans for Port Olímpic, so it is worth confirming before you go.' },
+    ],
+    de: [
+      { q: 'Wie sind die Öffnungszeiten von Shoko Barcelona?', a: 'Das Restaurant öffnet von 11 bis 24 Uhr, der Club von 0 bis 6 Uhr, jeden Tag.' },
+      { q: 'Wo liegt es?', a: 'Am Passeig Marítim de la Barceloneta, 36, direkt am Strand im Bereich des Port Olímpic.' },
+      { q: 'Wie erreiche ich das Shoko?', a: 'Telefonisch unter +34 932 259 200. Die Stadt plant einen Umbau des Port Olímpic, daher lohnt es sich, vorher nachzufragen.' },
+    ],
+  },
+  'sala-malandar-sevilla': {
+    es: [
+      { q: '¿Qué es Sala Malandar?', a: 'Una sala de conciertos y club abierta en 2007 en Sevilla, con un aforo de unas 300 personas.' },
+      { q: '¿Qué horario tiene?', a: 'Los conciertos suelen abrir puertas entre las 21:30 y las 22:00, y después siguen sesiones de DJ hasta tarde.' },
+      { q: '¿Dónde está?', a: 'En la Calle Torneo, 43, junto al río Guadalquivir.' },
+    ],
+    en: [
+      { q: 'What is Sala Malandar?', a: 'A live music venue and club in Seville, open since 2007, with a capacity of about 300 people.' },
+      { q: 'What are the hours?', a: 'Doors for concerts usually open between 9:30pm and 10pm, followed by DJ sessions until late.' },
+      { q: 'Where is it?', a: 'At Calle Torneo, 43, next to the Guadalquivir river.' },
+    ],
+    de: [
+      { q: 'Was ist die Sala Malandar?', a: 'Ein Konzertsaal und Club in Sevilla, seit 2007 geöffnet, mit rund 300 Personen Kapazität.' },
+      { q: 'Wie sind die Zeiten?', a: 'Einlass zu Konzerten ist meist zwischen 21:30 und 22 Uhr, danach legen DJs bis spät auf.' },
+      { q: 'Wo liegt sie?', a: 'In der Calle Torneo, 43, am Fluss Guadalquivir.' },
     ],
   },
 }
