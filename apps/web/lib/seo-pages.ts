@@ -503,6 +503,10 @@ export function zoneFaqHeading(locale: string) {
 // simplemente sin este bloque. Nunca se rellena con una plantilla generica.
 export type ZoneGuide = {
   intro: string
+  // Opcionales: solo en ciudades con fichas de club ya curadas. Los
+  // destacados enlazan a esas fichas; las faqs van antes de las automaticas.
+  destacados?: { slug: string; nombre: string; texto: string }[]
+  faqs?: ZoneFaq[]
   zonas: { titulo: string; texto: string }[]
   temporada: string
   discotecasFamosas: string
@@ -524,11 +528,28 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { titulo: 'Alcúdia y la bahía norte', texto: 'Junto con Magaluf, el otro gran polo de fiesta veraniega de la isla. Ambiente más familiar durante el día y clubs de playa por la noche, con público más internacional y menos concentrado que en el sur.' },
       ],
       temporada: 'La fiesta en Mallorca es muy estacional. La mayoría de las discotecas grandes de Magaluf y Alcúdia abren solo entre abril/mayo y octubre, y cierran por completo en invierno (de noviembre a marzo). Junio, julio y agosto son la temporada alta, con más ambiente pero también más aglomeración y precios más caros. Septiembre suele ser el mes mejor valorado por quien ya conoce la isla: sigue haciendo calor, el mar está a buena temperatura y las zonas turísticas están mucho más tranquilas. En Palma, algunas salas de música electrónica y clubs de ciudad se mantienen abiertos todo el año, al margen de la temporada de playa.',
-      discotecasFamosas: 'BCM Planet Dance, en Magaluf, es una de las discotecas más grandes de Europa: más de 38 años de historia, capacidad para varios miles de personas y line-ups con DJs internacionales cada temporada, de abril a octubre. Pachá tiene también una sala en Palma, junto al Paseo Marítimo, dentro del mismo grupo que hizo famosa la marca en Ibiza. Tito\'s, la discoteca centenaria de Palma por la que pasaron desde Josephine Baker hasta Grace Kelly, cerró definitivamente en 2021 y hoy ya no existe como local: se menciona aquí porque sigue siendo parte de la historia de la vida nocturna de la isla, no porque siga abierta. La agenda de Where We Go recoge las salas que están activas ahora mismo, no un ranking histórico.',
+      discotecasFamosas: 'BCM Planet Dance, en Magaluf, es una de las discotecas más grandes de Europa: más de 38 años de historia, capacidad para varios miles de personas y line-ups con DJs internacionales cada temporada, de abril a octubre. Pachá tiene también una sala en Palma, junto al Paseo Marítimo, dentro del mismo grupo que hizo famosa la marca en Ibiza. Tito\'s, la discoteca histórica del Paseo Marítimo por la que pasaron desde Josephine Baker hasta Grace Kelly, estuvo años cerrada; su local reabrió en julio de 2026 como Fitz Mallorca. La agenda de Where We Go recoge las salas que están activas ahora mismo, no un ranking histórico.',
       transporte: 'Palma tiene un servicio de autobús nocturno (líneas NIT) que conecta el centro con las zonas periféricas, con parada común en Plaza de España para cambiar de línea. Fuera de Palma, en Magaluf y Alcúdia, el transporte público nocturno es mucho más limitado y la opción habitual es el taxi. En las noches de verano, sobre todo a la salida de las discotecas de madrugada, encontrar taxi libre puede costar bastante: conviene reservarlo con antelación o compartirlo. Se recomienda usar siempre taxis oficiales o aplicaciones de VTC reconocidas, nunca coches sin licencia que se ofrecen a pie de calle.',
       precio: 'La entrada estándar en la mayoría de discotecas de Mallorca ronda entre 10 y 25 €, según la noche y el cartel. Los clubs más grandes de Magaluf y Palma pueden subir de 30 € en fechas con DJs internacionales, con reservados y zonas VIP a partir de 100 € por persona. Las copas suelen costar entre 3 y 8 €. Cada ficha de evento en Where We Go lleva su precio real cuando el promotor lo publica.',
       vestimenta: 'El código de vestimenta depende del tipo de local. En los clubs de playa y en las zonas más turísticas de Magaluf el ambiente es informal, aunque en los locales con más nivel piden ir arreglado. En las salas de música electrónica de Palma el criterio es más relajado: lo habitual es ropa cómoda, sin chanclas ni bañador.',
       seguridad: 'Las zonas más turísticas, como Magaluf, Palma centro y El Arenal, son las que más registran hurtos y descuidos: vigila tus bebidas, no las pierdas de vista y evita dejarlas con desconocidos. Se recomienda no caminar solo de madrugada por calles poco transiluminadas cerca de las zonas de fiesta y volver siempre acompañado o en taxi. Beber en la calle fuera de los locales autorizados no está permitido y puede acabar en sanción. Como en cualquier zona turística con mucha afluencia nocturna, ir con el grupo, controlar el ritmo de bebida y planear la vuelta antes de salir reduce casi todos los riesgos.',
+      destacados: [
+        { slug: 'fitz-mallorca', nombre: 'Fitz Mallorca', texto: 'El antiguo Tito\'s del Paseo Marítimo, reabierto en julio de 2026. House, tech house y música urbana.' },
+        { slug: 'blvd-maritimo-club', nombre: 'Blvd Marítimo', texto: 'Paseo Marítimo, viernes y sábado hasta las 06:00. Comercial, reguetón y latino.' },
+        { slug: 'enredo-club', nombre: 'Enredo Club', texto: 'En Portopí, a pie de paseo. MENEO los sábados con reguetón; cumbia los viernes.' },
+        { slug: 'zar-society', nombre: 'Zar Society', texto: 'Paseo Marítimo. Reguetón y éxitos en español de jueves a sábado.' },
+        { slug: 'overclub', nombre: 'Overclub', texto: 'Techno y tech house en el polígono de Son Rossinyol, viernes y sábado.' },
+        { slug: 'wave-club', nombre: 'Wave Club', texto: 'Polígono Can Valero. Techno y house los viernes; reguetón el resto de noches.' },
+        { slug: 'koya-club', nombre: 'Koya Club', texto: 'El antiguo Magic de S\'Arenal, en Playa de Palma. Afro house, latin tech y reguetón.' },
+        { slug: 'bcm-mallorca', nombre: 'BCM Planet Dance', texto: 'Magaluf. Una de las discotecas más grandes de Europa, de abril a octubre.' },
+        { slug: 'panama-jack-magaluf', nombre: 'Panama Jack', texto: 'En la Strip de Magaluf. Reguetón y latino cada noche en temporada.' },
+      ],
+      faqs: [
+        { q: '¿Dónde salir de fiesta en Palma?', a: 'En el Paseo Marítimo se concentran Fitz Mallorca, Blvd Marítimo, Enredo y Zar Society. Para techno hay que ir a los polígonos: Overclub en Son Rossinyol y Wave Club en Can Valero. En Playa de Palma está Koya Club.' },
+        { q: '¿Dónde escuchar techno en Mallorca?', a: 'Overclub, en Son Rossinyol, programa techno y tech house los viernes y sábados. Wave Club, en Can Valero, dedica los viernes al techno y el house.' },
+        { q: '¿Hay discotecas abiertas en invierno en Mallorca?', a: 'Sí, pero sobre todo en Palma. Las grandes de Magaluf y Alcúdia cierran de noviembre a marzo, mientras que los clubs de ciudad siguen abriendo los fines de semana todo el año.' },
+        { q: '¿Cuál es la discoteca más grande de Mallorca?', a: 'BCM Planet Dance, en Magaluf. Tiene capacidad para varios miles de personas y abre de abril a octubre.' },
+      ],
     },
     en: {
       intro: 'Mallorca nightlife moves both the people who live on the island and the tourists who land for a few summer days. There is something for almost every plan: beach clubs with a touristy crowd, electronic music venues with an international line-up, and neighbourhood rooftops to start the night slowly. Back in the 1960s the island had more nightclubs than Madrid and Barcelona combined, and that weight still shows: Mallorca´s nightlife is not just a side effect of sun-and-beach tourism, it is its own industry with decades of history behind it.',
@@ -540,11 +561,28 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { titulo: 'Alcúdia and the northern bay', texto: 'Along with Magaluf, the island´s other big summer party hub. More of a family vibe during the day and beach clubs at night, with a more international, less packed crowd than the south.' },
       ],
       temporada: 'Partying in Mallorca is highly seasonal. Most of the big clubs in Magaluf and Alcúdia only open between April/May and October, closing completely over winter (November to March). June, July and August are peak season, with the most energy but also the biggest crowds and highest prices. September is usually the best-rated month for anyone who already knows the island: still warm, the sea still comfortable, and the touristy areas far calmer. In Palma, some electronic music clubs and city venues stay open all year, regardless of the beach season.',
-      discotecasFamosas: 'BCM Planet Dance, in Magaluf, is one of the biggest nightclubs in Europe: over 38 years of history, capacity for several thousand people and international DJ line-ups every season, from April to October. Pachá also runs a venue in Palma, by the Paseo Marítimo, part of the same group that made the brand famous in Ibiza. Tito´s, Palma´s century-old club that once hosted everyone from Josephine Baker to Grace Kelly, closed for good in 2021 and no longer exists as a venue: it´s mentioned here as part of the island´s nightlife history, not because it´s still open. Where We Go´s listings only cover venues that are active right now, not a historical ranking.',
+      discotecasFamosas: 'BCM Planet Dance, in Magaluf, is one of the biggest nightclubs in Europe: over 38 years of history, capacity for several thousand people and international DJ line-ups every season, from April to October. Pachá also runs a venue in Palma, by the Paseo Marítimo, part of the same group that made the brand famous in Ibiza. Tito´s, the historic Paseo Marítimo club that once hosted everyone from Josephine Baker to Grace Kelly, stood closed for years; its venue reopened in July 2026 as Fitz Mallorca. Where We Go´s listings only cover venues that are active right now, not a historical ranking.',
       transporte: 'Palma runs a night bus service (NIT lines) connecting the centre with outlying areas, with a shared stop at Plaza de España for changing lines. Outside Palma, in Magaluf and Alcúdia, night public transport is much more limited and taxis are the usual option. On summer nights, especially right after clubs close in the early hours, finding a free taxi can take a while: it´s worth booking ahead or sharing one. Always use official taxis or recognised ride-hailing apps, never unlicensed cars offered on the street.',
       precio: 'A standard club ticket in Mallorca runs roughly €10 to €25, depending on the night and the line-up. The bigger clubs in Magaluf and Palma can go above €30 on nights with international DJs, with tables and VIP areas starting around €100 per person. Drinks usually cost €3 to €8. Every event listing on Where We Go carries its real price when the promoter publishes one.',
       vestimenta: 'Dress code depends on the venue. Beach clubs and the touristy parts of Magaluf are casual, though the higher-end venues expect something smarter. Palma´s electronic music clubs are more relaxed: comfortable clothes are fine, just no flip-flops or swimwear.',
       seguridad: 'The most touristy areas, like Magaluf, central Palma and El Arenal, see the most petty theft and unattended drinks: keep an eye on your glass and never leave it with strangers. It´s best to avoid walking alone in the early hours through poorly lit streets near the party areas, and to head back with company or by taxi. Drinking in the street outside licensed venues isn´t allowed and can lead to a fine. As with any busy tourist nightlife area, sticking with your group, pacing your drinking and planning the way back before you go out removes most of the risk.',
+      destacados: [
+        { slug: 'fitz-mallorca', nombre: 'Fitz Mallorca', texto: "The former Tito's on the Paseo Marítimo, reopened in July 2026. House, tech house and urban music." },
+        { slug: 'blvd-maritimo-club', nombre: 'Blvd Marítimo', texto: 'Paseo Marítimo, Friday and Saturday until 6am. Commercial, reggaeton and Latin.' },
+        { slug: 'enredo-club', nombre: 'Enredo Club', texto: 'In Portopí, right on the seafront. MENEO on Saturdays with reggaeton; cumbia on Fridays.' },
+        { slug: 'zar-society', nombre: 'Zar Society', texto: 'Paseo Marítimo. Reggaeton and Spanish hits, Thursday to Saturday.' },
+        { slug: 'overclub', nombre: 'Overclub', texto: 'Techno and tech house in the Son Rossinyol industrial estate, Friday and Saturday.' },
+        { slug: 'wave-club', nombre: 'Wave Club', texto: 'Can Valero industrial estate. Techno and house on Fridays; reggaeton on other nights.' },
+        { slug: 'koya-club', nombre: 'Koya Club', texto: "The former Magic in S'Arenal, Playa de Palma. Afro house, latin tech and reggaeton." },
+        { slug: 'bcm-mallorca', nombre: 'BCM Planet Dance', texto: 'Magaluf. One of the biggest nightclubs in Europe, April to October.' },
+        { slug: 'panama-jack-magaluf', nombre: 'Panama Jack', texto: 'On the Magaluf Strip. Reggaeton and Latin every night in season.' },
+      ],
+      faqs: [
+        { q: 'Where to go out in Palma?', a: 'Fitz Mallorca, Blvd Marítimo, Enredo and Zar Society are all on the Paseo Marítimo. For techno, head to the industrial estates: Overclub in Son Rossinyol and Wave Club in Can Valero. Koya Club is in Playa de Palma.' },
+        { q: 'Where to hear techno in Mallorca?', a: 'Overclub, in Son Rossinyol, runs techno and tech house on Fridays and Saturdays. Wave Club, in Can Valero, gives Fridays to techno and house.' },
+        { q: 'Are there clubs open in winter in Mallorca?', a: 'Yes, mostly in Palma. The big clubs in Magaluf and Alcúdia close from November to March, while city clubs keep opening at weekends all year.' },
+        { q: 'What is the biggest nightclub in Mallorca?', a: 'BCM Planet Dance, in Magaluf. It holds several thousand people and opens from April to October.' },
+      ],
     },
     de: {
       // Reescrita para el mercado aleman, no traducida del castellano. Los
@@ -568,6 +606,23 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       precio: 'In den meisten Bars am Ballermann zahlt man keinen Eintritt — das Geld geht für Getränke drauf, ein Bier liegt je nach Laden bei etwa 4 bis 8 €. Der Megapark verlangt je nach Veranstaltung Eintritt. In den großen Clubs in Palma und Magaluf liegt er meist zwischen 15 und 30 €, an Abenden mit internationalen DJs auch darüber; Tische und VIP-Bereiche starten ab rund 100 € pro Person. Im Vorverkauf ist es fast immer günstiger als an der Tür. Den genauen Preis zeigt jede Veranstaltung, sobald der Veranstalter ihn veröffentlicht.',
       vestimenta: 'Am Ballermann gibt es praktisch keinen Dresscode: Shorts, Trikot und Flip-Flops sind völlig normal, viele kommen direkt vom Strand. Trikots und Gruppen-Shirts gehören für viele zum Malle-Urlaub dazu. In den großen Clubs am Paseo Marítimo in Palma sieht das anders aus — dort wird gepflegte Kleidung erwartet, Badekleidung und Sportsachen kommen nicht durch die Tür. In Magaluf liegt es dazwischen und hängt vom Laden ab.',
       seguridad: 'In der Hochsaison sind Taschendiebstähle an der Playa de Palma häufig: Handy und Geldbeutel nah am Körper tragen und Getränke nie unbeaufsichtigt stehen lassen. Trinken auf offener Straße außerhalb der Lokale ist auf Mallorca verboten und wird mit Bußgeldern geahndet; an der Playa de Palma gelten zusätzlich verschärfte Regeln gegen Alkoholexzesse. In den frühen Morgenstunden nicht allein durch schlecht beleuchtete Straßen laufen, sondern in Begleitung oder mit dem Taxi zurück. Wer in der Gruppe bleibt, das Trinktempo im Blick behält und den Rückweg vorher plant, hat mit dem Rest keine Probleme.',
+      destacados: [
+        { slug: 'fitz-mallorca', nombre: 'Fitz Mallorca', texto: 'Das frühere Tito\'s am Paseo Marítimo, im Juli 2026 neu eröffnet. House, Tech House und Urban.' },
+        { slug: 'blvd-maritimo-club', nombre: 'Blvd Marítimo', texto: 'Paseo Marítimo, Freitag und Samstag bis 6 Uhr. Commercial, Reggaeton und Latin.' },
+        { slug: 'enredo-club', nombre: 'Enredo Club', texto: 'In Portopí direkt an der Promenade. Samstags MENEO mit Reggaeton, freitags Cumbia.' },
+        { slug: 'zar-society', nombre: 'Zar Society', texto: 'Paseo Marítimo. Reggaeton und spanische Hits, Donnerstag bis Samstag.' },
+        { slug: 'overclub', nombre: 'Overclub', texto: 'Techno und Tech House im Gewerbegebiet Son Rossinyol, Freitag und Samstag.' },
+        { slug: 'wave-club', nombre: 'Wave Club', texto: 'Gewerbegebiet Can Valero. Freitags Techno und House, sonst Reggaeton.' },
+        { slug: 'koya-club', nombre: 'Koya Club', texto: 'Das frühere Magic in S\'Arenal an der Playa de Palma. Afro House, Latin Tech und Reggaeton.' },
+        { slug: 'bcm-mallorca', nombre: 'BCM Planet Dance', texto: 'Magaluf. Einer der größten Clubs Europas, von April bis Oktober.' },
+        { slug: 'panama-jack-magaluf', nombre: 'Panama Jack', texto: 'Am Magaluf Strip. Reggaeton und Latin jede Nacht in der Saison.' },
+      ],
+      faqs: [
+        { q: 'Wo kann man in Palma feiern gehen?', a: 'Am Paseo Marítimo liegen Fitz Mallorca, Blvd Marítimo, Enredo und Zar Society. Für Techno geht es in die Gewerbegebiete: Overclub in Son Rossinyol und Wave Club in Can Valero. An der Playa de Palma liegt der Koya Club.' },
+        { q: 'Wo läuft Techno auf Mallorca?', a: 'Der Overclub in Son Rossinyol spielt freitags und samstags Techno und Tech House. Der Wave Club in Can Valero widmet die Freitage Techno und House.' },
+        { q: 'Haben auf Mallorca im Winter Clubs geöffnet?', a: 'Ja, vor allem in Palma. Die großen Clubs in Magaluf und Alcúdia schließen von November bis März, die Clubs in der Stadt öffnen das ganze Jahr am Wochenende.' },
+        { q: 'Welcher ist der größte Club auf Mallorca?', a: 'BCM Planet Dance in Magaluf. Er fasst mehrere tausend Personen und hat von April bis Oktober geöffnet.' },
+      ],
     },
   },
   Madrid: {

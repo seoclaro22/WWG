@@ -52,10 +52,10 @@ export default async function ZonePage({ params }: { params: { locale: string; z
     fetchZoneGenreCounts(zoneName),
     fetchZoneFacts(zoneName),
   ])
-  const faq = zoneFaq(zoneName, params.locale, facts)
   // undefined en cualquier ciudad que no se haya investigado todavia: la
   // pagina sigue funcionando igual, solo sin este bloque.
   const guide = zoneGuide(zoneName, params.locale)
+  const faq = [...(guide?.faqs || []), ...zoneFaq(zoneName, params.locale, facts)]
   const guideH = zoneGuideHeadings(params.locale)
 
   const copy = zoneMeta(zoneName, params.locale)
@@ -124,6 +124,24 @@ export default async function ZonePage({ params }: { params: { locale: string; z
           <div className="space-y-3">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-[#d8af3a]/70">{guideH.discotecasFamosas(zoneName)}</h2>
             <p className="text-sm text-white/70 leading-relaxed max-w-2xl">{guide.discotecasFamosas}</p>
+          </div>
+        )}
+
+        {/* Seleccion fija con enlace a fichas ya curadas: reparte autoridad
+            desde la pagina de ciudad hacia los clubs con contenido propio. */}
+        {guide?.destacados && guide.destacados.length > 0 && (
+          <div className="grid gap-3 md:grid-cols-2">
+            {guide.destacados.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/club/${d.slug}`}
+                prefetch={false}
+                className="rounded-2xl border border-white/10 bg-white/5 p-4 hover:border-[#d8af3a]/40 transition-colors"
+              >
+                <h3 className="text-sm font-medium text-white">{d.nombre}</h3>
+                <p className="text-sm text-white/60 mt-1.5 leading-relaxed">{d.texto}</p>
+              </Link>
+            ))}
           </div>
         )}
 
