@@ -836,8 +836,15 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'Al ser una isla con mucha afluencia turística y locales con aforos muy grandes, conviene vigilar las pertenencias en las colas y dentro de las discotecas más masificadas. El discobús nocturno y los taxis oficiales son las formas más seguras de moverse de madrugada; evita coches sin licencia que se ofrecen fuera de los locales.',
       destacados: [
         { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, abierto en 2024. Noches latinas y afro como Be Latin Bitch o Afrobibi." },
+        { slug: 'hi-ibiza', nombre: 'Hï Ibiza', texto: "Playa d'en Bossa, en el antiguo Space desde 2017. The Theatre y Club Room." },
+        { slug: 'pacha-ibiza', nombre: 'Pacha Ibiza', texto: 'Ibiza ciudad, desde 1973. Unas 3.000 personas, de mayo a octubre.' },
+        { slug: 'amnesia-ibiza', nombre: 'Amnesia', texto: 'San Rafael, desde 1976. Main Room y Terrace, unas 5.000 personas.' },
+        { slug: 'eden-ibiza-377a52', nombre: 'Eden', texto: 'Sant Antoni, desde 1999. Sala principal, sala NeXt y sonido Void.' },
+        { slug: 'cafe-del-mar-ibiza', nombre: 'Café del Mar', texto: 'Sant Antoni, desde 1980. La puesta de sol con música balear.' },
       ],
       faqs: [
+        { q: '¿Cuáles son las discotecas más conocidas de Ibiza?', a: "Pacha, en Ibiza ciudad desde 1973; Amnesia, en San Rafael desde 1976; Hï, en Playa d'en Bossa desde 2017; y Eden, en Sant Antoni desde 1999." },
+        { q: '¿Dónde ver la puesta de sol en Ibiza?', a: 'Café del Mar, en Sant Antoni de Portmany, lleva desde 1980 acompañando la puesta de sol sobre la bahía con música balear.' },
         { q: '¿Dónde hay fiestas latinas en Ibiza?', a: "Baloo, en Playa d'en Bossa, programa Be Latin Bitch los viernes y Mentiroso y Afrobibi los jueves. Solo mayores de 18 con DNI." },
       ],
     },
@@ -856,8 +863,15 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'As an island with heavy tourist traffic and very large-capacity venues, it´s worth watching your belongings in queues and inside the more crowded clubs. The night disco-bus and official taxis are the safest ways to get around in the small hours; avoid unlicensed cars offered outside venues.',
       destacados: [
         { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, opened in 2024. Latin and afro nights such as Be Latin Bitch and Afrobibi." },
+        { slug: 'hi-ibiza', nombre: 'Hï Ibiza', texto: "Playa d'en Bossa, on the old Space site since 2017. The Theatre and Club Room." },
+        { slug: 'pacha-ibiza', nombre: 'Pacha Ibiza', texto: 'Ibiza Town, since 1973. About 3,000 people, May to October.' },
+        { slug: 'amnesia-ibiza', nombre: 'Amnesia', texto: 'San Rafael, since 1976. Main Room and Terrace, about 5,000 people.' },
+        { slug: 'eden-ibiza-377a52', nombre: 'Eden', texto: 'Sant Antoni, since 1999. Main room, NeXt room and Void sound.' },
+        { slug: 'cafe-del-mar-ibiza', nombre: 'Café del Mar', texto: 'Sant Antoni, since 1980. Sunset with a Balearic soundtrack.' },
       ],
       faqs: [
+        { q: 'Which are the best-known clubs in Ibiza?', a: "Pacha, in Ibiza Town since 1973; Amnesia, in San Rafael since 1976; Hï, in Playa d'en Bossa since 2017; and Eden, in Sant Antoni since 1999." },
+        { q: 'Where to watch the sunset in Ibiza?', a: 'Café del Mar, in Sant Antoni de Portmany, has been setting the sunset over the bay to Balearic music since 1980.' },
         { q: 'Where are the Latin parties in Ibiza?', a: "Baloo, in Playa d'en Bossa, runs Be Latin Bitch on Fridays and Mentiroso and Afrobibi on Thursdays. 18+ with ID." },
       ],
     },
@@ -876,8 +890,15 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       seguridad: 'Als Insel mit starkem Touristenandrang und sehr großen Locations sollte man in Schlangen und in den volleren Clubs auf seine Sachen achten. Der nächtliche Discobus und offizielle Taxis sind die sichersten Wege in den frühen Morgenstunden; unlizenzierte Autos vor den Locations meiden.',
       destacados: [
         { slug: 'baloo-ibiza', nombre: 'Baloo Ibiza', texto: "Playa d'en Bossa, eröffnet 2024. Latin- und Afro-Nächte wie Be Latin Bitch und Afrobibi." },
+        { slug: 'hi-ibiza', nombre: 'Hï Ibiza', texto: "Playa d'en Bossa, seit 2017 am früheren Space-Standort. The Theatre und Club Room." },
+        { slug: 'pacha-ibiza', nombre: 'Pacha Ibiza', texto: 'Ibiza-Stadt, seit 1973. Rund 3.000 Personen, Mai bis Oktober.' },
+        { slug: 'amnesia-ibiza', nombre: 'Amnesia', texto: 'San Rafael, seit 1976. Main Room und Terrace, rund 5.000 Personen.' },
+        { slug: 'eden-ibiza-377a52', nombre: 'Eden', texto: 'Sant Antoni, seit 1999. Hauptraum, NeXt-Raum und Void-Sound.' },
+        { slug: 'cafe-del-mar-ibiza', nombre: 'Café del Mar', texto: 'Sant Antoni, seit 1980. Sonnenuntergang mit balearischer Musik.' },
       ],
       faqs: [
+        { q: 'Welche Clubs auf Ibiza sind am bekanntesten?', a: "Pacha in Ibiza-Stadt seit 1973, Amnesia in San Rafael seit 1976, Hï in Playa d'en Bossa seit 2017 und Eden in Sant Antoni seit 1999." },
+        { q: 'Wo sieht man auf Ibiza den Sonnenuntergang?', a: 'Im Café del Mar in Sant Antoni de Portmany, wo seit 1980 der Sonnenuntergang über der Bucht mit balearischer Musik begleitet wird.' },
         { q: 'Wo gibt es Latin-Partys auf Ibiza?', a: "Im Baloo in Playa d'en Bossa: freitags Be Latin Bitch, donnerstags Mentiroso und Afrobibi. Ab 18 mit Ausweis." },
       ],
     },
@@ -1565,6 +1586,31 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     es: 'Sala de conciertos y club en la Calle Torneo desde 2007, con unas 300 personas de aforo. Conciertos por la noche y sesiones de DJ hasta tarde.',
     en: 'Live music venue and club on Calle Torneo since 2007, holding about 300 people. Gigs in the evening and DJ sessions until late.',
     de: 'Konzertsaal und Club in der Calle Torneo seit 2007, rund 300 Personen Kapazität. Abends Konzerte, danach DJ-Sets bis spät.',
+  },
+  'hi-ibiza': {
+    es: "Club de Playa d'en Bossa abierto en 2017 en el antiguo local de Space. Dos salas, The Theatre y Club Room, y temporada de verano.",
+    en: "Playa d'en Bossa club opened in 2017 on the former Space site. Two main rooms, The Theatre and Club Room, open for the summer season.",
+    de: "2017 am früheren Standort des Space in Playa d'en Bossa eröffnet. Zwei Haupträume, The Theatre und Club Room, geöffnet in der Sommersaison.",
+  },
+  'pacha-ibiza': {
+    es: 'Abierto en 1973 por Ricardo Urgell en una casa payesa de Ibiza ciudad, el club de las cerezas. Unas 3.000 personas, temporada de mayo a octubre.',
+    en: 'Opened in 1973 by Ricardo Urgell in a farmhouse in Ibiza Town, the club of the cherries. About 3,000 people, season from May to October.',
+    de: '1973 von Ricardo Urgell in einem Bauernhaus in Ibiza-Stadt eröffnet, der Club mit den Kirschen. Rund 3.000 Personen, Saison Mai bis Oktober.',
+  },
+  'amnesia-ibiza': {
+    es: 'Club de San Rafael, en la carretera de Ibiza a Sant Antoni, abierto en 1976. Main Room y Terrace, con unas 5.000 personas de aforo.',
+    en: 'San Rafael club on the Ibiza to Sant Antoni road, open since 1976. Main Room and Terrace, with a capacity of about 5,000.',
+    de: 'Club in San Rafael an der Straße Ibiza–Sant Antoni, seit 1976. Main Room und Terrace, Kapazität rund 5.000 Personen.',
+  },
+  'eden-ibiza-377a52': {
+    es: 'Club de Sant Antoni abierto en 1999 donde estuvo Kaos. Sala principal y sala NeXt, sonido Void, junto a Es Paradis.',
+    en: 'Sant Antoni club opened in 1999 on the old Kaos site. Main room and NeXt room, Void sound system, next door to Es Paradis.',
+    de: 'Club in Sant Antoni, 1999 am Standort des Kaos eröffnet. Hauptraum und NeXt-Raum, Void-Soundsystem, direkt neben Es Paradis.',
+  },
+  'cafe-del-mar-ibiza': {
+    es: 'Café de Sant Antoni abierto en 1980 con diseño de Lluís Güell. Famoso por ver la puesta de sol con música balear de fondo.',
+    en: 'Sant Antoni café opened in 1980, designed by Lluís Güell. Famous for watching the sunset to a Balearic soundtrack.',
+    de: '1980 eröffnetes Café in Sant Antoni, entworfen von Lluís Güell. Berühmt für den Sonnenuntergang mit balearischer Musik.',
   },
 }
 
@@ -2288,6 +2334,94 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Was ist die Sala Malandar?', a: 'Ein Konzertsaal und Club in Sevilla, seit 2007 geöffnet, mit rund 300 Personen Kapazität.' },
       { q: 'Wie sind die Zeiten?', a: 'Einlass zu Konzerten ist meist zwischen 21:30 und 22 Uhr, danach legen DJs bis spät auf.' },
       { q: 'Wo liegt sie?', a: 'In der Calle Torneo, 43, am Fluss Guadalquivir.' },
+    ],
+  },
+  'hi-ibiza': {
+    es: [
+      { q: '¿Hï Ibiza es el antiguo Space?', a: "Ocupa el mismo edificio de Playa d'en Bossa. Space cerró en 2016 y Hï abrió allí el 28 de mayo de 2017, gestionado por The Night League, el grupo de Ushuaïa." },
+      { q: '¿Cuántas salas tiene Hï Ibiza?', a: 'Dos salas principales, The Theatre y Club Room, y un tercer espacio, Wild Corner.' },
+      { q: '¿Cuándo abre Hï Ibiza?', a: 'En la temporada de verano. Las fechas de apertura y cierre cambian cada año, así que conviene revisarlas en la agenda.' },
+    ],
+    en: [
+      { q: 'Is Hï Ibiza the old Space?', a: "It occupies the same building in Playa d'en Bossa. Space closed in 2016 and Hï opened there on 28 May 2017, run by The Night League, the group behind Ushuaïa." },
+      { q: 'How many rooms does Hï Ibiza have?', a: 'Two main rooms, The Theatre and Club Room, plus a third space, the Wild Corner.' },
+      { q: 'When is Hï Ibiza open?', a: 'During the summer season. Opening and closing dates change every year, so check the listings.' },
+    ],
+    de: [
+      { q: 'Ist Hï Ibiza das frühere Space?', a: "Der Club nutzt dasselbe Gebäude in Playa d'en Bossa. Das Space schloss 2016, Hï eröffnete dort am 28. Mai 2017, betrieben von The Night League, der Gruppe hinter dem Ushuaïa." },
+      { q: 'Wie viele Räume hat Hï Ibiza?', a: 'Zwei Haupträume, The Theatre und Club Room, dazu einen dritten Bereich, die Wild Corner.' },
+      { q: 'Wann hat Hï Ibiza geöffnet?', a: 'In der Sommersaison. Die Eröffnungs- und Schlussdaten ändern sich jedes Jahr, ein Blick ins Programm lohnt sich.' },
+    ],
+  },
+  'pacha-ibiza': {
+    es: [
+      { q: '¿Desde cuándo existe Pacha Ibiza?', a: 'Desde 1973. Lo abrió Ricardo Urgell, que ya había creado el primer Pacha en Sitges en 1967, en un edificio con forma de casa payesa ibicenca.' },
+      { q: '¿Qué aforo tiene Pacha Ibiza?', a: 'Unas 3.000 personas.' },
+      { q: '¿Pacha abre todo el año?', a: 'Ya no. Durante años abrió los fines de semana en invierno, pero ahora funciona por temporada, más o menos de mayo a octubre, con fechas sueltas como Nochevieja.' },
+      { q: '¿Dónde está?', a: 'En la Avinguda 8 d\'Agost, en Ibiza ciudad, junto al puerto deportivo.' },
+    ],
+    en: [
+      { q: 'How long has Pacha Ibiza been around?', a: 'Since 1973. It was opened by Ricardo Urgell, who had launched the first Pacha in Sitges in 1967, in a building styled as a traditional Ibizan farmhouse.' },
+      { q: 'What is the capacity of Pacha Ibiza?', a: 'About 3,000 people.' },
+      { q: 'Is Pacha open all year?', a: "Not any more. For years it opened at weekends in winter, but it now runs a season, roughly May to October, with one-off dates such as New Year's Eve." },
+      { q: 'Where is it?', a: "On Avinguda 8 d'Agost, in Ibiza Town, by the marina." },
+    ],
+    de: [
+      { q: 'Seit wann gibt es Pacha Ibiza?', a: 'Seit 1973. Eröffnet hat es Ricardo Urgell, der 1967 das erste Pacha in Sitges gegründet hatte, in einem Gebäude im Stil eines ibizenkischen Bauernhauses.' },
+      { q: 'Wie groß ist Pacha Ibiza?', a: 'Rund 3.000 Personen.' },
+      { q: 'Hat Pacha das ganze Jahr geöffnet?', a: 'Nicht mehr. Lange war es im Winter an Wochenenden offen, heute läuft es saisonal, etwa von Mai bis Oktober, mit Einzelterminen wie Silvester.' },
+      { q: 'Wo liegt es?', a: "An der Avinguda 8 d'Agost in Ibiza-Stadt, nahe dem Jachthafen." },
+    ],
+  },
+  'amnesia-ibiza': {
+    es: [
+      { q: '¿Desde cuándo existe Amnesia?', a: 'Desde 1976, en una antigua finca de San Rafael.' },
+      { q: '¿Cuántas salas y qué aforo tiene Amnesia?', a: 'Dos espacios, Main Room y Terrace, con un aforo total de unas 5.000 personas.' },
+      { q: '¿Dónde está Amnesia?', a: 'En el kilómetro 5 de la carretera de Ibiza a Sant Antoni, en San Rafael, a medio camino entre las dos ciudades.' },
+    ],
+    en: [
+      { q: 'How long has Amnesia been around?', a: 'Since 1976, in an old farmhouse in San Rafael.' },
+      { q: 'How many rooms and what capacity does Amnesia have?', a: 'Two spaces, the Main Room and the Terrace, with a total capacity of about 5,000 people.' },
+      { q: 'Where is Amnesia?', a: 'At km 5 on the road from Ibiza Town to Sant Antoni, in San Rafael, halfway between the two towns.' },
+    ],
+    de: [
+      { q: 'Seit wann gibt es Amnesia?', a: 'Seit 1976, in einem alten Landhaus in San Rafael.' },
+      { q: 'Wie viele Räume und welche Kapazität hat Amnesia?', a: 'Zwei Bereiche, Main Room und Terrace, mit insgesamt rund 5.000 Personen.' },
+      { q: 'Wo liegt Amnesia?', a: 'An Kilometer 5 der Straße von Ibiza-Stadt nach Sant Antoni, in San Rafael, auf halbem Weg zwischen beiden Orten.' },
+    ],
+  },
+  'eden-ibiza-377a52': {
+    es: [
+      { q: '¿Qué historia tiene Eden?', a: 'Abrió en 1999 en el local que antes fue Star Club y después Kaos, justo al lado de Es Paradis. Sus dueños actuales lo llevan desde 2013, cuando se reformó.' },
+      { q: '¿Cuántas salas tiene Eden?', a: 'La sala principal y otra más pequeña, la sala NeXt. Es conocido por su equipo de sonido Void.' },
+      { q: '¿Dónde está Eden?', a: 'En el Carrer Salvador Espriu, en Sant Antoni de Portmany, en la zona de clubs del centro del pueblo.' },
+    ],
+    en: [
+      { q: 'What is the history of Eden?', a: 'It opened in 1999 on the site that had been Star Club and then Kaos, right next to Es Paradis. Its current owners have run it since 2013, when it was refurbished.' },
+      { q: 'How many rooms does Eden have?', a: 'The main room and a smaller one, the NeXt room. It is known for its Void sound system.' },
+      { q: 'Where is Eden?', a: 'On Carrer Salvador Espriu, in Sant Antoni de Portmany, in the club area of the town centre.' },
+    ],
+    de: [
+      { q: 'Welche Geschichte hat Eden?', a: 'Eröffnet 1999 am Standort des früheren Star Club und später Kaos, direkt neben Es Paradis. Die heutigen Betreiber führen es seit 2013, als es umgebaut wurde.' },
+      { q: 'Wie viele Räume hat Eden?', a: 'Den Hauptraum und einen kleineren, den NeXt-Raum. Bekannt ist der Club für sein Void-Soundsystem.' },
+      { q: 'Wo liegt Eden?', a: 'In der Carrer Salvador Espriu in Sant Antoni de Portmany, im Clubviertel im Ortszentrum.' },
+    ],
+  },
+  'cafe-del-mar-ibiza': {
+    es: [
+      { q: '¿Desde cuándo existe Café del Mar?', a: 'Desde junio de 1980. Lo diseñó el arquitecto catalán Lluís Güell.' },
+      { q: '¿Por qué es famoso Café del Mar?', a: 'Por ver la puesta de sol sobre la bahía de Sant Antoni con música de fondo. Las sesiones de José Padilla en los años 90 ayudaron a crear el sonido chill out con el que se asocia.' },
+      { q: '¿Dónde está?', a: 'En el paseo de la puesta de sol de Sant Antoni de Portmany, en el oeste de Ibiza.' },
+    ],
+    en: [
+      { q: 'How long has Café del Mar been around?', a: 'Since June 1980. It was designed by Catalan architect Lluís Güell.' },
+      { q: 'Why is Café del Mar famous?', a: "For watching the sunset over Sant Antoni bay with music playing. José Padilla's sets in the 1990s helped shape the chill-out sound it is known for." },
+      { q: 'Where is it?', a: "On Sant Antoni de Portmany's sunset strip, on the west coast of Ibiza." },
+    ],
+    de: [
+      { q: 'Seit wann gibt es das Café del Mar?', a: 'Seit Juni 1980. Entworfen hat es der katalanische Architekt Lluís Güell.' },
+      { q: 'Warum ist das Café del Mar berühmt?', a: 'Für den Sonnenuntergang über der Bucht von Sant Antoni mit Musik. Die Sets von José Padilla in den 1990ern prägten den Chill-out-Sound, für den es steht.' },
+      { q: 'Wo liegt es?', a: 'An der Sunset-Promenade von Sant Antoni de Portmany, an der Westküste Ibizas.' },
     ],
   },
 }
