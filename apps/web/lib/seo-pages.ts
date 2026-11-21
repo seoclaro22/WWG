@@ -1720,6 +1720,21 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Grupo Sounds club on Calle Princesa, by Plaza de España. Thursday to Saturday, 11:30pm to 6am, with house, hip hop, reggaeton and urban.',
     de: 'Club von Grupo Sounds in der Calle Princesa bei der Plaza de España. Donnerstag bis Samstag, 23:30 bis 6 Uhr, House, Hip-Hop, Reggaeton.',
   },
+  'rubicon': {
+    es: 'En la calle del Cid, a un paso de Colón. Los miércoles son de reguetón y el público pasa de los 25. Lista gratis hasta la 1:00 si te apuntas antes.',
+    en: 'On Calle del Cid, a step from Colón. Wednesdays are reggaeton nights for a 25+ crowd. Free guest list until 1am if you sign up in advance.',
+    de: 'In der Calle del Cid, gleich bei Colón. Mittwochs Reggaeton für ein Publikum ab 25. Bis 1 Uhr kostenlos auf der Gästeliste, wenn man sich vorher einträgt.',
+  },
+  'nazca-club': {
+    es: 'Dos plantas con entrada propia cada una, en la calle Orense, entre Nuevos Ministerios y el Bernabéu. Hay noches de club y también conciertos.',
+    en: 'Two floors, each with its own street entrance, on Calle Orense between Nuevos Ministerios and the Bernabéu. Club nights and live gigs.',
+    de: 'Zwei Etagen mit jeweils eigenem Eingang in der Calle Orense, zwischen Nuevos Ministerios und dem Bernabéu. Clubnächte und Konzerte.',
+  },
+  'teatro-magno': {
+    es: 'A cinco minutos andando de Sol, en la calle Cedaceros. House, éxitos y algo latino de jueves a sábado hasta las 06:00. Se entra con 18 y bien vestido.',
+    en: 'Five minutes on foot from Sol, on Calle Cedaceros. House, hits and some Latin, Thursday to Saturday until 6am. 18+ and dress smart.',
+    de: 'Fünf Gehminuten von der Puerta del Sol, Calle Cedaceros. House, Hits und etwas Latin, Donnerstag bis Samstag bis 6 Uhr. Ab 18, schick anziehen.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -2854,6 +2869,66 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Welche Musik läuft?', a: 'Open Format: House, Hip-Hop, Elektronik, Reggaeton, Trap und Urban, mit DJ-Sets und gelegentlichen Konzerten.' },
       { q: 'Hat er mit Fitz Mallorca zu tun?', a: 'Ja, beide gehören zu Grupo Sounds. Fitz Mallorca eröffnete im Juli 2026 im früheren Tito\'s in Palma.' },
       { q: 'Wo liegt er und wie reserviere ich?', a: 'In der Calle de la Princesa, 1, neben der Plaza de España. Reservierungen unter +34 697 570 801.' },
+    ],
+  },
+  'rubicon': {
+    es: [
+      { q: '¿Qué noche merece la pena en Rubicon?', a: 'Los miércoles, que es cuando el local se llena con reguetón. También hay fiestas los sábados.' },
+      { q: '¿Cuánto cuesta entrar?', a: 'Los miércoles la entrada sale a 20 € con dos copas si llegas antes de la 1:30; después baja a una. Si te apuntas a la lista, entras gratis hasta la 1:00.' },
+      { q: 'Me han dicho que hay edad mínima de 25, ¿es así?', a: 'En los eventos que hemos visto, sí: piden 25 años o más y un estilo smart casual. Con zapatillas de deporte y chándal lo normal es que no pases.' },
+      { q: '¿Por dónde cae?', a: 'Calle del Cid, 7, en el barrio de Salamanca, a dos minutos de la plaza de Colón. Serrano y Colón son las paradas de metro más cómodas.' },
+    ],
+    en: [
+      { q: 'Which night is worth it at Rubicon?', a: 'Wednesdays, when the place fills up with reggaeton. There are Saturday parties too.' },
+      { q: 'How much does it cost to get in?', a: 'On Wednesdays entry is €20 with two drinks if you arrive before 1:30am, one drink after that. Get on the guest list and you are in free until 1am.' },
+      { q: "I've heard there's a 25+ age limit. True?", a: 'At the events we have seen, yes: 25 and over, smart casual. Trainers and tracksuits will most likely be turned away.' },
+      { q: 'Where exactly is it?', a: 'Calle del Cid, 7, in the Salamanca district, two minutes from Plaza de Colón. Serrano and Colón are the handiest metro stops.' },
+    ],
+    de: [
+      { q: 'Welcher Abend lohnt sich im Rubicon?', a: 'Der Mittwoch, dann wird es mit Reggaeton richtig voll. Samstags gibt es ebenfalls Partys.' },
+      { q: 'Was kostet der Eintritt?', a: 'Mittwochs 20 € mit zwei Getränken, wenn man vor 1:30 Uhr kommt, danach mit einem. Wer auf der Gästeliste steht, kommt bis 1 Uhr gratis rein.' },
+      { q: 'Stimmt es, dass man mindestens 25 sein muss?', a: 'Bei den Events, die wir gesehen haben, ja: ab 25 und Smart Casual. Mit Sneakern und Jogginghose wird es schwierig.' },
+      { q: 'Wo genau liegt der Club?', a: 'Calle del Cid, 7, im Viertel Salamanca, zwei Minuten von der Plaza de Colón. Am bequemsten sind die Metrostationen Serrano und Colón.' },
+    ],
+  },
+  'nazca-club': {
+    es: [
+      { q: '¿Nazca es una discoteca o una sala de conciertos?', a: 'Las dos cosas. Funciona como club con DJ, pero también programa grupos en directo; por eso a veces lo vas a ver anunciado como Sala Nazca Live y otras como Nazca Events Club.' },
+      { q: '¿Cómo es por dentro?', a: 'Tiene dos plantas separadas y cada una con su propia puerta a la calle, así que pueden funcionar a la vez con fiestas distintas.' },
+      { q: '¿Hasta qué hora abre?', a: 'Las noches de club acaban a las 06:00.' },
+      { q: '¿Cómo llego?', a: 'Está en la calle de Orense, 24. Lo más cerca es Nuevos Ministerios (L6, L8 y L10) o Santiago Bernabéu (L10).' },
+    ],
+    en: [
+      { q: 'Is Nazca a club or a concert venue?', a: 'Both. It runs as a DJ club but also books live bands, which is why you will see it billed as Sala Nazca Live in some places and Nazca Events Club in others.' },
+      { q: 'What is it like inside?', a: 'Two separate floors, each with its own door onto the street, so they can run different parties at the same time.' },
+      { q: 'How late does it stay open?', a: 'Club nights finish at 6am.' },
+      { q: 'How do I get there?', a: 'It is at Calle de Orense, 24. The nearest stops are Nuevos Ministerios (L6, L8 and L10) and Santiago Bernabéu (L10).' },
+    ],
+    de: [
+      { q: 'Ist Nazca ein Club oder ein Konzertsaal?', a: 'Beides. Es läuft als DJ-Club, holt aber auch Live-Bands, deshalb taucht es mal als Sala Nazca Live und mal als Nazca Events Club auf.' },
+      { q: 'Wie sieht es drinnen aus?', a: 'Zwei getrennte Etagen, jede mit eigener Tür zur Straße, sodass gleichzeitig zwei verschiedene Partys laufen können.' },
+      { q: 'Wie lange ist offen?', a: 'Clubnächte enden um 6 Uhr.' },
+      { q: 'Wie komme ich hin?', a: 'Calle de Orense, 24. Am nächsten sind Nuevos Ministerios (L6, L8 und L10) und Santiago Bernabéu (L10).' },
+    ],
+  },
+  'teatro-magno': {
+    es: [
+      { q: '¿Qué ambiente tiene Teatro Magno?', a: 'De discoteca de centro para bailar sin complicarse: house y dance que cambian cada noche, éxitos del momento y un toque latino. Cada semana mete algún espectáculo o evento especial.' },
+      { q: '¿Qué días abre?', a: 'De jueves a sábado, de medianoche a las 06:00. Algunas semanas abre también el domingo.' },
+      { q: '¿Qué piden en la puerta?', a: 'Tener 18 años y venir arreglado. Con ropa deportiva lo tienes complicado.' },
+      { q: '¿Está bien situado?', a: 'Mucho: calle de Cedaceros, 7, a cinco minutos andando de la Puerta del Sol y a diez de Gran Vía y de la Plaza Mayor.' },
+    ],
+    en: [
+      { q: "What's the vibe at Teatro Magno?", a: 'A city-centre club for dancing without fuss: house and dance that change every night, current hits and a touch of Latin. Each week there is some show or special event.' },
+      { q: 'Which days is it open?', a: 'Thursday to Saturday, midnight to 6am. Some weeks it opens on Sunday too.' },
+      { q: 'What do they ask for at the door?', a: 'Being 18 and dressed smart. In sportswear you will struggle.' },
+      { q: 'Is it central?', a: 'Very: Calle de Cedaceros, 7, five minutes on foot from Puerta del Sol and ten from Gran Vía and Plaza Mayor.' },
+    ],
+    de: [
+      { q: 'Wie ist die Stimmung im Teatro Magno?', a: 'Ein Club in der Innenstadt zum unkomplizierten Tanzen: House und Dance, die jede Nacht wechseln, aktuelle Hits und etwas Latin. Jede Woche gibt es eine Show oder ein Special.' },
+      { q: 'An welchen Tagen ist offen?', a: 'Donnerstag bis Samstag, Mitternacht bis 6 Uhr. In manchen Wochen auch sonntags.' },
+      { q: 'Worauf achten sie an der Tür?', a: 'Mindestens 18 und gepflegt angezogen. In Sportkleidung wird es schwierig.' },
+      { q: 'Liegt es zentral?', a: 'Sehr: Calle de Cedaceros, 7, fünf Gehminuten von der Puerta del Sol, zehn von Gran Vía und Plaza Mayor.' },
     ],
   },
 }
