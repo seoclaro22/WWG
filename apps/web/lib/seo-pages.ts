@@ -1735,6 +1735,16 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Five minutes on foot from Sol, on Calle Cedaceros. House, hits and some Latin, Thursday to Saturday until 6am. 18+ and dress smart.',
     de: 'Fünf Gehminuten von der Puerta del Sol, Calle Cedaceros. House, Hits und etwas Latin, Donnerstag bis Samstag bis 6 Uhr. Ab 18, schick anziehen.',
   },
+  'fulanita-de-tal': {
+    es: 'Empezó como un bar lésbico pequeño en Chueca y hoy ocupa dos plantas en la calle Regueros. Éxitos de radio, cero postureo y tardeo el finde.',
+    en: 'Started out as a small lesbian bar in Chueca and now fills two floors on Calle Regueros. Chart hits, no posing and afternoon sessions at weekends.',
+    de: 'Fing als kleine Lesbenbar in Chueca an und hat heute zwei Etagen in der Calle Regueros. Chart-Hits, entspannte Stimmung, am Wochenende Tardeo.',
+  },
+  'pabblo': {
+    es: 'Restaurante con espectáculo a los pies de Torre Picasso: cocina mediterránea, cócteles, show en directo cada noche y rooftop con vistas a la Castellana.',
+    en: 'Restaurant with a show at the foot of Torre Picasso: Mediterranean food, cocktails, live entertainment every night and a rooftop over the Castellana.',
+    de: 'Restaurant mit Show am Fuß des Torre Picasso: mediterrane Küche, Cocktails, jeden Abend Live-Programm und Rooftop mit Blick auf die Castellana.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -2929,6 +2939,46 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'An welchen Tagen ist offen?', a: 'Donnerstag bis Samstag, Mitternacht bis 6 Uhr. In manchen Wochen auch sonntags.' },
       { q: 'Worauf achten sie an der Tür?', a: 'Mindestens 18 und gepflegt angezogen. In Sportkleidung wird es schwierig.' },
       { q: 'Liegt es zentral?', a: 'Sehr: Calle de Cedaceros, 7, fünf Gehminuten von der Puerta del Sol, zehn von Gran Vía und Plaza Mayor.' },
+    ],
+  },
+  'fulanita-de-tal': {
+    es: [
+      { q: '¿Es un bar solo para chicas?', a: 'Nació en 2004 como bar lésbico y el público sigue siendo mayoritariamente de mujeres, pero entra todo el mundo. El ambiente es de ir en vaqueros, nada de etiqueta.' },
+      { q: '¿Qué suena?', a: 'Lo que está sonando en la radio, a todo volumen y hasta tarde. Los fines de semana organizan Flashback, una sesión de tardeo con éxitos de otras décadas.' },
+      { q: '¿Cuándo abre?', a: 'Los horarios que publican las guías no coinciden: unas dicen que abre de martes a domingo desde la tarde y otras solo de jueves a domingo por la noche. En lo que sí coinciden es en que cierra sobre las 03:30.' },
+      { q: '¿Dónde está?', a: 'En la calle de Regueros, 9, en la parte de Chueca que da a Alonso Martínez. El metro más cercano es Chueca (L5).' },
+    ],
+    en: [
+      { q: 'Is it a women-only bar?', a: 'It opened in 2004 as a lesbian bar and the crowd is still mostly women, but everyone is welcome. Think jeans, not dress codes.' },
+      { q: 'What does it play?', a: 'Whatever is on the radio, loud and late. At weekends there is Flashback, an afternoon session with hits from past decades.' },
+      { q: 'When is it open?', a: 'Guides disagree: some say Tuesday to Sunday from the afternoon, others only Thursday to Sunday at night. They all agree it closes around 3:30am.' },
+      { q: 'Where is it?', a: 'At Calle de Regueros, 9, on the Alonso Martínez side of Chueca. The nearest metro is Chueca (L5).' },
+    ],
+    de: [
+      { q: 'Ist es eine reine Frauenbar?', a: 'Sie eröffnete 2004 als Lesbenbar, und das Publikum ist bis heute überwiegend weiblich, aber alle sind willkommen. Jeans statt Dresscode.' },
+      { q: 'Was läuft?', a: 'Was gerade im Radio läuft, laut und bis spät. Am Wochenende gibt es Flashback, eine Nachmittagssession mit Hits vergangener Jahrzehnte.' },
+      { q: 'Wann ist offen?', a: 'Die Angaben der Guides gehen auseinander: mal Dienstag bis Sonntag ab nachmittags, mal nur Donnerstag bis Sonntag abends. Einig sind sich alle, dass gegen 3:30 Uhr Schluss ist.' },
+      { q: 'Wo liegt die Bar?', a: 'In der Calle de Regueros, 9, im Teil von Chueca Richtung Alonso Martínez. Nächste Metro ist Chueca (L5).' },
+    ],
+  },
+  'pabblo': {
+    es: [
+      { q: '¿Pabblo es una discoteca?', a: 'No exactamente. Es un restaurante grande, de dos plantas, donde la cena viene con espectáculo en directo cada noche y la coctelería alarga la sobremesa. Para bailar hasta las seis hay que ir a otro sitio.' },
+      { q: '¿Cuánto cuesta cenar?', a: 'El ticket medio ronda los 50 a 55 € por persona.' },
+      { q: '¿Hasta qué hora está abierto?', a: 'Abre desde la hora de comer y cierra sobre las 02:00 entre semana y las 02:30 los viernes y sábados. Los fines de semana a mediodía hay también comidas con espectáculo.' },
+      { q: '¿Merece la pena el rooftop?', a: 'Si hace bueno, sí: mira a la Castellana y a la avenida del General Perón, en pleno AZCA.' },
+    ],
+    en: [
+      { q: 'Is Pabblo a nightclub?', a: 'Not really. It is a big two-floor restaurant where dinner comes with a live show every night and the cocktail bar keeps things going. If you want to dance until six, you will need to move on.' },
+      { q: 'How much does dinner cost?', a: 'The average bill is around €50 to €55 per person.' },
+      { q: 'How late is it open?', a: 'From lunchtime until about 2am on weeknights and 2:30am on Fridays and Saturdays. Weekend lunchtimes also have shows.' },
+      { q: 'Is the rooftop worth it?', a: 'On a good day, yes: it looks out over the Castellana and Avenida del General Perón, right in AZCA.' },
+    ],
+    de: [
+      { q: 'Ist Pabblo ein Club?', a: 'Nicht wirklich. Es ist ein großes Restaurant auf zwei Etagen, wo es zum Abendessen jeden Abend eine Live-Show gibt und die Cocktailbar den Abend verlängert. Wer bis sechs tanzen will, zieht danach weiter.' },
+      { q: 'Was kostet ein Abendessen?', a: 'Im Schnitt rund 50 bis 55 € pro Person.' },
+      { q: 'Wie lange ist offen?', a: 'Ab Mittag bis etwa 2 Uhr unter der Woche, freitags und samstags bis 2:30 Uhr. Am Wochenende gibt es auch mittags Essen mit Show.' },
+      { q: 'Lohnt sich das Rooftop?', a: 'Bei gutem Wetter ja: mit Blick auf die Castellana und die Avenida del General Perón, mitten in AZCA.' },
     ],
   },
 }
