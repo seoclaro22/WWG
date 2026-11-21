@@ -640,14 +640,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       zonas: [
         { titulo: 'Malasaña', texto: 'El barrio que fue el centro de la Movida madrileña de los 80. Ambiente alternativo e indie, con bares de copas, música en directo y salas más pequeñas que en otras zonas.' },
         { titulo: 'Chueca', texto: 'El barrio con más ambiente de fiesta del centro, epicentro también del ocio LGTBI+ de la ciudad. Música electrónica, pop y reggaetón, con la Plaza de Chueca como punto de encuentro.' },
-        { titulo: 'Triángulo del arte y Huertas', texto: 'Zona donde están las discotecas más grandes y conocidas de la ciudad, como Teatro Kapital o Teatro Barceló. Ambiente más de discoteca clásica que de bar de barrio, con entradas y dress code más exigentes.' },
+        { titulo: 'Triángulo del arte y Huertas', texto: 'Zona donde están las discotecas más grandes y conocidas de la ciudad, como Teatro Kapital. Ambiente más de discoteca clásica que de bar de barrio, con entradas y dress code más exigentes.' },
         { titulo: 'La Latina', texto: 'Más de tapeo y terraza que de discoteca, sobre todo los domingos después del Rastro. Buen punto de partida para empezar la noche antes de moverse a otra zona.' },
       ],
       temporada: 'A diferencia de las ciudades de costa, Madrid no cierra su vida nocturna en invierno: las discotecas del centro abren todo el año, de jueves a domingo en su mayoría. El verano suma las terrazas al aire libre y algún macrofestival, pero la agenda de clubs se mantiene activa en cualquier época.',
-      discotecasFamosas: 'Teatro Kapital, con siete plantas y ambientes distintos, es la discoteca más conocida de la ciudad, en pleno triángulo del arte. Teatro Barceló ocupa un antiguo cine de los años 30 reconvertido en sala, con una estética teatral que lo diferencia del resto. Fabrik, a las afueras de Madrid en Humanes, es una de las macrodiscotecas de música electrónica más grandes de España, con aforo para varios miles de personas. La agenda de Where We Go recoge las salas activas ahora mismo, no un ranking fijo.',
+      discotecasFamosas: 'Teatro Kapital, con siete plantas y ambientes distintos, es la discoteca más conocida de la ciudad, en pleno triángulo del arte. Teatro Barceló, un cine de los años 30 que funcionó como Pachá desde 1980, cerró con un precinto municipal en noviembre de 2025 y el edificio se puso a la venta. Fabrik, a las afueras de Madrid en Humanes, es una de las macrodiscotecas de música electrónica más grandes de España, con aforo para varios miles de personas. La agenda de Where We Go recoge las salas activas ahora mismo, no un ranking fijo.',
       transporte: 'El Metro de Madrid cierra entre la 1:30 y las 2:00, con algún refuerzo los fines de semana. A partir de ahí entra en marcha la red de autobuses nocturnos, conocidos como "búhos", con salida principal desde la Plaza de Cibeles y frecuencias de 15 a 35 minutos según la línea. El taxi es la alternativa más rápida de madrugada: los taxis oficiales llevan licencia visible, GPS y no aplican tarifas dinámicas como sí hacen algunas apps de VTC.',
-      precio: 'La entrada a una discoteca de Madrid suele rondar entre 15 y 25 € con una consumición incluida, tanto en Teatro Kapital como en Teatro Barceló. En Fabrik, según el evento, puede ir de 20 a 60 €. Comprar la entrada anticipada suele salir más barato que pagar en puerta.',
-      vestimenta: 'Las discotecas grandes del centro (Kapital, Barceló) suelen pedir ir arreglado, sin ropa deportiva. En Malasaña y Chueca el ambiente es bastante más relajado, con ropa informal aceptada en la mayoría de locales.',
+      precio: 'La entrada a una discoteca de Madrid suele rondar entre 15 y 25 € con una consumición incluida, por ejemplo en Teatro Kapital. En Fabrik, según el evento, puede ir de 20 a 60 €. Comprar la entrada anticipada suele salir más barato que pagar en puerta.',
+      vestimenta: 'Las discotecas grandes del centro (como Kapital) suelen pedir ir arreglado, sin ropa deportiva. En Malasaña y Chueca el ambiente es bastante más relajado, con ropa informal aceptada en la mayoría de locales.',
       seguridad: 'Las zonas más concurridas de fiesta (Malasaña, Chueca, Huertas) son también las más vigiladas, con bastante gente en la calle hasta tarde. Aun así, conviene vigilar tus pertenencias entre la multitud y no perder de vista tu copa. El Metro y los búhos nocturnos son opciones seguras para volver a casa; si vas a beber, lo más sensato es planear el regreso antes de salir.',
       destacados: [
         { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Siete plantas junto a Atocha, de miércoles a domingo de 23:00 a 06:00.' },
@@ -657,6 +657,10 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Reguetón colombiano en el barrio de Salamanca, de jueves a sábado.' },
         { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Jardín del Palacio de Linares, junto a Cibeles. Tardeo con DJ desde las 17:00.' },
         { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy del Barrio de las Letras: se entra con la contraseña del mes.' },
+        { slug: 'fabrik', nombre: 'Fabrik', texto: 'Humanes de Madrid. Macrodiscoteca de techno con autobuses desde el centro.' },
+        { slug: 'fitz-madrid', nombre: 'Fitz Madrid', texto: 'Plaza de España. House, hip hop y reguetón de jueves a sábado.' },
+        { slug: 'moby-dick', nombre: 'Moby Dick', texto: 'Junto a AZCA. Conciertos desde 1992 y club hasta las 06:00.' },
+        { slug: 'la-via-lactea', nombre: 'La Vía Láctea', texto: 'Malasaña. Bar de la Movida desde 1979, rock y pop hasta las 03:00.' },
       ],
       faqs: [
         { q: '¿Dónde salir de fiesta en el centro de Madrid?', a: 'Joy Eslava está en la Calle del Arenal, a dos minutos de Sol. Teatro Kapital, junto a la estación de Atocha. Shoko, en La Latina, junto a Puerta de Toledo.' },
@@ -669,14 +673,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       zonas: [
         { titulo: 'Malasaña', texto: 'The neighbourhood that was the centre of the 1980s Movida madrileña. Alternative, indie vibe, with cocktail bars, live music and smaller venues than other areas.' },
         { titulo: 'Chueca', texto: 'The most party-driven neighbourhood in the centre, also the hub of the city´s LGBTQ+ nightlife. Electronic, pop and reggaeton, with Plaza de Chueca as the meeting point.' },
-        { titulo: 'Art Triangle and Huertas', texto: 'Home to the city´s biggest and best-known clubs, like Teatro Kapital or Teatro Barceló. More classic nightclub than neighbourhood bar, with stricter entry and dress code.' },
+        { titulo: 'Art Triangle and Huertas', texto: 'Home to the city´s biggest and best-known clubs, like Teatro Kapital. More classic nightclub than neighbourhood bar, with stricter entry and dress code.' },
         { titulo: 'La Latina', texto: 'More tapas-and-terrace than nightclub, especially on Sundays after the Rastro flea market. A good starting point before moving to another area.' },
       ],
       temporada: 'Unlike coastal cities, Madrid doesn´t shut its nightlife down in winter: the central clubs stay open all year, mostly Thursday to Sunday. Summer adds outdoor terraces and the odd festival, but the club scene stays active regardless of season.',
-      discotecasFamosas: 'Teatro Kapital, with seven floors and different vibes on each, is the city´s best-known club, right in the art triangle. Teatro Barceló occupies a converted 1930s cinema, with a theatrical look that sets it apart from the rest. Fabrik, on the outskirts of Madrid in Humanes, is one of Spain´s biggest electronic music superclubs, holding several thousand people. Where We Go´s listings show what´s active right now, not a fixed ranking.',
+      discotecasFamosas: 'Teatro Kapital, with seven floors and different vibes on each, is the city´s best-known club, right in the art triangle. Teatro Barceló, a 1930s cinema that ran as Pachá from 1980, was shut by a council closure order in November 2025 and the building was put up for sale. Fabrik, on the outskirts of Madrid in Humanes, is one of Spain´s biggest electronic music superclubs, holding several thousand people. Where We Go´s listings show what´s active right now, not a fixed ranking.',
       transporte: 'The Madrid Metro closes between 1:30 and 2:00am, with extra service some weekends. After that, the night bus network known as "búhos" (owls) takes over, running mainly from Plaza de Cibeles with 15 to 35 minute frequencies depending on the line. A taxi is the fastest option in the small hours: official taxis carry a visible licence, GPS and don´t apply surge pricing the way some ride-hailing apps do.',
-      precio: 'A club ticket in Madrid usually runs €15 to €25 with a drink included, both at Teatro Kapital and Teatro Barceló. At Fabrik, depending on the event, it can range from €20 to €60. Buying in advance is usually cheaper than paying at the door.',
-      vestimenta: 'The big central clubs (Kapital, Barceló) usually expect smart dress, no sportswear. Malasaña and Chueca are far more relaxed, with casual clothing fine in most venues.',
+      precio: 'A club ticket in Madrid usually runs €15 to €25 with a drink included, for example at Teatro Kapital. At Fabrik, depending on the event, it can range from €20 to €60. Buying in advance is usually cheaper than paying at the door.',
+      vestimenta: 'The big central clubs (such as Kapital) usually expect smart dress, no sportswear. Malasaña and Chueca are far more relaxed, with casual clothing fine in most venues.',
       seguridad: 'The busiest party areas (Malasaña, Chueca, Huertas) are also the most watched, with plenty of people out late. Still, keep an eye on your belongings in the crowd and don´t lose sight of your drink. The Metro and night buses are safe ways home; if you´re drinking, planning your way back before heading out is the sensible move.',
       destacados: [
         { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Seven floors by Atocha, Wednesday to Sunday, 11pm to 6am.' },
@@ -686,6 +690,10 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Colombian reggaeton in the Salamanca district, Thursday to Saturday.' },
         { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Garden of Palacio de Linares, by Cibeles. Afternoon DJ sessions from 5pm.' },
         { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy in Barrio de las Letras: you get in with the monthly password.' },
+        { slug: 'fabrik', nombre: 'Fabrik', texto: 'Humanes de Madrid. Techno superclub with shuttle buses from the centre.' },
+        { slug: 'fitz-madrid', nombre: 'Fitz Madrid', texto: 'Plaza de España. House, hip hop and reggaeton, Thursday to Saturday.' },
+        { slug: 'moby-dick', nombre: 'Moby Dick', texto: 'By AZCA. Concerts since 1992 and club until 6am.' },
+        { slug: 'la-via-lactea', nombre: 'La Vía Láctea', texto: 'Malasaña. Movida bar since 1979, rock and pop until 3am.' },
       ],
       faqs: [
         { q: 'Where to go out in central Madrid?', a: 'Joy Eslava is on Calle del Arenal, two minutes from Sol. Teatro Kapital is next to Atocha station. Shoko is in La Latina, by Puerta de Toledo.' },
@@ -698,14 +706,14 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       zonas: [
         { titulo: 'Malasaña', texto: 'Das Viertel, das in den 1980ern das Zentrum der Movida madrileña war. Alternative, Indie-Atmosphäre, mit Cocktailbars, Live-Musik und kleineren Locations als in anderen Vierteln.' },
         { titulo: 'Chueca', texto: 'Das partyreichste Viertel im Zentrum, auch Zentrum des LGBTQ+-Nachtlebens der Stadt. Electronic, Pop und Reggaeton, mit der Plaza de Chueca als Treffpunkt.' },
-        { titulo: 'Kunstdreieck und Huertas', texto: 'Hier stehen die größten und bekanntesten Clubs der Stadt, wie Teatro Kapital oder Teatro Barceló. Eher klassischer Nachtclub als Viertelbar, mit strengerem Einlass und Dresscode.' },
+        { titulo: 'Kunstdreieck und Huertas', texto: 'Hier stehen die größten und bekanntesten Clubs der Stadt, wie das Teatro Kapital. Eher klassischer Nachtclub als Viertelbar, mit strengerem Einlass und Dresscode.' },
         { titulo: 'La Latina', texto: 'Eher Tapas und Terrasse als Nachtclub, besonders sonntags nach dem Rastro-Flohmarkt. Ein guter Startpunkt, bevor man in ein anderes Viertel weiterzieht.' },
       ],
       temporada: 'Anders als Küstenstädte legt Madrid sein Nachtleben im Winter nicht still: die zentralen Clubs bleiben das ganze Jahr geöffnet, meist von Donnerstag bis Sonntag. Der Sommer bringt zusätzlich Außenterrassen und das ein oder andere Festival, aber die Club-Szene bleibt unabhängig von der Saison aktiv.',
-      discotecasFamosas: 'Teatro Kapital mit sieben Stockwerken und unterschiedlichen Stimmungen auf jedem ist der bekannteste Club der Stadt, mitten im Kunstdreieck. Teatro Barceló befindet sich in einem umgebauten Kino aus den 1930ern, mit einer theatralischen Optik, die es vom Rest abhebt. Fabrik, am Stadtrand von Madrid in Humanes, ist einer der größten Electronic-Superclubs Spaniens mit Platz für mehrere Tausend Gäste. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
+      discotecasFamosas: 'Teatro Kapital mit sieben Stockwerken und unterschiedlichen Stimmungen auf jedem ist der bekannteste Club der Stadt, mitten im Kunstdreieck. Das Teatro Barceló, ein Kino aus den 1930ern, das ab 1980 als Pachá lief, wurde im November 2025 behördlich geschlossen, das Gebäude steht zum Verkauf. Fabrik, am Stadtrand von Madrid in Humanes, ist einer der größten Electronic-Superclubs Spaniens mit Platz für mehrere Tausend Gäste. Das Programm von Where We Go zeigt, was gerade aktiv ist, kein festes Ranking.',
       transporte: 'Die Madrider Metro schließt zwischen 1:30 und 2:00 Uhr, an manchen Wochenenden mit Zusatzservice. Danach übernimmt das Nachtbusnetz "búhos" (Eulen), hauptsächlich ab der Plaza de Cibeles, mit 15 bis 35 Minuten Takt je nach Linie. Ein Taxi ist in den frühen Morgenstunden die schnellste Option: offizielle Taxis haben sichtbare Lizenz, GPS und berechnen keine dynamischen Preise wie manche Fahrdienst-Apps.',
-      precio: 'Der Eintritt in einen Madrider Club liegt meist bei 15 bis 25 € inklusive Getränk, sowohl im Teatro Kapital als auch im Teatro Barceló. Im Fabrik kann er je nach Event zwischen 20 und 60 € liegen. Der Vorverkauf ist meist günstiger als der Kauf an der Tür.',
-      vestimenta: 'Die großen zentralen Clubs (Kapital, Barceló) erwarten meist gepflegte Kleidung, keine Sportbekleidung. In Malasaña und Chueca ist es deutlich lockerer, legere Kleidung reicht in den meisten Locations.',
+      precio: 'Der Eintritt in einen Madrider Club liegt meist bei 15 bis 25 € inklusive Getränk, zum Beispiel im Teatro Kapital. Im Fabrik kann er je nach Event zwischen 20 und 60 € liegen. Der Vorverkauf ist meist günstiger als der Kauf an der Tür.',
+      vestimenta: 'Die großen zentralen Clubs (wie Kapital) erwarten meist gepflegte Kleidung, keine Sportbekleidung. In Malasaña und Chueca ist es deutlich lockerer, legere Kleidung reicht in den meisten Locations.',
       seguridad: 'Die belebtesten Partyviertel (Malasaña, Chueca, Huertas) sind auch die am besten überwachten, mit vielen Menschen bis spät auf der Straße. Trotzdem: im Gedränge auf die eigenen Sachen achten und das Glas nicht aus den Augen lassen. Metro und Nachtbusse sind sichere Heimwege; wer trinkt, plant den Rückweg am besten vorher.',
       destacados: [
         { slug: 'teatro-kapital', nombre: 'Teatro Kapital', texto: 'Sieben Etagen bei Atocha, Mittwoch bis Sonntag von 23 bis 6 Uhr.' },
@@ -715,6 +723,10 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
         { slug: 'perro-negro-madrid', nombre: 'Perro Negro', texto: 'Kolumbianischer Reggaeton im Viertel Salamanca, Donnerstag bis Samstag.' },
         { slug: 'terraza-karau', nombre: 'Terraza Karau', texto: 'Garten des Palacio de Linares bei Cibeles. Tardeo mit DJ ab 17 Uhr.' },
         { slug: 'calle-365', nombre: 'Calle 365', texto: 'Speakeasy im Barrio de las Letras: Einlass mit dem Passwort des Monats.' },
+        { slug: 'fabrik', nombre: 'Fabrik', texto: 'Humanes de Madrid. Techno-Großclub mit Shuttlebussen aus dem Zentrum.' },
+        { slug: 'fitz-madrid', nombre: 'Fitz Madrid', texto: 'Plaza de España. House, Hip-Hop und Reggaeton, Donnerstag bis Samstag.' },
+        { slug: 'moby-dick', nombre: 'Moby Dick', texto: 'Bei AZCA. Konzerte seit 1992 und Club bis 6 Uhr.' },
+        { slug: 'la-via-lactea', nombre: 'La Vía Láctea', texto: 'Malasaña. Movida-Bar seit 1979, Rock und Pop bis 3 Uhr.' },
       ],
       faqs: [
         { q: 'Wo kann man im Zentrum von Madrid feiern?', a: 'Joy Eslava liegt in der Calle del Arenal, zwei Minuten von der Puerta del Sol. Teatro Kapital neben dem Bahnhof Atocha. Shoko in La Latina, bei Puerta de Toledo.' },
@@ -1682,6 +1694,31 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     es: 'Club en Can Pastilla con terraza y piscina. Fiestas temáticas de techno y tech house a noches latinas y música en directo.',
     en: 'Club in Can Pastilla with a terrace and pool. Themed parties from techno and tech house to Latin nights and live music.',
     de: 'Club in Can Pastilla mit Terrasse und Pool. Mottopartys von Techno und Tech House bis zu Latin-Nächten und Livemusik.',
+  },
+  'fabrik': {
+    es: 'Macrodiscoteca de música electrónica en Humanes de Madrid, a unos 20 km de la capital. Varios miles de personas, autobuses desde el centro. +18.',
+    en: 'Electronic music superclub in Humanes de Madrid, about 20 km from the city. Several thousand people, shuttle buses from the centre. 18+.',
+    de: 'Elektronik-Großraumclub in Humanes de Madrid, rund 20 km von der Stadt. Mehrere tausend Personen, Shuttlebusse aus dem Zentrum. Ab 18.',
+  },
+  'la-via-lactea': {
+    es: 'Bar mítico de la Movida en la calle Velarde, Malasaña, abierto en 1979. Rock, pop e indie hasta las 03:00, con placa del Ayuntamiento.',
+    en: 'Legendary Movida bar on Calle Velarde, Malasaña, open since 1979. Rock, pop and indie until 3am, with a city council plaque.',
+    de: 'Legendäre Movida-Bar in der Calle Velarde, Malasaña, seit 1979. Rock, Pop und Indie bis 3 Uhr, mit Gedenktafel der Stadt.',
+  },
+  'why-not': {
+    es: 'Bar de baile LGTBI en la calle San Bartolomé, en Chueca. Pop, disco y house hasta la madrugada, pequeño y siempre lleno. Metro Chueca.',
+    en: 'LGBTQ+ dance bar on Calle San Bartolomé, in Chueca. Pop, disco and house until late, small and always packed. Metro Chueca.',
+    de: 'LGBTQ+-Tanzbar in der Calle San Bartolomé in Chueca. Pop, Disco und House bis spät, klein und immer voll. Metro Chueca.',
+  },
+  'moby-dick': {
+    es: 'Sala de conciertos en la Avenida de Brasil, junto a AZCA, desde 1992. Pop, rock, jazz y urbano en directo, y club hasta las 06:00 después.',
+    en: 'Concert venue on Avenida de Brasil, by AZCA, since 1992. Live pop, rock, jazz and urban acts, then club nights until 6am.',
+    de: 'Konzertsaal an der Avenida de Brasil bei AZCA, seit 1992. Live Pop, Rock, Jazz und Urban, danach Club bis 6 Uhr.',
+  },
+  'fitz-madrid': {
+    es: 'Club de Grupo Sounds en la calle Princesa, junto a Plaza de España. Jueves a sábado de 23:30 a 06:00, con house, hip hop, reguetón y urbano.',
+    en: 'Grupo Sounds club on Calle Princesa, by Plaza de España. Thursday to Saturday, 11:30pm to 6am, with house, hip hop, reggaeton and urban.',
+    de: 'Club von Grupo Sounds in der Calle Princesa bei der Plaza de España. Donnerstag bis Samstag, 23:30 bis 6 Uhr, House, Hip-Hop, Reggaeton.',
   },
 }
 
@@ -2720,6 +2757,103 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Was für ein Lokal ist Lunita?', a: 'Ein Club in Can Pastilla mit Terrasse und Pool, der Mottopartys, DJ-Sets und Livemusik verbindet.' },
       { q: 'Welche Musik läuft?', a: 'Je nach Party: von Techno und Tech House bis zu Latin-Nächten.' },
       { q: 'Wo liegt es?', a: 'Am Camí de Can Pastilla, 39, nahe Flughafen und Playa de Palma.' },
+    ],
+  },
+  'fabrik': {
+    es: [
+      { q: '¿Qué es Fabrik?', a: 'Una de las macrodiscotecas de música electrónica más grandes de España, abierta a principios de los 2000 en el local de la antigua discoteca Radical. Los lectores de DJ Mag la votaron segunda del mundo en 2011.' },
+      { q: '¿Qué música suena en Fabrik?', a: 'Sobre todo techno, con su fama de catedral del techno madrileño, aunque en los últimos años ha abierto su programación a otros estilos electrónicos.' },
+      { q: '¿Cómo llegar a Fabrik?', a: 'Está en la Avenida de la Industria, 82, en un polígono de Humanes de Madrid, a unos 20 km de la capital junto a la M-413. Lo más habitual es ir en coche, porque tiene aparcamiento propio, o en los autobuses que pone la discoteca desde la zona del Templo de Debod y desde Fuenlabrada.' },
+      { q: '¿Qué horario tiene y hay edad mínima?', a: 'Abre sobre todo los fines de semana, con sesiones que suelen ir de las 22:00 a las 06:00 según la fiesta. Solo mayores de 18 años.' },
+    ],
+    en: [
+      { q: 'What is Fabrik?', a: 'One of the biggest electronic music superclubs in Spain, opened in the early 2000s on the site of the old Radical club. DJ Mag readers voted it second in the world in 2011.' },
+      { q: 'What music plays at Fabrik?', a: "Mostly techno, given its reputation as Madrid's cathedral of techno, though in recent years it has opened up to other electronic styles." },
+      { q: 'How do I get to Fabrik?', a: 'It is at Avenida de la Industria, 82, in an industrial estate in Humanes de Madrid, about 20 km from the city off the M-413. Most people drive, since it has its own car park, or take the club buses from around the Templo de Debod and from Fuenlabrada.' },
+      { q: 'What are the hours and is there a minimum age?', a: 'It opens mainly at weekends, with sessions usually running 10pm to 6am depending on the party. 18+ only.' },
+    ],
+    de: [
+      { q: 'Was ist Fabrik?', a: 'Einer der größten Elektronik-Clubs Spaniens, Anfang der 2000er am Standort der alten Diskothek Radical eröffnet. Die DJ-Mag-Leser wählten ihn 2011 auf Platz zwei weltweit.' },
+      { q: 'Welche Musik läuft im Fabrik?', a: 'Vor allem Techno, denn er gilt als Kathedrale des Madrider Techno, auch wenn das Programm in den letzten Jahren andere elektronische Stile aufgenommen hat.' },
+      { q: 'Wie komme ich zum Fabrik?', a: 'Avenida de la Industria, 82, in einem Gewerbegebiet in Humanes de Madrid, rund 20 km von der Stadt an der M-413. Die meisten fahren mit dem Auto, es gibt einen eigenen Parkplatz, oder mit den Clubbussen ab dem Templo de Debod und ab Fuenlabrada.' },
+      { q: 'Wie sind die Zeiten und gibt es ein Mindestalter?', a: 'Geöffnet vor allem am Wochenende, meist von 22 bis 6 Uhr je nach Party. Nur ab 18 Jahren.' },
+    ],
+  },
+  'la-via-lactea': {
+    es: [
+      { q: '¿Qué historia tiene La Vía Láctea?', a: 'Abrió en julio de 1979 en un antiguo despacho de carbón y fue uno de los bares clave de la Movida madrileña. Por allí pasaron artistas como Nico o Johnny Thunders, y desde 2021 tiene una placa de reconocimiento del Ayuntamiento en la fachada.' },
+      { q: '¿Qué horario tiene?', a: 'Abre cada día por la tarde-noche y cierra sobre las 03:00, algo más tarde los viernes. Cambia según los eventos, así que conviene revisarlo antes de ir.' },
+      { q: '¿Dónde está?', a: 'En la calle Velarde, 18, en Malasaña, a pocos minutos de las plazas del Dos de Mayo y de San Ildefonso.' },
+    ],
+    en: [
+      { q: 'What is the history of La Vía Láctea?', a: "It opened in July 1979 in an old coal shop and became one of the key bars of Madrid's Movida. Artists such as Nico and Johnny Thunders passed through, and since 2021 it has a city council plaque on its façade." },
+      { q: 'What are the opening hours?', a: 'It opens every evening and closes around 3am, a little later on Fridays. Hours change with events, so check before you go.' },
+      { q: 'Where is it?', a: 'At Calle Velarde, 18, in Malasaña, a few minutes from Plaza del Dos de Mayo and Plaza de San Ildefonso.' },
+    ],
+    de: [
+      { q: 'Welche Geschichte hat La Vía Láctea?', a: 'Eröffnet im Juli 1979 in einer alten Kohlenhandlung, wurde sie zu einer der wichtigsten Bars der Madrider Movida. Hier waren Künstler wie Nico und Johnny Thunders, seit 2021 hängt eine Gedenktafel der Stadt an der Fassade.' },
+      { q: 'Wie sind die Öffnungszeiten?', a: 'Jeden Abend geöffnet bis etwa 3 Uhr, freitags etwas länger. Die Zeiten ändern sich je nach Event, ein Blick vorab lohnt sich.' },
+      { q: 'Wo liegt die Bar?', a: 'In der Calle Velarde, 18, in Malasaña, wenige Minuten von der Plaza del Dos de Mayo und der Plaza de San Ildefonso.' },
+    ],
+  },
+  'why-not': {
+    es: [
+      { q: '¿Qué tipo de local es Why Not?', a: 'Un bar de baile LGTBI en pleno Chueca, de los más conocidos de España. Es pequeño y suele estar lleno, sobre todo de madrugada.' },
+      { q: '¿Qué música suena?', a: 'Pop, disco y house, con mucho pop y éxitos de otras décadas.' },
+      { q: '¿Qué horario tiene?', a: 'Abre cada noche desde las 22:00 hasta la madrugada; según la fuente cierra entre las 03:30 y las 05:00.' },
+      { q: '¿Dónde está?', a: 'En la calle de San Bartolomé, 7, en Chueca. El metro más cercano es Chueca (L5).' },
+    ],
+    en: [
+      { q: 'What kind of venue is Why Not?', a: 'An LGBTQ+ dance bar in the heart of Chueca, one of the best known in Spain. It is small and usually packed, especially late at night.' },
+      { q: 'What music plays?', a: 'Pop, disco and house, with lots of pop and hits from past decades.' },
+      { q: 'What are the opening hours?', a: 'Open every night from 10pm into the early hours; depending on the source it closes between 3:30am and 5am.' },
+      { q: 'Where is it?', a: 'At Calle de San Bartolomé, 7, in Chueca. The nearest metro is Chueca (L5).' },
+    ],
+    de: [
+      { q: 'Was für ein Lokal ist Why Not?', a: 'Eine LGBTQ+-Tanzbar mitten in Chueca, eine der bekanntesten Spaniens. Klein und meist voll, vor allem spät nachts.' },
+      { q: 'Welche Musik läuft?', a: 'Pop, Disco und House, viel Pop und Hits vergangener Jahrzehnte.' },
+      { q: 'Wie sind die Öffnungszeiten?', a: 'Jede Nacht ab 22 Uhr bis in den Morgen; je nach Quelle bis 3:30 oder 5 Uhr.' },
+      { q: 'Wo liegt die Bar?', a: 'In der Calle de San Bartolomé, 7, in Chueca. Nächste Metro ist Chueca (L5).' },
+    ],
+  },
+  'moby-dick': {
+    es: [
+      { q: '¿Qué es Moby Dick Club?', a: 'Una sala de conciertos abierta en 1992, conocida por el pop-rock pero con programación también de jazz, metal y música urbana. Después de los conciertos funciona como club hasta las 06:00.' },
+      { q: '¿Qué aforo tiene?', a: 'Unas 250 personas de pie, lo que la convierte en una sala pequeña y cercana al escenario.' },
+      { q: '¿Cómo se compran las entradas?', a: 'Online o en taquilla el mismo día del concierto.' },
+      { q: '¿Dónde está?', a: 'En la Avenida de Brasil, 5, en Tetuán, junto a AZCA y el estadio Santiago Bernabéu.' },
+    ],
+    en: [
+      { q: 'What is Moby Dick Club?', a: 'A concert venue open since 1992, known for pop-rock but also booking jazz, metal and urban acts. After the gigs it runs as a club until 6am.' },
+      { q: 'What is the capacity?', a: 'About 250 standing, which makes it a small room close to the stage.' },
+      { q: 'How do I buy tickets?', a: 'Online or at the box office on the day of the gig.' },
+      { q: 'Where is it?', a: 'At Avenida de Brasil, 5, in Tetuán, next to AZCA and the Santiago Bernabéu stadium.' },
+    ],
+    de: [
+      { q: 'Was ist Moby Dick Club?', a: 'Ein Konzertsaal seit 1992, bekannt für Pop-Rock, aber auch mit Jazz, Metal und Urban im Programm. Nach den Konzerten läuft er als Club bis 6 Uhr.' },
+      { q: 'Wie groß ist er?', a: 'Rund 250 Stehplätze, also ein kleiner Saal nah an der Bühne.' },
+      { q: 'Wie kaufe ich Tickets?', a: 'Online oder am Konzerttag an der Abendkasse.' },
+      { q: 'Wo liegt er?', a: 'An der Avenida de Brasil, 5, in Tetuán, neben AZCA und dem Stadion Santiago Bernabéu.' },
+    ],
+  },
+  'fitz-madrid': {
+    es: [
+      { q: '¿Qué días abre Fitz Madrid?', a: 'De jueves a sábado, de 23:30 a 06:00. Algunas semanas añade otras noches, así que conviene mirar la agenda.' },
+      { q: '¿Qué música suena?', a: 'Formato abierto: house, hip hop, electrónica, reguetón, trap y música urbana, con sesiones de DJ y algún concierto.' },
+      { q: '¿Tiene relación con Fitz Mallorca?', a: 'Sí, los dos son de Grupo Sounds. Fitz Mallorca abrió en julio de 2026 en el antiguo Tito\'s de Palma.' },
+      { q: '¿Dónde está y cómo reservar?', a: 'En la calle de la Princesa, 1, junto a Plaza de España. Las reservas se hacen en el 697 570 801.' },
+    ],
+    en: [
+      { q: 'Which days is Fitz Madrid open?', a: 'Thursday to Saturday, from 11:30pm to 6am. Some weeks it adds other nights, so check the listings.' },
+      { q: 'What music plays?', a: 'Open format: house, hip hop, electronic, reggaeton, trap and urban music, with DJ sets and the occasional live show.' },
+      { q: 'Is it related to Fitz Mallorca?', a: "Yes, both belong to Grupo Sounds. Fitz Mallorca opened in July 2026 in Palma's former Tito's." },
+      { q: 'Where is it and how do I book?', a: 'At Calle de la Princesa, 1, next to Plaza de España. Bookings on +34 697 570 801.' },
+    ],
+    de: [
+      { q: 'An welchen Tagen hat Fitz Madrid geöffnet?', a: 'Donnerstag bis Samstag von 23:30 bis 6 Uhr. In manchen Wochen kommen weitere Abende dazu, ein Blick ins Programm lohnt sich.' },
+      { q: 'Welche Musik läuft?', a: 'Open Format: House, Hip-Hop, Elektronik, Reggaeton, Trap und Urban, mit DJ-Sets und gelegentlichen Konzerten.' },
+      { q: 'Hat er mit Fitz Mallorca zu tun?', a: 'Ja, beide gehören zu Grupo Sounds. Fitz Mallorca eröffnete im Juli 2026 im früheren Tito\'s in Palma.' },
+      { q: 'Wo liegt er und wie reserviere ich?', a: 'In der Calle de la Princesa, 1, neben der Plaza de España. Reservierungen unter +34 697 570 801.' },
     ],
   },
 }
