@@ -59,6 +59,7 @@ export default function AboutPage({ params }: { params: { locale: string } }) {
     about: { '@id': 'https://wherewego.site/#organization' },
     mainEntity: { '@id': 'https://wherewego.site/#organization' },
   }
+  // El fundador va en la entidad Organization de la home (founder).
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 min-h-[100vh] rounded-[28px] bg-[#07060a] overflow-hidden">
@@ -138,6 +139,20 @@ export default function AboutPage({ params }: { params: { locale: string } }) {
         <div className="space-y-3 bg-white/4 border border-white/8 rounded-3xl p-5">
           <h2 className="text-lg font-bold text-white"><T k="about.cities_title" /></h2>
           <p className="text-sm text-white/60 leading-relaxed"><T k="about.cities_body" /></p>
+        </div>
+
+        {/* ── Quien esta detras y metodo ─────────────────────── */}
+        <div className="space-y-3">
+          <h2 className="text-xl font-bold text-white"><T k="about.who_title" /></h2>
+          <p className="text-sm text-white/65 leading-relaxed"><T k="about.who_body" /></p>
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-xl font-bold text-white"><T k="about.method_title" /></h2>
+          <p className="text-sm text-white/65 leading-relaxed"><T k="about.method_body" /></p>
+          <p className="text-sm text-white/65 leading-relaxed">
+            <Link href="/contact" prefetch={false} className="text-[#d8af3a] hover:underline"><T k="about.method_contact" /></Link>
+          </p>
         </div>
 
         {/* ── FAQ ──────────────────────────────────────────────── */}

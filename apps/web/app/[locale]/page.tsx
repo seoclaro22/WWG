@@ -61,6 +61,7 @@ export default async function Home({ params: { locale } }: { params: { locale: s
           '@type': 'ImageObject',
           url: 'https://wherewego.site/icon.svg',
         },
+        founder: { '@type': 'Person', name: 'Cristian Romero', address: { '@type': 'PostalAddress', addressRegion: 'Mallorca', addressCountry: 'ES' } },
         // Sin areaServed a proposito: la cobertura crece con cada ciudad nueva
         // y son las paginas de zona las que declaran el ambito geografico.
       },
