@@ -40,13 +40,38 @@ export function djIsIndexable(
   return upcomingEvents > 0
 }
 
-// Los clubs se indexan todos, sin puerta de calidad: son el contenido
-// principal del sitio y pocos (menos de cien).
+// Fichas de club que no superan una verificacion externa (noviembre de 2026):
+// local cerrado, direccion que no corresponde a ningun local de ocio, o sin
+// ningun rastro en guias, webs de entradas ni prensa. Muchas parecen generadas
+// (mismo nombre repetido en varias ciudades, codigos postales que no existen).
+// Ofrecerlas a Google es justo la señal de contenido inventado que penaliza.
+// No se borran: siguen accesibles hasta que se revisen en el backoffice; si un
+// local se confirma real, basta con quitarlo de aqui.
+const CLUBS_SIN_VERIFICAR = new Set([
+  // Mallorca
+  'abraxas-palma', 'castros-palma', 'garito-cafe-palma', 'zenox', 'es-turo', 'savannah-pool-club',
+  // Madrid
+  'teatro-barcelo', 'state-metropolitan', 'la-lupe', 'panta-rhei', 'soda-stereo-club', 'saint-club',
+  'eslabon', 'somera-madrid', 'zona-club', 'la-sala-madrid', 'sala-de-despecho',
+  // Valencia
+  'kapital-valencia', 'unic-valencia', 'la-sala-club-valencia', 'eslabon-valencia', 'hanger-valencia',
+  'la-casa-del-sonido', 'la-playa-club', 'morgan-valencia', 'motel-connect', 'state-club-valencia',
+  // Sevilla
+  'discotheque-sevilla', 'eslabon-sevilla',
+  // Malaga
+  'booga-beach-malaga', 'mala-compania-malaga', 'purobeach-malaga', 'salsa-latina-malaga',
+  // Bilbao
+  'el-sotano-bilbao', 'surco-bilbao',
+])
+
+// Los clubs se indexan todos salvo los que no se han podido verificar: son el
+// contenido principal del sitio y pocos (menos de cien).
 export function clubIsIndexable(
-  club: { id?: string | null } | null | undefined,
+  club: { id?: string | null; slug?: string | null } | null | undefined,
   _upcomingEvents: number,
 ) {
-  return Boolean(club)
+  if (!club) return false
+  return !(club.slug && CLUBS_SIN_VERIFICAR.has(club.slug))
 }
 
 export type WhenKey = 'today' | 'weekend'
@@ -1771,6 +1796,21 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     en: 'Club on Avinguda de les Corts Valencianes with tech house and minimal nights in autumn and winter. Tickets and tables can be booked ahead.',
     de: 'Club an der Avinguda de les Corts Valencianes mit Tech-House- und Minimal-Nächten im Herbst und Winter. Tickets und Tische vorab buchbar.',
   },
+  'kafe-antzokia-bilbao': {
+    es: 'El antiguo cine San Vicente, convertido en sala de conciertos, café y discoteca de cultura vasca. Directos entre semana y DJ los fines de semana.',
+    en: 'The old San Vicente cinema, turned into a Basque-culture concert hall, café and club. Live gigs midweek and DJs at weekends.',
+    de: 'Das alte Kino San Vicente, heute Konzertsaal, Café und Club baskischer Kultur. Unter der Woche Konzerte, am Wochenende DJs.',
+  },
+  'cova-santa': {
+    es: 'Recinto al aire libre con club interior en la carretera de Sant Josep. La fiesta empieza fuera con el sol y a las 23:00 baja al club. Domingos de Pantheøn.',
+    en: 'Open-air venue with an indoor club on the Sant Josep road. The party starts outside in daylight and moves into the club at 11pm. Pantheøn on Sundays.',
+    de: 'Open-Air-Gelände mit Club an der Straße nach Sant Josep. Draußen beginnt die Party bei Tageslicht, um 23 Uhr geht es in den Club.',
+  },
+  'lio-ibiza': {
+    es: 'Cena, cabaret y club en el puerto de Marina Ibiza. Restaurante desde las 20:30, club de 1:00 a 6:00. Vestir elegante y mayores de 18, sin excepciones.',
+    en: 'Dinner, cabaret and club at the Marina Ibiza harbour. Restaurant from 8:30pm, club 1am to 6am. Dress elegant; 18+, no exceptions.',
+    de: 'Dinner, Cabaret und Club im Hafen Marina Ibiza. Restaurant ab 20:30 Uhr, Club 1 bis 6 Uhr. Elegante Kleidung, ab 18 ohne Ausnahme.',
+  },
 }
 
 export function clubMetaDescription(partes: DescPartes, locale: string, respaldo?: string | null) {
@@ -3085,6 +3125,66 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Welche Musik läuft im Tulum?', a: 'In den Clubnächten im Herbst und Winter Tech House und Minimal.' },
       { q: 'Muss ich das Ticket vorher kaufen?', a: 'Nicht unbedingt, aber Tickets und VIP-Tische lassen sich vorab reservieren, an großen Abenden die sicherere Wahl.' },
       { q: 'Wo liegt der Club?', a: "An der Avinguda de les Corts Valencianes, 58, im Bereich Pobles de l'Oest im Nordwesten Valencias." },
+    ],
+  },
+  'kafe-antzokia-bilbao': {
+    es: [
+      { q: '¿Qué es exactamente el Kafe Antzokia?', a: 'Un espacio de cultura vasca que funciona a la vez como café, restaurante, sala de conciertos y discoteca. Abrió en los años 80 en el edificio del antiguo cine San Vicente.' },
+      { q: '¿Qué conciertos programa?', a: 'De todo un poco y con nombres conocidos: por su escenario han pasado en 2026 desde The Aristocrats hasta Nacho Vegas. Las entradas se venden por concierto.' },
+      { q: '¿Y para bailar?', a: 'Los fines de semana, cuando acaban los conciertos, la sala se convierte en discoteca con DJ hasta tarde. En la planta de arriba funciona Stereorocks, un club de electrónica.' },
+      { q: '¿Dónde está?', a: 'En la calle San Vicente, 2, en el centro de Bilbao.' },
+    ],
+    en: [
+      { q: 'What exactly is Kafe Antzokia?', a: 'A Basque cultural space that works as a café, restaurant, concert hall and club all at once. It opened in the 1980s in the old San Vicente cinema building.' },
+      { q: 'What kind of gigs does it host?', a: 'A bit of everything, with well-known names: in 2026 its stage has hosted acts from The Aristocrats to Nacho Vegas. Tickets are sold per gig.' },
+      { q: 'And for dancing?', a: 'At weekends, once the gigs finish, the room turns into a club with DJs until late. Upstairs is Stereorocks, an electronic music club.' },
+      { q: 'Where is it?', a: 'At Calle San Vicente, 2, in central Bilbao.' },
+    ],
+    de: [
+      { q: 'Was genau ist das Kafe Antzokia?', a: 'Ein Ort baskischer Kultur, der zugleich Café, Restaurant, Konzertsaal und Club ist. Eröffnet in den 1980ern im Gebäude des alten Kinos San Vicente.' },
+      { q: 'Welche Konzerte gibt es?', a: 'Ein breites Programm mit bekannten Namen: 2026 standen hier etwa The Aristocrats und Nacho Vegas auf der Bühne. Tickets gibt es pro Konzert.' },
+      { q: 'Und zum Tanzen?', a: 'Am Wochenende wird der Saal nach den Konzerten zum Club mit DJs bis spät. Im Obergeschoss läuft Stereorocks, ein Elektronik-Club.' },
+      { q: 'Wo liegt es?', a: 'In der Calle San Vicente, 2, im Zentrum von Bilbao.' },
+    ],
+  },
+  'cova-santa': {
+    es: [
+      { q: '¿Cómo es una noche en Cova Santa?', a: 'Empieza al aire libre, con luz de día, y a partir de las 23:00 la fiesta se mete en el club interior. Lo normal es abrir de 19:00 a 06:00, aunque hay fiestas que arrancan a las cuatro de la tarde.' },
+      { q: '¿Qué fiestas tiene?', a: 'Los domingos son de Pantheøn, de mayo a principios de octubre. Gala by Ibán Mendoza ocupa algunos jueves sueltos, también está Woomoon y hay especiales como The Soundgarden de Nick Warren.' },
+      { q: '¿Cuándo es la temporada?', a: 'En 2026 abrió el sábado 2 de mayo y cierra el viernes 9 de octubre.' },
+      { q: '¿Cómo se llega?', a: 'Está en el kilómetro 7 de la carretera de Sant Josep, en el desvío hacia Sa Caleta. Hace falta coche o taxi.' },
+    ],
+    en: [
+      { q: 'What is a night at Cova Santa like?', a: 'It starts outdoors in daylight, and from 11pm the party moves into the indoor club. Usual hours are 7pm to 6am, though some parties kick off at 4pm.' },
+      { q: 'Which parties are on?', a: 'Sundays belong to Pantheøn, May to early October. Gala by Ibán Mendoza takes some Thursdays, there is Woomoon, and specials such as Nick Warren’s The Soundgarden.' },
+      { q: 'When is the season?', a: 'In 2026 it opened on Saturday 2 May and closes on Friday 9 October.' },
+      { q: 'How do I get there?', a: 'At km 7 on the Sant Josep road, at the turn-off for Sa Caleta. You will need a car or taxi.' },
+    ],
+    de: [
+      { q: 'Wie läuft eine Nacht in Cova Santa ab?', a: 'Sie beginnt draußen bei Tageslicht, ab 23 Uhr zieht die Party in den Club drinnen. Üblich ist 19 bis 6 Uhr, manche Partys starten schon um 16 Uhr.' },
+      { q: 'Welche Partys gibt es?', a: 'Sonntags Pantheøn, von Mai bis Anfang Oktober. Gala by Ibán Mendoza an einzelnen Donnerstagen, dazu Woomoon und Specials wie Nick Warrens The Soundgarden.' },
+      { q: 'Wann ist Saison?', a: '2026 eröffnete sie am Samstag, 2. Mai, und schließt am Freitag, 9. Oktober.' },
+      { q: 'Wie komme ich hin?', a: 'An Kilometer 7 der Straße nach Sant Josep, an der Abzweigung nach Sa Caleta. Man braucht Auto oder Taxi.' },
+    ],
+  },
+  'lio-ibiza': {
+    es: [
+      { q: '¿Lío es restaurante o discoteca?', a: 'Las dos cosas, por turnos. Desde las 20:30 se cena con espectáculo de cabaret y, a partir de la una, se quitan las mesas y es club hasta las seis.' },
+      { q: '¿Cuánto cuesta?', a: 'Para el club, entre 40 y 50 € según el promotor; las mesas VIP salen desde unos 200 € por persona. La cena con cabaret es bastante más cara y se reserva con semanas de antelación.' },
+      { q: '¿Qué hay que llevar?', a: 'Ropa elegante. No dejan entrar con bañador, pantalón corto, chanclas, el torso al aire ni, en el caso de los hombres, con camiseta de tirantes. Y hay que tener 18 años, aunque vengas con tus padres.' },
+      { q: '¿Sigue en Marina Ibiza?', a: 'Sí, en 2026 ha seguido en el puerto tras un acuerdo provisional con Marina Ibiza. El grupo tiene previsto trasladarse al Hotel Corso más adelante, así que conviene comprobarlo de cara a 2027.' },
+    ],
+    en: [
+      { q: 'Is Lío a restaurant or a club?', a: 'Both, in turns. From 8:30pm you dine with a cabaret show, and from 1am the tables go and it is a club until six.' },
+      { q: 'How much is it?', a: 'Club entry is €40 to €50 depending on the promoter; VIP tables start at about €200 per person. Dinner with cabaret costs a lot more and gets booked weeks ahead.' },
+      { q: 'What should I wear?', a: 'Something elegant. No swimwear, shorts, flip-flops or bare chests, and men can’t wear vests. You must be 18, even if you come with your parents.' },
+      { q: 'Is it still at Marina Ibiza?', a: 'Yes, in 2026 it stayed at the harbour under a temporary deal with Marina Ibiza. The group plans to move to the Hotel Corso later on, so check ahead for 2027.' },
+    ],
+    de: [
+      { q: 'Ist Lío Restaurant oder Club?', a: 'Beides, nacheinander. Ab 20:30 Uhr gibt es Dinner mit Cabaret-Show, ab 1 Uhr verschwinden die Tische und es ist Club bis sechs.' },
+      { q: 'Was kostet es?', a: 'Der Club kostet 40 bis 50 € je nach Promoter, VIP-Tische ab etwa 200 € pro Person. Das Dinner mit Cabaret ist deutlich teurer und Wochen im Voraus ausgebucht.' },
+      { q: 'Was soll ich anziehen?', a: 'Etwas Elegantes. Keine Badesachen, kurzen Hosen, Flip-Flops oder nackten Oberkörper, Männer nicht im Tanktop. Mindestalter 18, auch in Begleitung der Eltern.' },
+      { q: 'Ist Lío noch in der Marina Ibiza?', a: 'Ja, 2026 blieb es dank einer Übergangslösung mit Marina Ibiza im Hafen. Die Gruppe plant später einen Umzug ins Hotel Corso, für 2027 lohnt sich ein Blick vorab.' },
     ],
   },
 }
