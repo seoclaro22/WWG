@@ -10,7 +10,7 @@ import { genrePath, genreSegment, zoneGenrePath } from '@/lib/hrefs'
 import { EventCard } from '@/components/EventCard'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternatesFor, genreMeta, ogImage } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, genreZonesHeading, homeCrumb, formatEventDate, vacios, zoneGenreMeta } from '@/lib/seo-pages'
+import { MIN_EVENTS_GENRE_INDEX, genreZonesHeading, homeCrumb, formatEventDate, vacios, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 type Params = { locale: string; name: string }
@@ -42,7 +42,7 @@ export async function genreMetadata(params: Params, expectedSegment: string) {
   const { title, description, eyebrow } = genreMeta(name, params.locale)
   // Mismo umbral que los cruces zona x genero: un genero sin agenda es una
   // pagina vacia, y ofrecerla a Google solo resta calidad al dominio.
-  const count = (await fetchEvents({ genre: name, limit: MIN_EVENTS_TO_INDEX })).length
+  const count = (await fetchEvents({ genre: name, limit: MIN_EVENTS_GENRE_INDEX })).length
   const images = ogImage({ eyebrow, title: name, subtitle: description })
   const path = genrePath(name, params.locale)
   return {
@@ -51,7 +51,7 @@ export async function genreMetadata(params: Params, expectedSegment: string) {
     alternates: buildAlternatesFor((l) => genrePath(name, l), params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
-    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
+    ...(count < MIN_EVENTS_GENRE_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 
@@ -69,7 +69,7 @@ export async function renderGenrePage(params: Params, expectedSegment: string) {
   const vacio = vacios(params.locale)
   // Mismo umbral que el resto del sitio: no se enlaza un cruce zona x genero
   // que se serviria noindex al otro lado.
-  const zonasConAgenda = zonas.filter((z) => z.count >= MIN_EVENTS_TO_INDEX)
+  const zonasConAgenda = zonas.filter((z) => z.count >= MIN_EVENTS_GENRE_INDEX)
 
   return (
     <div className="relative -mx-4 md:-mx-6 lg:-mx-10 px-4 md:px-6 lg:px-10 py-8 md:py-10 min-h-[100vh] rounded-[28px] border border-[#d8af3a]/10 bg-[#07060a]">

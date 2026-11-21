@@ -15,7 +15,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { routing } from '@/i18n/routing'
 import { buildAlternatesFor, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
-import { genreZoneGuide, genreZoneGuideHeadings, genreZoneSummary, MIN_EVENTS_TO_INDEX, formatEventDate, formatShortDate, zoneGenreMeta } from '@/lib/seo-pages'
+import { genreZoneGuide, genreZoneGuideHeadings, genreZoneSummary, MIN_EVENTS_GENRE_INDEX, formatEventDate, formatShortDate, zoneGenreMeta } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
 
 type Params = { locale: string; zone: string; name: string }
@@ -29,7 +29,7 @@ export async function zoneGenreStaticParams(expectedSegment: string) {
     // Solo se prerenderiza el cruce que ya tiene agenda: el resto se resuelve
     // bajo demanda y sale noindex.
     return Array.from(counts.entries())
-      .filter(([, n]) => n >= MIN_EVENTS_TO_INDEX)
+      .filter(([, n]) => n >= MIN_EVENTS_GENRE_INDEX)
       .map(([genre]) => ({ zone, name: genreSlug(genre) }))
   }))
   // Solo el idioma cuyo segmento es este: el otro folder cubre el resto de
@@ -72,7 +72,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
 
   const { title, description, eyebrow } = zoneGenreMeta(genre, zoneName, params.locale)
   const path = zoneGenrePath(params.zone, genre, params.locale)
-  const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_TO_INDEX })).length
+  const count = (await fetchEvents({ zone: zoneName, genre, limit: MIN_EVENTS_GENRE_INDEX })).length
   const images = ogImage({ eyebrow, title: `${genre} · ${zoneName}`, subtitle: description })
 
   return {
@@ -81,7 +81,7 @@ export async function zoneGenreMetadata(params: Params, expectedSegment: string)
     alternates: buildAlternatesFor((l) => zoneGenrePath(params.zone, genre, l), params.locale),
     openGraph: { title, description, type: 'website', url: path, images },
     twitter: { card: 'summary_large_image', images },
-    ...(count < MIN_EVENTS_TO_INDEX ? { robots: { index: false, follow: true } } : {}),
+    ...(count < MIN_EVENTS_GENRE_INDEX ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

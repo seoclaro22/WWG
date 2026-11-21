@@ -17,6 +17,10 @@ export function homeCrumb(locale: string) {
 // sigue existiendo para el usuario que llega desde el sitio, pero sale del
 // sitemap y lleva noindex.
 export const MIN_EVENTS_TO_INDEX = 3
+// Las paginas de genero y los cruces zona x genero piden mas: con 3 eventos
+// eran casi la misma lista repartida entre generos solapados (regueton,
+// perreo, urban, latino, dembow), contenido duplicado a ojos de Google.
+export const MIN_EVENTS_GENRE_INDEX = 8
 
 // Que fichas de DJ se ofrecen a Google.
 //

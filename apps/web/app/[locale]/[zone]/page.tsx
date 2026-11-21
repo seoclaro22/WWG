@@ -8,7 +8,7 @@ import { routing } from '@/i18n/routing'
 import { buildAlternates, ogImage } from '@/lib/seo'
 import { dictionaries } from '@/lib/dictionaries'
 import {
-  MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug,
+  MIN_EVENTS_GENRE_INDEX, MIN_EVENTS_TO_INDEX, WHEN_KEYS, formatEventDate, relatedLinksLabels, whenMeta, whenSlug,
   zoneFaq, zoneFaqHeading, zoneMeta, zoneGuide, zoneGuideHeadings,
 } from '@/lib/seo-pages'
 import { EventListJsonLd } from '@/components/EventListJsonLd'
@@ -66,7 +66,7 @@ export default async function ZonePage({ params }: { params: { locale: string; z
   // los mismos que se indexan, asi no mandamos ni al usuario ni a Google a
   // paginas vacias.
   const genres = Array.from(genreCounts.entries())
-    .filter(([, n]) => n >= MIN_EVENTS_TO_INDEX)
+    .filter(([, n]) => n >= MIN_EVENTS_GENRE_INDEX)
     .sort((a, b) => b[1] - a[1])
     .map(([g]) => g)
 

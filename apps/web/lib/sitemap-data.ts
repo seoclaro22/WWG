@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { getSupabaseClient } from '@/lib/supabase'
 import { countUpcomingEvents, fetchClubIdsWithUpcomingEvents, fetchDjIdsWithUpcomingEvents, fetchEvents, fetchZoneGenreCounts, fetchZonesMap } from '@/lib/db'
 import { localizedUrl, hreflangMap } from '@/lib/seo'
-import { MIN_EVENTS_TO_INDEX, WHEN_KEYS, clubIsIndexable, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
+import { MIN_EVENTS_GENRE_INDEX, MIN_EVENTS_TO_INDEX, WHEN_KEYS, clubIsIndexable, djIsIndexable, nearSlug, whenRange, whenSlug } from '@/lib/seo-pages'
 import { routing } from '@/i18n/routing'
 import { clubPath, djPath, eventPath, genrePath, zoneGenrePath } from '@/lib/hrefs'
 
@@ -131,8 +131,8 @@ export async function genreEntries(): Promise<Entry[]> {
   // Un genero activo en la tabla no implica que tenga eventos: se comprueba
   // antes de publicarlo, igual que el resto de paginas generadas.
   const out = await Promise.all((data || []).map(async (g: any) => {
-    const found = await fetchEvents({ genre: g.name, limit: MIN_EVENTS_TO_INDEX })
-    if (found.length < MIN_EVENTS_TO_INDEX) return []
+    const found = await fetchEvents({ genre: g.name, limit: MIN_EVENTS_GENRE_INDEX })
+    if (found.length < MIN_EVENTS_GENRE_INDEX) return []
     return localizedEntries((locale) => genrePath(g.name, locale), { changeFrequency: 'daily', priority: 0.6 })
   }))
   return out.flat()
@@ -177,7 +177,7 @@ export async function zoneEntries(): Promise<Entry[]> {
 
       const counts = await fetchZoneGenreCounts(zoneName)
       for (const [genre, n] of counts) {
-        if (n < MIN_EVENTS_TO_INDEX) continue
+        if (n < MIN_EVENTS_GENRE_INDEX) continue
         out.push(...localizedEntries((locale) => zoneGenrePath(slug, genre, locale), { changeFrequency: 'daily', priority: 0.7 }))
       }
 
