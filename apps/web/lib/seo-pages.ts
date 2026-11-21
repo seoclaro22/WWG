@@ -752,6 +752,8 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       destacados: [
         { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club en la Avenida de Francia. Tardeo desde las 17:00 y noche hasta las 03:30, de jueves a domingo.' },
         { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Piscina frente al mar en la Pobla de Farnals, a unos 20 minutos. De mayo a septiembre.' },
+        { slug: 'akuarela-playa', nombre: 'Akuarela Playa', texto: 'Malvarrosa, de junio a septiembre. Tres salas a pie de playa hasta el amanecer.' },
+        { slug: 'deseo-valencia', nombre: 'Deseo 54', texto: 'El Carmen. Club gay de house desde 2003, viernes y sábado.' },
       ],
       faqs: [
         { q: '¿Dónde hacer tardeo en Valencia?', a: 'Brokers, en la Avenida de Francia junto a la Ciudad de las Artes, abre de jueves a domingo con tardeo desde las 17:00 y sigue de noche hasta las 03:30.' },
@@ -774,6 +776,8 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       destacados: [
         { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club on Avenida de Francia. Afternoon sessions from 5pm and nights until 3:30am, Thursday to Sunday.' },
         { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Seafront pool in Pobla de Farnals, about 20 minutes away. May to September.' },
+        { slug: 'akuarela-playa', nombre: 'Akuarela Playa', texto: 'Malvarrosa, June to September. Three beachfront rooms until sunrise.' },
+        { slug: 'deseo-valencia', nombre: 'Deseo 54', texto: 'El Carmen. Gay house club since 2003, Friday and Saturday.' },
       ],
       faqs: [
         { q: 'Where to go for afternoon parties in Valencia?', a: 'Brokers, on Avenida de Francia next to the City of Arts and Sciences, opens Thursday to Sunday with afternoon sessions from 5pm and nights until 3:30am.' },
@@ -796,6 +800,8 @@ const ZONE_GUIDES: Record<string, Record<string, ZoneGuide>> = {
       destacados: [
         { slug: 'brokers-valencia', nombre: 'Brokers Valencia', texto: 'Bank Club an der Avenida de Francia. Tardeo ab 17 Uhr, nachts bis 3:30 Uhr, Donnerstag bis Sonntag.' },
         { slug: 'calablava-beach-club', nombre: 'Calablava Beach Club', texto: 'Pool am Meer in Pobla de Farnals, rund 20 Minuten entfernt. Mai bis September.' },
+        { slug: 'akuarela-playa', nombre: 'Akuarela Playa', texto: 'Malvarrosa, Juni bis September. Drei Räume am Strand bis zum Sonnenaufgang.' },
+        { slug: 'deseo-valencia', nombre: 'Deseo 54', texto: 'El Carmen. Schwuler House-Club seit 2003, Freitag und Samstag.' },
       ],
       faqs: [
         { q: 'Wo gibt es Tardeo in Valencia?', a: 'Das Brokers an der Avenida de Francia, neben der Stadt der Künste, öffnet Donnerstag bis Sonntag mit Tardeo ab 17 Uhr und Nacht bis 3:30 Uhr.' },
@@ -1744,6 +1750,26 @@ const CLUB_META_DESC: Record<string, Record<string, string>> = {
     es: 'Restaurante con espectáculo a los pies de Torre Picasso: cocina mediterránea, cócteles, show en directo cada noche y rooftop con vistas a la Castellana.',
     en: 'Restaurant with a show at the foot of Torre Picasso: Mediterranean food, cocktails, live entertainment every night and a rooftop over the Castellana.',
     de: 'Restaurant mit Show am Fuß des Torre Picasso: mediterrane Küche, Cocktails, jeden Abend Live-Programm und Rooftop mit Blick auf die Castellana.',
+  },
+  'akuarela-playa': {
+    es: 'La discoteca de verano de la Malvarrosa: tres salas a pie de playa, de junio a septiembre, con reguetón, latino, EDM y tardeo los sábados.',
+    en: "Malvarrosa's summer club: three rooms right on the beach, June to September, with reggaeton, Latin, EDM and Saturday afternoon sessions.",
+    de: 'Der Sommerclub an der Malvarrosa: drei Räume direkt am Strand, Juni bis September, mit Reggaeton, Latin, EDM und samstags Tardeo.',
+  },
+  'deseo-valencia': {
+    es: 'Deseo 54, club gay de El Carmen abierto desde 2003. House toda la noche, drag y gogós, dos plantas y sesiones cada viernes y sábado.',
+    en: 'Deseo 54, a gay club in El Carmen open since 2003. House all night, drag shows and podium dancers, two floors, every Friday and Saturday.',
+    de: 'Deseo 54, schwuler Club in El Carmen seit 2003. House die ganze Nacht, Drag und Gogos, zwei Etagen, jeden Freitag und Samstag.',
+  },
+  'marina-beach-club': {
+    es: 'En la Marina de Valencia, junto al mar. Abre desde la tarde, a las 17:30, y estira la noche hasta las 03:30 con DJ y mesas VIP. Solo mayores de 18.',
+    en: 'In the Valencia marina, by the sea. Opens late afternoon at 5:30pm and runs until 3:30am with DJs and VIP tables. 18+ only.',
+    de: 'In der Marina von Valencia, direkt am Meer. Ab 17:30 Uhr geöffnet, mit DJs und VIP-Tischen bis 3:30 Uhr. Nur ab 18.',
+  },
+  'tulum': {
+    es: 'Club en la avenida de les Corts Valencianes con noches de tech house y minimal en otoño e invierno. Se pueden reservar entradas y mesa con antelación.',
+    en: 'Club on Avinguda de les Corts Valencianes with tech house and minimal nights in autumn and winter. Tickets and tables can be booked ahead.',
+    de: 'Club an der Avinguda de les Corts Valencianes mit Tech-House- und Minimal-Nächten im Herbst und Winter. Tickets und Tische vorab buchbar.',
   },
 }
 
@@ -2979,6 +3005,86 @@ const CLUB_FAQS: Record<string, Record<string, ZoneFaq[]>> = {
       { q: 'Was kostet ein Abendessen?', a: 'Im Schnitt rund 50 bis 55 € pro Person.' },
       { q: 'Wie lange ist offen?', a: 'Ab Mittag bis etwa 2 Uhr unter der Woche, freitags und samstags bis 2:30 Uhr. Am Wochenende gibt es auch mittags Essen mit Show.' },
       { q: 'Lohnt sich das Rooftop?', a: 'Bei gutem Wetter ja: mit Blick auf die Castellana und die Avenida del General Perón, mitten in AZCA.' },
+    ],
+  },
+  'akuarela-playa': {
+    es: [
+      { q: '¿Akuarela abre todo el año?', a: 'No, es de verano. Funciona de junio a septiembre, que es cuando la playa de la Malvarrosa tiene vida de noche.' },
+      { q: '¿Qué me voy a encontrar dentro?', a: 'Tres salas, cada una a lo suyo: éxitos del verano, reguetón y latino, y EDM. Los sábados, además, hay tardeo desde las 17:00.' },
+      { q: '¿A qué hora se llena?', a: 'Tarde. Las noches arrancan a partir de la medianoche o la una y pueden alargarse hasta las 07:30.' },
+      { q: '¿Cuánto sale?', a: 'Las entradas con consumición rondan los 16 a 21 €. Los reservados y mesas VIP empiezan en unos 150 €.' },
+    ],
+    en: [
+      { q: 'Is Akuarela open all year?', a: 'No, it is a summer club. It runs June to September, when Malvarrosa beach comes alive at night.' },
+      { q: 'What will I find inside?', a: 'Three rooms, each doing its own thing: summer hits, reggaeton and Latin, and EDM. On Saturdays there is also an afternoon session from 5pm.' },
+      { q: 'When does it fill up?', a: 'Late. Nights get going from midnight or 1am and can run until 7:30am.' },
+      { q: 'How much is it?', a: 'Tickets with a drink are around €16 to €21. Booths and VIP tables start at about €150.' },
+    ],
+    de: [
+      { q: 'Hat Akuarela das ganze Jahr geöffnet?', a: 'Nein, es ist ein Sommerclub. Geöffnet von Juni bis September, wenn am Strand der Malvarrosa nachts etwas los ist.' },
+      { q: 'Was erwartet mich drinnen?', a: 'Drei Räume mit je eigenem Sound: Sommerhits, Reggaeton und Latin, dazu EDM. Samstags gibt es außerdem Tardeo ab 17 Uhr.' },
+      { q: 'Wann wird es voll?', a: 'Spät. Die Nächte starten ab Mitternacht oder 1 Uhr und können bis 7:30 Uhr gehen.' },
+      { q: 'Was kostet es?', a: 'Tickets mit Getränk kosten etwa 16 bis 21 €. Separees und VIP-Tische ab rund 150 €.' },
+    ],
+  },
+  'deseo-valencia': {
+    es: [
+      { q: '¿Deseo y Deseo 54 son lo mismo?', a: 'Sí, el nombre completo es Deseo 54. Es uno de los clubs gais de referencia en Valencia y lleva abriendo cada viernes y sábado sin parar desde 2003.' },
+      { q: '¿Qué tipo de noche es?', a: 'House de principio a fin, con DJs internacionales de vez en cuando, espectáculos drag y gogós en las tarimas. Tiene dos plantas y zona VIP.' },
+      { q: '¿Abre algún día más?', a: 'Los jueves en verano y la mayoría de vísperas de festivo. En Fallas y en el Orgullo monta fiestas especiales.' },
+      { q: '¿Cuánto cuesta?', a: 'Depende de la noche y del DJ. Comprar online sale más barato que en puerta.' },
+      { q: '¿Dónde está?', a: 'En el Carrer de Pepita, 13-15.' },
+    ],
+    en: [
+      { q: 'Are Deseo and Deseo 54 the same?', a: "Yes, the full name is Deseo 54. It is one of Valencia's go-to gay clubs and has opened every Friday and Saturday without a break since 2003." },
+      { q: 'What kind of night is it?', a: 'House from start to finish, international DJs from time to time, drag shows and podium dancers. Two floors and a VIP area.' },
+      { q: 'Is it open any other days?', a: 'Thursdays in summer and most nights before public holidays. It throws special parties for Fallas and Pride.' },
+      { q: 'How much is it?', a: 'It depends on the night and the DJ. Buying online is cheaper than at the door.' },
+      { q: 'Where is it?', a: 'At Carrer de Pepita, 13-15.' },
+    ],
+    de: [
+      { q: 'Sind Deseo und Deseo 54 dasselbe?', a: 'Ja, der volle Name ist Deseo 54. Einer der wichtigsten schwulen Clubs in Valencia, seit 2003 ohne Pause jeden Freitag und Samstag geöffnet.' },
+      { q: 'Was für eine Nacht ist das?', a: 'House von Anfang bis Ende, ab und zu internationale DJs, Drag-Shows und Gogos auf den Podesten. Zwei Etagen und VIP-Bereich.' },
+      { q: 'Hat er auch an anderen Tagen offen?', a: 'Donnerstags im Sommer und an den meisten Abenden vor Feiertagen. Zu Fallas und Pride gibt es Sonderpartys.' },
+      { q: 'Was kostet der Eintritt?', a: 'Hängt von Abend und DJ ab. Online ist es günstiger als an der Tür.' },
+      { q: 'Wo liegt er?', a: 'In der Carrer de Pepita, 13-15.' },
+    ],
+  },
+  'marina-beach-club': {
+    es: [
+      { q: '¿A qué hora abre Marina Beach Club?', a: 'Desde las 17:30, todos los días, y cierra a las 03:30. Se puede empezar con el sol y acabar de noche sin cambiar de sitio.' },
+      { q: '¿Se puede reservar mesa?', a: 'Sí, tiene mesas VIP con reserva. Las noches van con DJ.' },
+      { q: '¿Hay edad mínima?', a: 'Sí, 18 años.' },
+      { q: '¿Dónde está exactamente?', a: 'En la Marina de Valencia, la antigua Marina Real Juan Carlos I, junto al mar.' },
+    ],
+    en: [
+      { q: 'What time does Marina Beach Club open?', a: 'From 5:30pm every day, closing at 3:30am. You can start in daylight and finish at night without moving on.' },
+      { q: 'Can I book a table?', a: 'Yes, there are VIP tables to book. Nights come with a DJ.' },
+      { q: 'Is there a minimum age?', a: 'Yes, 18.' },
+      { q: 'Where exactly is it?', a: 'In the Valencia marina, formerly Marina Real Juan Carlos I, by the sea.' },
+    ],
+    de: [
+      { q: 'Wann öffnet der Marina Beach Club?', a: 'Täglich ab 17:30 Uhr, Schluss ist um 3:30 Uhr. Man kann bei Tageslicht anfangen und nachts aufhören, ohne weiterzuziehen.' },
+      { q: 'Kann man einen Tisch reservieren?', a: 'Ja, es gibt VIP-Tische zum Reservieren. Abends legt ein DJ auf.' },
+      { q: 'Gibt es ein Mindestalter?', a: 'Ja, 18 Jahre.' },
+      { q: 'Wo genau liegt er?', a: 'In der Marina von Valencia, der früheren Marina Real Juan Carlos I, direkt am Meer.' },
+    ],
+  },
+  'tulum': {
+    es: [
+      { q: '¿Qué música suena en Tulum?', a: 'En las noches de club de otoño e invierno, tech house y minimal.' },
+      { q: '¿Hay que comprar la entrada antes?', a: 'No es obligatorio, pero se pueden reservar entradas y mesas VIP con antelación, y en las noches fuertes es lo más seguro.' },
+      { q: '¿Dónde está?', a: 'En la avenida de les Corts Valencianes, 58, en la zona de Pobles de l\'Oest, al noroeste de Valencia.' },
+    ],
+    en: [
+      { q: 'What music plays at Tulum?', a: 'On its autumn and winter club nights, tech house and minimal.' },
+      { q: 'Do I need to buy a ticket in advance?', a: 'Not necessarily, but tickets and VIP tables can be booked ahead, which is the safer bet on big nights.' },
+      { q: 'Where is it?', a: "At Avinguda de les Corts Valencianes, 58, in the Pobles de l'Oest area in north-west Valencia." },
+    ],
+    de: [
+      { q: 'Welche Musik läuft im Tulum?', a: 'In den Clubnächten im Herbst und Winter Tech House und Minimal.' },
+      { q: 'Muss ich das Ticket vorher kaufen?', a: 'Nicht unbedingt, aber Tickets und VIP-Tische lassen sich vorab reservieren, an großen Abenden die sicherere Wahl.' },
+      { q: 'Wo liegt der Club?', a: "An der Avinguda de les Corts Valencianes, 58, im Bereich Pobles de l'Oest im Nordwesten Valencias." },
     ],
   },
 }
