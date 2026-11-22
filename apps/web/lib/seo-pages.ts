@@ -508,6 +508,24 @@ export function zoneFaq(
   return out
 }
 
+export function otrosClubsHeading(locale: string, zona: string) {
+  const copy: Record<string, string> = {
+    es: `Más discotecas en ${zona}`,
+    en: `More clubs in ${zona}`,
+    de: `Weitere Clubs in ${zona}`,
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
+export function guiaZonaLabel(locale: string, zona: string) {
+  const copy: Record<string, string> = {
+    es: `Ver la guía de salir de fiesta en ${zona}`,
+    en: `See the nightlife guide to ${zona}`,
+    de: `Zum Ausgehguide für ${zona}`,
+  }
+  return copy[locale] || copy[routing.defaultLocale]
+}
+
 export function zoneFaqHeading(locale: string) {
   const copy: Record<string, string> = {
     es: 'Preguntas frecuentes',

@@ -1,6 +1,6 @@
 import { Link, localizedPath } from '@/lib/navigation'
 import { SafeImage } from '@/components/SafeImage'
-import { fetchClub, fetchClubEvents } from '@/lib/db'
+import { fetchClub, fetchClubEvents, fetchClubsPublic, fetchZonesMap } from '@/lib/db'
 import { clubPath, eventPath } from '@/lib/hrefs'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { FavoriteButton } from '@/components/FavoriteButton'
@@ -10,7 +10,7 @@ import { ShareSheet } from '@/components/ShareSheet'
 import { ClubDescriptionExpand } from '@/components/ClubDescriptionExpand'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { buildAlternates } from '@/lib/seo'
-import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado, clubFaq, zoneFaqHeading, updatedAtLabel } from '@/lib/seo-pages'
+import { homeCrumb, clubIsIndexable, clubMetaDescription, formatShortDate, formatEventDate, secciones, alts, resumenClub, tituloClub, noEncontrado, clubFaq, zoneFaqHeading, updatedAtLabel, otrosClubsHeading, guiaZonaLabel } from '@/lib/seo-pages'
 import { AnswerBlock } from '@/components/AnswerBlock'
 import { limpiarFicha, limpiarI18n, resumenFicha } from '@/lib/limpiar-ficha'
 import { openingHoursSpecification, horarioTexto } from '@/lib/opening-hours'
@@ -126,6 +126,29 @@ export default async function ClubProfile({ params }: { params: { locale: string
   const horario = openingHoursSpecification(club.open_hours)
   const horarioVisible = horarioTexto(club.open_hours, params.locale)
   const faq = clubFaq(club.slug, params.locale)
+
+  // Enlaces a otros clubs de la misma zona. En anillo sobre la lista ordenada
+  // (los 4 siguientes al actual) para que todas las fichas reciban enlaces por
+  // igual, en vez de que las primeras del alfabeto se lleven todos. Solo clubs
+  // indexables, para no enlazar a fichas que se sirven con noindex.
+  let relacionados: any[] = []
+  let zonaSlug: string | null = null
+  if (club.zone) {
+    const [todos, zonas] = await Promise.all([
+      fetchClubsPublic({ zone: club.zone, limit: 200 }),
+      fetchZonesMap(),
+    ])
+    for (const [slug, nombre] of Array.from(zonas.entries())) {
+      if (nombre === club.zone) zonaSlug = slug
+    }
+    const candidatos = todos.filter((c: any) => c.zone === club.zone && (c.id === club.id || clubIsIndexable(c, 0)))
+    const i = candidatos.findIndex((c: any) => c.id === club.id)
+    const resto = candidatos.filter((c: any) => c.id !== club.id)
+    if (resto.length > 0) {
+      const inicio = i === -1 ? 0 : i % resto.length
+      relacionados = Array.from({ length: Math.min(4, resto.length) }, (_, k) => resto[(inicio + k) % resto.length])
+    }
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -437,6 +460,34 @@ export default async function ClubProfile({ params }: { params: { locale: string
             </div>
           )}
         </div>
+
+        {/* Otros clubs de la zona y guia de la ciudad */}
+        {(relacionados.length > 0 || zonaSlug) && (
+          <div className="space-y-3">
+            {relacionados.length > 0 && (
+              <>
+                <h2 className="text-xs text-white/40 uppercase tracking-widest font-semibold">{otrosClubsHeading(params.locale, club.zone)}</h2>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {relacionados.map((c: any) => (
+                    <Link
+                      key={c.id}
+                      href={clubPath(c)}
+                      className="p-3 rounded-2xl bg-white/5 border border-white/8 hover:bg-white/8 hover:border-[#d8af3a]/30 transition-all"
+                    >
+                      <p className="text-sm font-medium text-white leading-tight">{c.name}</p>
+                      {(c.town || c.zone) && <p className="text-xs text-white/50 mt-0.5">{c.town || c.zone}</p>}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            {zonaSlug && (
+              <Link href={`/${zonaSlug}`} className="inline-block text-sm text-[#d8af3a] hover:underline">
+                {guiaZonaLabel(params.locale, club.zone)}
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Share */}
         <ShareSheet
