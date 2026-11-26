@@ -47,4 +47,4 @@ export default async function DjsIndex({ params }: { params: { locale: string } 
   )
 }
 
-export const revalidate = 60
+export const revalidate = 3600

@@ -3,7 +3,7 @@
 // version en "/genre/..." - ver lib/genre-page.tsx.
 import { genreMetadata, renderGenrePage } from '@/lib/genre-page'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export async function generateMetadata({ params }: { params: { locale: string; name: string } }) {
   return genreMetadata(params, 'genero')

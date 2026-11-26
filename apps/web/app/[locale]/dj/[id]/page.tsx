@@ -329,4 +329,4 @@ export default async function DjProfile({ params }: { params: { locale: string; 
   )
 }
 
-export const revalidate = 60
+export const revalidate = 3600

@@ -18,7 +18,7 @@ import { unstable_cache } from 'next/cache'
 // cache() compara los argumentos por identidad, asi que dos objetos literales
 // iguales pero distintos (el caso de fetchZoneFacts/fetchZoneGenreCounts) no se
 // deduplicarian nunca.
-export const DEFAULT_TTL = 60
+export const DEFAULT_TTL = 600
 
 // JSON con las claves ordenadas y sin undefined: {zone:'Ibiza',limit:500} y
 // {limit:500,zone:'Ibiza'} tienen que dar la misma cadena.

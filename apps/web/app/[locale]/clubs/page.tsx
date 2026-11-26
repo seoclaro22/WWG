@@ -43,4 +43,4 @@ export default async function ClubsIndex({ params }: { params: { locale: string 
   )
 }
 
-export const revalidate = 60
+export const revalidate = 3600
